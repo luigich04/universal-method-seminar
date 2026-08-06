@@ -26,8 +26,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${bebasNeue.variable} ${interTight.variable}`}>
-      <body>
+    <html lang="en" className={`${bebasNeue.variable} ${interTight.variable}`} suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

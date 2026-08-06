@@ -1,0 +1,227 @@
+/* ─────────────────────────────────────────
+   SeminarSection — Vertical Editorial Layout
+───────────────────────────────────────── */
+
+.section {
+  position: relative;
+  background: transparent;
+  width: 100%;
+  padding: 130px 80px 0;
+  height: auto;
+  scroll-margin-top: 80px;
+}
+
+/* ── Inner container ── */
+.inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══════════════════════════
+   TOP — eyebrow + headline + intro
+═══════════════════════════ */
+.top {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Eyebrow */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: var(--accent-orange);
+  margin: 0 0 36px;
+}
+
+/* Headline */
+.headline {
+  font-family: var(--font-title);
+  font-size: clamp(46px, 4.8vw, 78px);
+  font-weight: 700;
+  line-height: 0.98;
+  color: var(--text-ivory);
+  letter-spacing: -0.01em;
+  margin: 0 0 38px;
+  max-width: 960px;
+}
+
+/* Intro paragraph */
+.intro {
+  font-family: var(--font-sans);
+  font-size: clamp(15px, 1.25vw, 19px);
+  font-weight: 300;
+  line-height: 1.55;
+  color: rgba(200, 194, 186, 0.82);
+  margin: 0;
+  max-width: 800px;
+}
+
+/* ═══════════════════════════
+   BLOCKS ROW — 3 columns, single row
+═══════════════════════════ */
+.blocksRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(60px, 7vw, 120px);
+  align-items: start;
+  margin-top: clamp(52px, 6vw, 76px);
+}
+
+/* ── Single block ── */
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 390px;
+}
+
+.blockNum {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--accent-orange);
+  margin: 0;
+}
+
+.blockTitle {
+  font-family: var(--font-sans);
+  font-size: clamp(14px, 1.4vw, 19px);
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(200, 194, 186, 0.88);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.blockLead {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: rgba(200, 194, 186, 0.90);
+  margin: 0;
+}
+
+.blockBody {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.72;
+  color: rgba(200, 194, 186, 0.68);
+  margin: 0;
+}
+
+/* ═══════════════════════════
+   CLOSING — below blocks, right-aligned
+═══════════════════════════ */
+.closing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 28px;
+  margin-top: clamp(90px, 9vw, 140px);
+  margin-left: auto;
+  max-width: 760px;
+}
+
+.closingText {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.closingLine1 {
+  font-family: var(--font-sans);
+  font-size: clamp(17px, 1.8vw, 26px);
+  font-weight: 500;
+  line-height: 1.35;
+  color: rgba(200, 194, 186, 0.82);
+  margin: 0;
+}
+
+.closingLine2 {
+  font-family: var(--font-sans);
+  font-size: clamp(17px, 1.8vw, 26px);
+  font-weight: 300;
+  line-height: 1.35;
+  color: rgba(200, 194, 186, 0.82);
+  margin: 0;
+}
+
+.closingDot {
+  color: var(--accent-orange);
+}
+
+.closingCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--accent-orange);
+  text-decoration: none;
+  width: fit-content;
+  transition: gap 0.25s ease, opacity 0.25s ease;
+}
+
+.closingCta:hover {
+  gap: 14px;
+  opacity: 0.75;
+}
+
+.ctaArrow {
+  font-size: 14px;
+  line-height: 1;
+  transition: transform 0.25s ease;
+}
+
+.closingCta:hover .ctaArrow {
+  transform: translate(3px, 3px);
+}
+
+/* ═══════════════════════════
+   RESPONSIVE
+═══════════════════════════ */
+@media (max-width: 1024px) {
+  .section {
+    padding: 100px 48px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .blocksRow {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .closing {
+    align-items: flex-start;
+    margin-left: 0;
+    margin-top: 96px;
+  }
+  .closingText {
+    text-align: left;
+  }
+  .closingLine1,
+  .closingLine2 {
+    font-size: clamp(16px, 4vw, 22px);
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 72px 24px 0;
+  }
+}

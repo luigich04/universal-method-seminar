@@ -1,0 +1,34 @@
+.brushDivider {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-light);
+  line-height: 0;
+  margin-top: -2px;
+  margin-bottom: -2px;
+}
+
+.brushDivider img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .brushDivider {
+    height: 220px;
+    margin-top: -2px;
+    margin-bottom: -2px;
+    background: var(--bg-light);
+  }
+
+  .brushDivider img {
+    width: 170%;
+    max-width: none;
+    height: 222px;
+    object-fit: cover;
+    object-position: right center;
+    transform: translateX(-147px);
+  }
+}

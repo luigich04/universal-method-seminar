@@ -1,0 +1,358 @@
+/* ─────────────────────────────────────────
+   ProgrammeSection — Precise Editorial Layout
+───────────────────────────────────────── */
+
+.section {
+  position: relative;
+  background: var(--bg-dark, #070707);
+  width: 100%;
+  padding: clamp(110px, 10vw, 180px) 80px;
+  height: auto;
+  scroll-margin-top: 80px;
+  overflow: hidden;
+}
+
+/* Cement texture overlay */
+.section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("/texure-cemento.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Inner Container — Perfectly matched to 1280px boxed width of sections above */
+.inner {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  z-index: 2;
+}
+
+/* ═══════════════════════════
+   TOP INTRO GRID — 0.9fr / 1.1fr (Bottom Aligned)
+═══════════════════════════ */
+.introGrid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: clamp(48px, 6vw, 100px);
+  align-items: end;
+  margin-bottom: 110px;
+}
+
+.introLeft {
+  display: flex;
+  flex-direction: column;
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: var(--accent-orange);
+  margin: 0 0 28px;
+}
+
+.headline {
+  font-family: var(--font-title);
+  font-size: clamp(56px, 5.5vw, 86px);
+  font-weight: 700;
+  line-height: 0.95;
+  color: var(--text-ivory);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.introRight {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 6px;
+}
+
+.introText {
+  font-family: var(--font-sans);
+  font-size: clamp(16px, 1.25vw, 20px);
+  font-weight: 300;
+  line-height: 1.6;
+  color: rgba(225, 220, 212, 0.78);
+  margin: 0;
+  max-width: 580px;
+}
+
+/* ═══════════════════════════
+   DAYS LIST — Horizontal Rows
+═══════════════════════════ */
+.daysList {
+  display: flex;
+  flex-direction: column;
+}
+
+.dayRow {
+  display: grid;
+  grid-template-columns: 90px minmax(360px, 1fr) 190px;
+  gap: 40px;
+  padding: 52px 0 70px;
+  border-top: 1px solid rgba(225, 220, 212, 0.18);
+  align-items: start;
+}
+
+/* Column 1: Big Number */
+.dayColNum {
+  display: flex;
+  align-items: flex-start;
+}
+
+.dayNum {
+  font-family: var(--font-sans);
+  font-size: clamp(54px, 4.2vw, 64px);
+  font-weight: 700;
+  line-height: 0.9;
+  color: var(--accent-orange);
+  letter-spacing: -0.02em;
+}
+
+/* Column 2: Main Content */
+.dayColMain {
+  display: flex;
+  flex-direction: column;
+}
+
+.dayTitle {
+  font-family: var(--font-title);
+  font-size: clamp(40px, 3.5vw, 48px);
+  font-weight: 700;
+  line-height: 1.02;
+  color: var(--text-ivory);
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+}
+
+.dayTagline {
+  font-family: var(--font-sans);
+  font-size: clamp(18px, 1.3vw, 20px);
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(225, 220, 212, 0.92);
+  margin: 0 0 18px;
+}
+
+.dayBody {
+  font-family: var(--font-sans);
+  font-size: clamp(15px, 1.1vw, 16px);
+  font-weight: 300;
+  line-height: 1.6;
+  color: rgba(225, 220, 212, 0.64);
+  margin: 0 0 28px;
+  max-width: 580px;
+}
+
+.dayThemes {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(225, 161, 11, 0.75);
+  margin: 0;
+}
+
+/* Column 3: Date & Time */
+.dayColMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  text-align: right;
+  padding-top: 6px;
+}
+
+.dayDate {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent-orange);
+}
+
+.dayTime {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: rgba(200, 194, 186, 0.60);
+}
+
+/* ═══════════════════════════
+   CLOSING CTA FOOTER
+═══════════════════════════ */
+.cta {
+  margin-top: 60px;
+  padding-top: clamp(60px, 6vw, 90px);
+  border-top: 1px solid rgba(225, 220, 212, 0.18);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.ctaText {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 620px;
+}
+
+.ctaHeadline {
+  font-family: var(--font-title);
+  font-size: clamp(38px, 4.2vw, 68px);
+  font-weight: 700;
+  line-height: 0.98;
+  color: var(--text-ivory);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.ctaSub {
+  font-family: var(--font-sans);
+  font-size: clamp(14px, 1.15vw, 17px);
+  font-weight: 300;
+  line-height: 1.6;
+  color: rgba(200, 194, 186, 0.65);
+  margin: 0;
+}
+
+/* ── CTA Button ── */
+.ctaButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--accent-orange);
+  color: #070707;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 20px 36px;
+  border-radius: 4px;
+  text-decoration: none;
+  overflow: hidden;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ctaButton::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("/texure-cemento.png");
+  background-size: cover;
+  opacity: 0.08;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.ctaButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(225, 161, 11, 0.25);
+}
+
+.ctaArrow {
+  font-size: 15px;
+  line-height: 1;
+  transition: transform 0.25s ease;
+}
+
+.ctaButton:hover .ctaArrow {
+  transform: translate(3px, -3px);
+}
+
+/* ═══════════════════════════
+   RESPONSIVE — Matched to top sections
+═══════════════════════════ */
+@media (max-width: 1024px) {
+  .section {
+    padding: 90px 48px;
+  }
+
+  .introGrid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: start;
+    margin-bottom: 70px;
+  }
+
+  .dayRow {
+    grid-template-columns: 80px 1fr;
+    gap: 32px;
+    padding: 44px 0 54px;
+  }
+
+  .dayColMeta {
+    grid-column: 2;
+    align-items: flex-start;
+    text-align: left;
+    margin-top: 16px;
+  }
+
+  .cta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 70px 24px;
+  }
+
+  .headline {
+    font-size: clamp(48px, 12vw, 68px);
+  }
+
+  .dayRow {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 36px 0 44px;
+  }
+
+  .dayColMeta {
+    grid-column: 1;
+    order: -1;
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
+
+  .dayNum {
+    font-size: 52px;
+  }
+
+  .cta {
+    margin-top: 48px;
+    padding-top: 36px;
+    width: 100%;
+  }
+
+  .ctaButton {
+    width: 100%;
+    justify-content: center;
+    padding: 18px 24px;
+  }
+}

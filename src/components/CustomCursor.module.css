@@ -1,0 +1,39 @@
+.cursorRing {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  border: 2.8px solid rgba(225, 161, 11, 0.75);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999998;
+  transform: translate(-50%, -50%);
+  box-shadow: none;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s ease,
+              background-color 0.25s ease;
+  will-change: transform;
+}
+
+.ringHover {
+  width: 38px;
+  height: 38px;
+  border: 2.8px solid #e1a10b;
+  background-color: rgba(225, 161, 11, 0.06);
+  box-shadow: none;
+}
+
+.ringClicked {
+  width: 22px;
+  height: 22px;
+  border-color: var(--bg-light);
+}
+
+@media (pointer: coarse), (hover: none) {
+  .cursorDot,
+  .cursorRing {
+    display: none !important;
+  }
+}

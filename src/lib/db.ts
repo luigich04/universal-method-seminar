@@ -55,57 +55,76 @@ export function getMySQLPool() {
 }
 
 // ── JSON Fallback Helper ──
-const DATA_DIR = path.join(process.cwd(), "data");
-const DB_FILE = path.join(DATA_DIR, "crm_bookings.json");
+// Safe JSON Write Helper (Supports Vercel Read-Only File System & /tmp fallback)
+function safeWriteJSON(filePath: string, data: any) {
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+  } catch (fsErr: any) {
+    if (fsErr?.code === "EROFS" || fsErr?.message?.includes("read-only")) {
+      try {
+        const tmpPath = path.join("/tmp", "crm_bookings.json");
+        fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2), "utf-8");
+      } catch (tmpErr) {
+        console.warn("Vercel read-only filesystem notice:", tmpErr);
+      }
+    } else {
+      console.warn("FS write notice:", fsErr);
+    }
+  }
+}
 
 function ensureDirectoryExists() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-  if (!fs.existsSync(DB_FILE)) {
-    const initialSeed: BookingRecord[] = [
-      {
-        id: "seed-1",
-        ticketId: "UMS-8492",
-        fullName: "Marco Rossi",
-        email: "marco.rossi@bjj-academy.it",
-        phone: "+39 340 1234567",
-        address: "Roma (RM), Italia",
-        martialSystem: "BJJ (Brazilian Jiu-Jitsu)",
-        experienceLevel: "Advanced / Cintura Nera",
-        tierKey: "full",
-        tierName: "Full Seminar (2 Days)",
-        amountPaid: 140,
-        currency: "EUR",
-        paymentStatus: "PAID",
-        paymentMethod: "stripe_card",
-        attended: true,
-        notes: "Istruttore cintura nera BJJ. Richiede posto prima fila per riprese video.",
-        createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-        updatedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-      },
-      {
-        id: "seed-2",
-        ticketId: "UMS-3921",
-        fullName: "Alessandro Conti",
-        email: "alessandro.conti@gmail.com",
-        phone: "+39 335 9876543",
-        address: "Milano (MI), Italia",
-        martialSystem: "Wing Tsun",
-        experienceLevel: "3 - 5 Anni Esperienza",
-        tierKey: "day1",
-        tierName: "Day 1 Pass — Perceive",
-        amountPaid: 80,
-        currency: "EUR",
-        paymentStatus: "PAID",
-        paymentMethod: "google_pay",
-        attended: false,
-        notes: "Interessato alla biomeccanica di Chris Collins.",
-        createdAt: new Date(Date.now() - 86400000 * 1).toISOString(),
-        updatedAt: new Date(Date.now() - 86400000 * 1).toISOString(),
-      },
-    ];
-    fs.writeFileSync(DB_FILE, JSON.stringify(initialSeed, null, 2), "utf-8");
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    if (!fs.existsSync(DB_FILE)) {
+      const initialSeed: BookingRecord[] = [
+        {
+          id: "seed-1",
+          ticketId: "UMS-8492",
+          fullName: "Marco Rossi",
+          email: "marco.rossi@bjj-academy.it",
+          phone: "+39 340 1234567",
+          address: "Roma (RM), Italia",
+          martialSystem: "BJJ (Brazilian Jiu-Jitsu)",
+          experienceLevel: "Advanced / Cintura Nera",
+          tierKey: "full",
+          tierName: "Full Seminar (2 Days)",
+          amountPaid: 140,
+          currency: "EUR",
+          paymentStatus: "PAID",
+          paymentMethod: "stripe_card",
+          attended: true,
+          notes: "Istruttore cintura nera BJJ. Richiede posto prima fila per riprese video.",
+          createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+          updatedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+        },
+        {
+          id: "seed-2",
+          ticketId: "UMS-3921",
+          fullName: "Alessandro Conti",
+          email: "alessandro.conti@gmail.com",
+          phone: "+39 335 9876543",
+          address: "Milano (MI), Italia",
+          martialSystem: "Wing Tsun",
+          experienceLevel: "3 - 5 Anni Esperienza",
+          tierKey: "day1",
+          tierName: "Day 1 Pass — Perceive",
+          amountPaid: 80,
+          currency: "EUR",
+          paymentStatus: "PAID",
+          paymentMethod: "google_pay",
+          attended: false,
+          notes: "Interessato alla biomeccanica di Chris Collins.",
+          createdAt: new Date(Date.now() - 86400000 * 1).toISOString(),
+          updatedAt: new Date(Date.now() - 86400000 * 1).toISOString(),
+        },
+      ];
+      safeWriteJSON(DB_FILE, initialSeed);
+    }
+  } catch (err) {
+    console.warn("Directory notice:", err);
   }
 }
 
@@ -229,7 +248,7 @@ export async function saveBookingAsync(
   } else {
     bookings.unshift(fullRecord);
   }
-  fs.writeFileSync(DB_FILE, JSON.stringify(bookings, null, 2), "utf-8");
+  safeWriteJSON(DB_FILE, bookings);
   return fullRecord;
 }
 

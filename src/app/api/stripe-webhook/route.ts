@@ -47,26 +47,30 @@ export async function POST(request: Request) {
         console.warn("MySQL webhook update notice:", dbErr);
       }
 
-      // Update JSON fallback
-      const DATA_DIR = path.join(process.cwd(), "data");
-      const DB_FILE = path.join(DATA_DIR, "crm_bookings.json");
+      // Update JSON fallback (wrapped for Vercel EROFS read-only safety)
+      try {
+        const DATA_DIR = path.join(process.cwd(), "data");
+        const DB_FILE = path.join(DATA_DIR, "crm_bookings.json");
 
-      if (fs.existsSync(DB_FILE)) {
-        const raw = fs.readFileSync(DB_FILE, "utf-8");
-        const bookings = JSON.parse(raw);
-        let updated = false;
+        if (fs.existsSync(DB_FILE)) {
+          const raw = fs.readFileSync(DB_FILE, "utf-8");
+          const bookings = JSON.parse(raw);
+          let updated = false;
 
-        for (const b of bookings) {
-          if (b.stripeSessionId === sessionId) {
-            b.paymentStatus = "PAID";
-            b.updatedAt = new Date().toISOString();
-            updated = true;
+          for (const b of bookings) {
+            if (b.stripeSessionId === sessionId) {
+              b.paymentStatus = "PAID";
+              b.updatedAt = new Date().toISOString();
+              updated = true;
+            }
+          }
+
+          if (updated) {
+            fs.writeFileSync(DB_FILE, JSON.stringify(bookings, null, 2), "utf-8");
           }
         }
-
-        if (updated) {
-          fs.writeFileSync(DB_FILE, JSON.stringify(bookings, null, 2), "utf-8");
-        }
+      } catch (fsErr) {
+        console.warn("Vercel read-only filesystem notice in webhook (proceeding):", fsErr);
       }
     }
 

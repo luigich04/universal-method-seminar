@@ -1,0 +1,1132 @@
+/* ─────────────────────────────────────────
+   ReservationModal — Editorial Luxury Modal
+   Matches site tokens: --bg-dark, --accent-orange, --text-ivory, --font-title, --font-sans
+───────────────────────────────────────── */
+
+/* ── Backdrop Overlay ── */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 4, 4, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  padding: 16px;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Modal Card Container (Exact 85vh Height) ── */
+.modalCard {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  height: 85vh;
+  max-height: 85vh;
+  background: var(--bg-dark, #070707);
+  border: 1px solid rgba(200, 194, 186, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.95);
+  overflow: hidden;
+  overscroll-behavior: contain;
+  color: var(--text-ivory, #C8C2BA);
+  font-family: var(--font-sans);
+  display: flex;
+  flex-direction: column;
+  animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Background image overlay (/sfondo-popup.png) */
+.modalCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/sfondo-popup.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Top Header ── */
+.header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  border-bottom: 1px solid rgba(200, 194, 186, 0.08);
+  background: rgba(12, 12, 12, 0.85);
+  flex-shrink: 0;
+}
+
+.brandGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.brandTitle {
+  color: var(--text-ivory, #C8C2BA);
+}
+
+.brandSub {
+  color: var(--accent-orange, #e1a10b);
+}
+
+.closeBtn {
+  background: transparent;
+  border: 1px solid rgba(200, 194, 186, 0.2);
+  color: var(--text-muted, #8E8880);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.closeBtn:hover {
+  border-color: var(--accent-orange, #e1a10b);
+  color: var(--accent-orange, #e1a10b);
+}
+
+/* ── Minimal Editorial Progress Tracker ── */
+.progressRow {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 28px;
+  background: rgba(6, 6, 6, 0.9);
+  border-bottom: 1px solid rgba(200, 194, 186, 0.06);
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted, #8E8880);
+  flex-shrink: 0;
+}
+
+.progressStep {
+  transition: color 0.2s ease;
+}
+
+.activeStep {
+  color: var(--accent-orange, #e1a10b);
+  font-weight: 700;
+}
+
+/* ── Step Body Container ── */
+.stepBody {
+  position: relative;
+  z-index: 2;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Eyebrow & Titles ── */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent-orange, #e1a10b);
+  margin: 0 0 4px 0;
+}
+
+.heroTitle {
+  font-family: var(--font-title);
+  font-size: clamp(26px, 2.8vw, 36px);
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--text-ivory, #C8C2BA);
+  margin: 0 0 4px 0;
+}
+
+.heroSub {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted, #8E8880);
+  margin: 0;
+}
+
+.stepHeader {
+  margin-bottom: 12px;
+}
+
+.stepTitle {
+  font-family: var(--font-title);
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 700;
+  color: var(--text-ivory, #C8C2BA);
+  margin: 2px 0 0 0;
+}
+
+/* ── Step 1 Overview (Luxury Editorial Aesthetic) ── */
+.overviewHero {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.overviewEyebrow {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-orange, #e1a10b);
+  background: rgba(225, 161, 11, 0.1);
+  border: 1px solid rgba(225, 161, 11, 0.25);
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.overviewTitle {
+  font-family: var(--font-sans);
+  font-size: clamp(20px, 2.4vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-ivory, #C8C2BA);
+  margin: 4px 0 6px 0;
+}
+
+.overviewSub {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted, #8E8880);
+  margin: 0;
+}
+
+/* 4 Stats Grid */
+.overviewStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.statBox {
+  background: rgba(200, 194, 186, 0.025);
+  border: 1px solid rgba(200, 194, 186, 0.08);
+  border-radius: 8px;
+  padding: 14px 10px;
+  text-align: center;
+  transition: border-color 0.25s ease;
+}
+
+.statBox:hover {
+  border-color: rgba(225, 161, 11, 0.3);
+}
+
+.statNum {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-orange, #e1a10b);
+  margin-bottom: 2px;
+}
+
+.statLabel {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted, #8E8880);
+}
+
+/* Details Card */
+.overviewDetailsCard {
+  background: rgba(225, 161, 11, 0.03);
+  border: 1px solid rgba(225, 161, 11, 0.2);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  border-bottom: 1px dashed rgba(200, 194, 186, 0.08);
+  padding-bottom: 8px;
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.dLabel {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-orange, #e1a10b);
+}
+
+.dValue {
+  font-weight: 500;
+  color: var(--text-ivory, #C8C2BA);
+}
+
+.overviewActionBox {
+  width: 100%;
+}
+
+.btnPrimaryFull {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bg-dark, #070707);
+  background-color: var(--accent-orange, #e1a10b);
+  padding: 16px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(225, 161, 11, 0.2);
+}
+
+.btnPrimaryFull:hover {
+  background-color: #f5b51b;
+  transform: translateY(-1px);
+}
+
+/* ── Buttons (Site Style) ── */
+.actionRowEnd {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.actionRowBetween {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.actionRowCenter {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.btnPrimary {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bg-dark, #070707);
+  background-color: var(--accent-orange, #e1a10b);
+  padding: 13px 26px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.btnPrimary:hover {
+  background-color: #f5b51b;
+}
+
+.btnSecondary {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-ivory, #C8C2BA);
+  background: transparent;
+  border: 1px solid rgba(200, 194, 186, 0.2);
+  padding: 13px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btnSecondary:hover {
+  border-color: var(--accent-orange, #e1a10b);
+  color: var(--accent-orange, #e1a10b);
+}
+
+/* ── Double Confirmation Warning Card Inside Modal ── */
+.warningCard {
+  background: rgba(225, 161, 11, 0.05);
+  border: 1px solid rgba(225, 161, 11, 0.4);
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.warningIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(225, 161, 11, 0.15);
+  border: 1px solid var(--accent-orange, #e1a10b);
+  color: var(--accent-orange, #e1a10b);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px auto;
+}
+
+.warningTitle {
+  font-family: var(--font-title);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-ivory, #C8C2BA);
+  margin: 0 0 6px 0;
+}
+
+.warningText {
+  font-size: 13px;
+  color: rgba(200, 194, 186, 0.8);
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+/* ── Step 2 Tiers Grid ── */
+.tiersGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  flex: 1;
+}
+
+.tierCard {
+  position: relative;
+  background: rgba(200, 194, 186, 0.02);
+  border: 1px solid rgba(200, 194, 186, 0.08);
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+  will-change: transform, opacity;
+}
+
+.tierCard:hover {
+  border-color: rgba(225, 161, 11, 0.6);
+}
+
+.tierFeatured {
+  border: 1.5px solid rgba(225, 161, 11, 0.4);
+}
+
+.tierFeatured .tierName {
+  color: var(--accent-orange, #e1a10b);
+}
+
+.tierSingleDay .tierTag {
+  background: rgba(200, 194, 186, 0.12);
+  color: var(--text-ivory, #C8C2BA);
+  border: 1px solid rgba(200, 194, 186, 0.2);
+}
+
+.tierSelected {
+  transform: scale(1.05);
+  z-index: 5;
+  opacity: 1 !important;
+  border-color: var(--accent-orange, #e1a10b) !important;
+  background: rgba(225, 161, 11, 0.09) !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 25px rgba(225, 161, 11, 0.18);
+}
+
+.tierUnselected {
+  transform: scale(0.94);
+  opacity: 0.65;
+  z-index: 1;
+}
+
+.tierTag {
+  position: absolute;
+  top: -9px;
+  right: 12px;
+  background: var(--accent-orange, #e1a10b);
+  color: var(--bg-dark, #070707);
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 2px 7px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.tierHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2px;
+}
+
+.tierName {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-ivory, #C8C2BA);
+  margin: 0;
+}
+
+.tierPrice {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--accent-orange, #e1a10b);
+}
+
+.tierSubtitle {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--text-muted, #8E8880);
+  margin: 0 0 10px 0;
+}
+
+.tierDivider {
+  height: 1px;
+  background: rgba(200, 194, 186, 0.08);
+  margin-bottom: 10px;
+}
+
+.featuresList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 400;
+  color: rgba(225, 220, 212, 0.78);
+}
+
+.selectStatus {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted, #8E8880);
+}
+
+.tierSelected .selectStatus {
+  color: var(--accent-orange, #e1a10b);
+}
+
+/* ── Step 3 Profile Box ── */
+.profileFormBox {
+  background: rgba(200, 194, 186, 0.02);
+  border: 1px solid rgba(200, 194, 186, 0.08);
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.fieldGroup label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted, #8E8880);
+}
+
+.fieldGroup input, .fieldGroup select {
+  background: rgba(5, 5, 5, 0.9);
+  border: 1px solid rgba(200, 194, 186, 0.14);
+  border-radius: 4px;
+  padding: 10px 12px;
+  color: var(--text-ivory, #C8C2BA);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  outline: none;
+}
+
+.fieldGroup input:focus, .fieldGroup select:focus {
+  border-color: var(--accent-orange, #e1a10b);
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── STEP 4: Shopify + Stripe Checkout Screen ── */
+.shopifyCheckoutGrid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 18px;
+  flex: 1;
+}
+
+.shopifyLeftPanel {
+  background: rgba(200, 194, 186, 0.02);
+  border: 1px solid rgba(200, 194, 186, 0.08);
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+
+.expressGroup {
+  margin-bottom: 12px;
+}
+
+.expressTitle {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--text-muted, #8E8880);
+  margin-bottom: 6px;
+}
+
+.expressButtonsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.shopPayBtn {
+  background: #5a31f4;
+  color: #fff;
+  border: none;
+  padding: 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.applePayBtn {
+  background: #000;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.googlePayBtn {
+  background: #1a73e8;
+  color: #fff;
+  border: none;
+  padding: 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.orDivider {
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: rgba(200, 194, 186, 0.3);
+  margin: 10px 0;
+}
+
+.shopifyRightPanel {
+  background: rgba(225, 161, 11, 0.03);
+  border: 1px solid rgba(225, 161, 11, 0.2);
+  border-radius: 8px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.summaryBadge {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--accent-orange, #e1a10b);
+  margin-bottom: 14px;
+}
+
+.summaryItemBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.itemThumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  background: rgba(225, 161, 11, 0.15);
+  border: 1px solid var(--accent-orange, #e1a10b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-title);
+  font-size: 14px;
+  color: var(--accent-orange, #e1a10b);
+  flex-shrink: 0;
+}
+
+.itemMeta {
+  flex: 1;
+}
+
+.itemTitle {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-ivory, #C8C2BA);
+  margin: 0 0 2px 0;
+}
+
+.itemSub {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--text-muted, #8E8880);
+  margin: 0 0 2px 0;
+}
+
+.itemCustomer {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--accent-orange, #e1a10b);
+  margin: 0;
+}
+
+.itemPrice {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-ivory, #C8C2BA);
+}
+
+.summaryDivider {
+  height: 1px;
+  background: rgba(200, 194, 186, 0.08);
+  margin: 14px 0;
+}
+
+.summaryBreakdownRow {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--text-muted, #8E8880);
+  margin-bottom: 6px;
+}
+
+.summaryTotalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(225, 161, 11, 0.25);
+  padding-top: 10px;
+  margin-top: 10px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.totalAmount {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--accent-orange, #e1a10b);
+}
+
+/* ── Step 5 Confirmation ── */
+.confirmHeader {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.confirmTitle {
+  font-family: var(--font-title);
+  font-size: clamp(30px, 3.2vw, 42px);
+  color: var(--text-ivory, #C8C2BA);
+  margin: 2px 0 4px 0;
+}
+
+.confirmSub {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text-muted, #8E8880);
+  margin: 0;
+}
+
+.ticketPass {
+  background: rgba(200, 194, 186, 0.025);
+  border: 1px solid rgba(225, 161, 11, 0.3);
+  border-radius: 8px;
+  padding: 18px 22px;
+}
+
+.ticketHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed rgba(200, 194, 186, 0.15);
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-ivory, #C8C2BA);
+}
+
+.ticketId {
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--accent-orange, #e1a10b);
+}
+
+.ticketGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.tLabel {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  color: var(--text-muted, #8E8880);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.tVal {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-ivory, #C8C2BA);
+}
+
+.tValGold {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-orange, #e1a10b);
+}
+
+.ticketFooter {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid rgba(200, 194, 186, 0.08);
+  margin-top: 14px;
+  padding-top: 10px;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-muted, #8E8880);
+}
+
+/* ── Mobile Fullscreen Viewport ── */
+@media (max-width: 768px) {
+  .backdrop {
+    padding: 0;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
+  .modalCard {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+    border: none;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header {
+    padding: 16px;
+    border-radius: 0;
+  }
+
+  .progressRow {
+    padding: 8px 12px;
+    font-size: 8px;
+    letter-spacing: 0.08em;
+  }
+
+  .stepBody {
+    padding: 16px;
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .overviewGrid, .tiersGrid, .shopifyCheckoutGrid, .ticketGrid, .fieldRow {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .fieldGroup {
+    margin-bottom: 2px;
+  }
+
+  .fieldGroup label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    margin-bottom: 6px;
+  }
+
+  .fieldGroup input, .fieldGroup select {
+    font-size: 16px; /* Prevents auto-zoom on iOS mobile */
+    height: 50px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: rgba(14, 14, 14, 0.95);
+    border: 1px solid rgba(200, 194, 186, 0.22);
+  }
+
+  .confirmHeader {
+    text-align: center;
+    margin-bottom: 18px;
+  }
+
+  .confirmTitle {
+    font-size: 28px !important;
+    margin: 4px 0 8px 0 !important;
+  }
+
+  .ticketPass {
+    padding: 16px;
+    margin-bottom: 20px;
+    background: rgba(225, 161, 11, 0.04);
+  }
+
+  .ticketHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    font-size: 13px;
+  }
+
+  .ticketFooter {
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .actionRowCenter {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .actionRowBetween {
+    flex-direction: column-reverse;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  /* Step 1 Mobile Optimizations */
+  .overviewHero {
+    margin-bottom: 12px;
+  }
+
+  .overviewTitle {
+    font-size: 21px !important;
+    line-height: 1.25;
+    margin-top: 4px;
+  }
+
+  .overviewSub {
+    font-size: 10.5px;
+  }
+
+  .overviewStatsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .statBox {
+    padding: 16px 10px;
+    background: rgba(200, 194, 186, 0.035);
+    border: 1px solid rgba(200, 194, 186, 0.12);
+  }
+
+  .statNum {
+    font-size: 22px;
+    margin-bottom: 3px;
+  }
+
+  .statLabel {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+  }
+
+  .overviewDetailsCard {
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    background: rgba(225, 161, 11, 0.04);
+  }
+
+  .detailRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding-bottom: 6px;
+  }
+
+  .dLabel {
+    font-size: 9px;
+  }
+
+  .dValue {
+    font-size: 12px;
+  }
+
+  .overviewActionBox {
+    margin-top: 0;
+  }
+
+  .btnPrimaryFull {
+    padding: 16px 18px;
+    font-size: 12px;
+  }
+
+  /* Step 2 Mobile Pass Selection Optimizations */
+  .tiersGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .tierCard {
+    transform: none !important;
+    padding: 10px 12px;
+    border-radius: 6px;
+  }
+
+  .tierHeader {
+    align-items: center;
+  }
+
+  .tierName {
+    font-size: 13px;
+  }
+
+  .tierPrice {
+    font-size: 20px;
+  }
+
+  .tierSubtitle {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+
+  .tierDivider {
+    margin: 6px 0;
+  }
+
+  .featuresList li {
+    font-size: 11px;
+    margin-bottom: 3px;
+  }
+
+  .actionRowBetween {
+    flex-direction: column-reverse;
+    gap: 8px;
+    margin-top: 12px;
+    position: sticky;
+    bottom: 0;
+    background: rgba(7, 7, 7, 0.96);
+    backdrop-filter: blur(12px);
+    padding-top: 8px;
+    padding-bottom: 4px;
+    z-index: 10;
+  }
+
+  .btnPrimary, .btnSecondary {
+    width: 100%;
+    text-align: center;
+    padding: 14px 16px;
+    font-size: 12px;
+  }
+}

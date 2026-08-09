@@ -28,7 +28,11 @@ const DAYS = [
   },
 ];
 
-export default function ProgrammeSection() {
+interface ProgrammeSectionProps {
+  onOpenReservation?: () => void;
+}
+
+export default function ProgrammeSection({ onOpenReservation }: ProgrammeSectionProps) {
   const sectionRef   = useRef<HTMLElement>(null);
   const eyebrowRef   = useRef<HTMLParagraphElement>(null);
   const headlineRef  = useRef<HTMLHeadingElement>(null);
@@ -36,6 +40,11 @@ export default function ProgrammeSection() {
   const day1Ref      = useRef<HTMLDivElement>(null);
   const day2Ref      = useRef<HTMLDivElement>(null);
   const ctaRef       = useRef<HTMLDivElement>(null);
+
+  const handleCtaClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onOpenReservation) onOpenReservation();
+  };
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -164,6 +173,7 @@ export default function ProgrammeSection() {
           </div>
           <a
             href="#reserve"
+            onClick={handleCtaClick}
             className={styles.ctaButton}
             id="programme-reserve"
             aria-label="Reserve your place at the Universal Method Seminar"

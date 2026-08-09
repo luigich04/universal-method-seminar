@@ -12,7 +12,11 @@ const NAV_LINKS = [
   { label: "FAQ", id: "faq" },
 ];
 
-export default function Navbar() {
+interface NavbarProps {
+  onOpenReservation?: () => void;
+}
+
+export default function Navbar({ onOpenReservation }: NavbarProps) {
   const [pastHero, setPastHero] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -35,6 +39,27 @@ export default function Navbar() {
       document.body.style.overflow = "";
     };
   }, [menuOpen]);
+
+  const handleCtaClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (menuOpen) setMenuOpen(false);
+    if (onOpenReservation) onOpenReservation();
+  };
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    if (menuOpen) setMenuOpen(false);
+
+    const element = document.getElementById(id);
+    if (element) {
+      const lenis = (window as any).lenis;
+      if (lenis && typeof lenis.scrollTo === "function") {
+        lenis.scrollTo(element, { offset: -80, duration: 1.2 });
+      } else {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
 
   return (
     <header className={`${styles.header} ${pastHero ? styles.headerScrolled : ""} ${menuOpen ? styles.headerMenuOpen : ""}`}>
@@ -62,7 +87,7 @@ export default function Navbar() {
         {/* CENTER — CTA (scroll-triggered) */}
         <div className={`${styles.ctaWrapper} ${pastHero ? styles.ctaVisible : ""}`}>
           <Magnetic strength={0.4}>
-            <a href="#reserve" className={styles.cta} id="nav-reserve-place">
+            <a href="#reserve" onClick={handleCtaClick} className={styles.cta} id="nav-reserve-place">
               <span className={styles.ctaText}>RESERVE YOUR PLACE</span>
             </a>
           </Magnetic>
@@ -74,6 +99,7 @@ export default function Navbar() {
             <Magnetic key={id} strength={0.35}>
               <a
                 href={`#${id}`}
+                onClick={(e) => handleNavClick(e, id)}
                 className={styles.link}
                 id={`nav-${id}`}
               >
@@ -105,7 +131,7 @@ export default function Navbar() {
               href={`#${id}`}
               className={styles.mobileOverlayLink}
               style={{ transitionDelay: `${index * 50}ms` }}
-              onClick={() => setMenuOpen(false)}
+              onClick={(e) => handleNavClick(e, id)}
             >
               {label}
             </a>
@@ -113,7 +139,7 @@ export default function Navbar() {
           <a
             href="#reserve"
             className={styles.mobileOverlayCta}
-            onClick={() => setMenuOpen(false)}
+            onClick={handleCtaClick}
           >
             RESERVE YOUR PLACE
           </a>

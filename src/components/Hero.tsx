@@ -12,9 +12,18 @@ const OUTFITS = [
   { src: "/outfit3.png", alt: "Chris Collins - BJJ Gi" },
 ];
 
-export default function Hero() {
+interface HeroProps {
+  onOpenReservation?: () => void;
+}
+
+export default function Hero({ onOpenReservation }: HeroProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const heroRef = useRef<HTMLDivElement>(null);
+
+  const handleCtaClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onOpenReservation) onOpenReservation();
+  };
 
   // Outfit switcher loop
   useEffect(() => {
@@ -204,7 +213,7 @@ export default function Hero() {
 
       {/* ── CTA Hero — posizionato in basso ── */}
       <div className={styles.heroCta}>
-        <a href="#reserve" className={styles.heroCtaBtn} id="hero-reserve-place">
+        <a href="#reserve" onClick={handleCtaClick} className={styles.heroCtaBtn} id="hero-reserve-place">
           RESERVE YOUR PLACE
         </a>
         <p className={styles.heroCtaMicro}>
@@ -233,7 +242,7 @@ export default function Hero() {
 
         {/* CTA */}
         <div className={styles.mobileCta}>
-          <a href="#reserve" className={styles.mobileCtaBtn} id="mobile-hero-reserve-place">
+          <a href="#reserve" onClick={handleCtaClick} className={styles.mobileCtaBtn} id="mobile-hero-reserve-place">
             RESERVE YOUR PLACE
           </a>
           <p className={styles.mobileCtaMicro}>

@@ -1,0 +1,580 @@
+/* ─────────────────────────────────────────
+   Shopify Checkout — Pixel-Perfect Replica
+   Top Order Summary + Real Logos
+───────────────────────────────────────── */
+
+.checkoutPage {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #2c2c2c;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* ── Top Header ── */
+.topHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px 24px 16px 24px;
+}
+
+.brandName {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111111;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.cartIcon {
+  color: #1a5b4c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── TOP ORDER SUMMARY BOX (Sidebar placed at the TOP) ── */
+.topOrderSummaryBox {
+  background: #f5f5f5;
+  border-top: 1px solid #e6e6e6;
+  border-bottom: 1px solid #e6e6e6;
+  width: 100%;
+}
+
+.topSummaryInner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.summaryToggleHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggleLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1a5b4c;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.chevronIcon {
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.toggleRightTotal {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.totalCurrencyLabel {
+  font-size: 11px;
+  color: #707070;
+}
+
+.totalAmountLabel {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.summaryExpandedContent {
+  padding-bottom: 14px;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 12px;
+}
+
+.productRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.productImageWrap {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #dcdcdc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.badgeQty {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #666666;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.productMeta {
+  flex: 1;
+}
+
+.productName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111111;
+  margin: 0 0 1px 0;
+}
+
+.productVariant {
+  font-size: 11.5px;
+  color: #707070;
+  margin: 0;
+}
+
+.productPrice {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #111111;
+}
+
+.discountRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  max-width: 460px;
+}
+
+.discountInput {
+  flex: 1;
+  height: 38px;
+  padding: 8px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  font-size: 12.5px;
+  outline: none;
+  background: #ffffff;
+}
+
+.discountInput:focus {
+  border-color: #1a5b4c;
+}
+
+.applyBtn {
+  height: 38px;
+  padding: 0 16px;
+  background: #e8e8e8;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #333333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.applyBtn:hover {
+  background: #dcdcdc;
+}
+
+.calcDivider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 10px 0;
+}
+
+.calcRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: #555555;
+  margin-bottom: 4px;
+}
+
+.calcRowTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.totalLabel {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111111;
+}
+
+.totalPriceWrap {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+/* ── Main Form Container (Centered Single Column) ── */
+.formContainer {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 32px 24px 80px 24px;
+}
+
+.expressSection {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.expressTitle {
+  font-size: 12px;
+  color: #707070;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.expressPayBtn {
+  width: 100%;
+  height: 48px;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.2s ease;
+}
+
+.expressPayBtn:hover {
+  opacity: 0.9;
+}
+
+.orDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 24px 0;
+  position: relative;
+}
+
+.orDivider::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: #e6e6e6;
+}
+
+.orDivider span {
+  position: relative;
+  background: #ffffff;
+  padding: 0 14px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: #888888;
+  font-weight: 600;
+}
+
+/* ── Form Section Groups ── */
+.sectionBlock {
+  margin-bottom: 32px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111111;
+  margin: 0;
+}
+
+.sectionSubtitle {
+  font-size: 12px;
+  color: #666666;
+  margin-top: 2px;
+}
+
+.loginLink {
+  font-size: 12px;
+  color: #1a5b4c;
+  text-decoration: underline;
+}
+
+.inputGroup {
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.inputGroup input,
+.inputGroup select {
+  width: 100%;
+  height: 46px;
+  padding: 12px 14px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #2c2c2c;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.inputGroup input:focus,
+.inputGroup select:focus {
+  border-color: #1a5b4c;
+  box-shadow: 0 0 0 1px #1a5b4c;
+}
+
+.inputRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #444444;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #1a5b4c;
+}
+
+/* ── Payment Radio Card Accordion ── */
+.paymentAccordion {
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.paymentOption {
+  border-bottom: 1px solid #d9d9d9;
+  background: #ffffff;
+}
+
+.paymentOption:last-child {
+  border-bottom: none;
+}
+
+.paymentHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  cursor: pointer;
+  background: #fcfcfc;
+}
+
+.paymentHeaderSelected {
+  background: #f4f8f6;
+}
+
+.radioTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #111111;
+}
+
+.radioTitle input[type="radio"] {
+  accent-color: #1a5b4c;
+  width: 18px;
+  height: 18px;
+}
+
+.brandLogos {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cardBody {
+  padding: 16px;
+  background: #f9f9f9;
+  border-top: 1px solid #e6e6e6;
+}
+
+.billingCheckbox {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #e8e8e8;
+}
+
+/* ── Primary Submit Button ── */
+.payNowBtn {
+  width: 100%;
+  height: 52px;
+  background: #2b6e59;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 24px;
+  transition: background 0.2s ease;
+}
+
+.payNowBtn:hover {
+  background: #205343;
+}
+
+.payNowBtn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+/* ── Footer Links ── */
+.footerLinks {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #e6e6e6;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  font-size: 11px;
+}
+
+.footerLinks a {
+  color: #1a5b4c;
+  text-decoration: underline;
+}
+
+/* ── Success Ticket View (Shopify Light Theme Style) ── */
+.successOverlay {
+  max-width: 640px;
+  margin: 40px auto 80px auto;
+  padding: 36px 32px;
+  background: #ffffff;
+  color: #2c2c2c;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+  text-align: center;
+}
+
+.successIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #e8f4f0;
+  border: 2px solid #2b6e59;
+  color: #2b6e59;
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+}
+
+.successTicketCard {
+  background: #f9f9f9;
+  border: 1px solid #e2e2e2;
+  border-radius: 8px;
+  padding: 22px 24px;
+  text-align: left;
+  margin: 24px 0;
+}
+
+.ticketHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed #d5d5d5;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.ticketHeaderTitle {
+  font-weight: 700;
+  color: #111111;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+.ticketIdBadge {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: #2b6e59;
+  background: #eaf3f0;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.ticketGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  font-size: 13px;
+}
+
+.ticketLabel {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #777777;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.ticketValue {
+  color: #111111;
+  font-weight: 600;
+}
+
+.ticketValueAccent {
+  color: #2b6e59;
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  .inputRow {
+    grid-template-columns: 1fr;
+  }
+}

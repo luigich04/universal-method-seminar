@@ -5,7 +5,8 @@ import { sendConfirmationEmailAsync } from "@/lib/emailer";
 import fs from "fs";
 import path from "path";
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY || "";
+const stripeSecretKey =
+  process.env.STRIPE_SECRET_KEY || "sk_test_placeholder_build_key";
 
 const stripe = new Stripe(stripeSecretKey, {
   apiVersion: "2025-01-27.acacia" as any,

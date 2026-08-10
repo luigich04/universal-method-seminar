@@ -1,4 +1,179 @@
 import nodemailer from "nodemailer";
+import PDFDocument from "pdfkit";
+
+export function generateTicketPDFBuffer(params: {
+  toName: string;
+  ticketId: string;
+  tierName: string;
+}): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    try {
+      const doc = new PDFDocument({ size: "A4", margin: 40 });
+      const buffers: Buffer[] = [];
+
+      doc.on("data", (chunk) => buffers.push(chunk));
+      doc.on("end", () => resolve(Buffer.concat(buffers)));
+      doc.on("error", (err) => reject(err));
+
+      // Header Top Bar
+      doc.rect(40, 40, 515, 50).fill("#1c1a17");
+
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(18)
+        .fillColor("#ffffff")
+        .text("UNIVERSAL METHOD SEMINAR", 55, 50);
+
+      doc
+        .font("Helvetica")
+        .fontSize(9)
+        .fillColor("#0074d4")
+        .text("CHRIS COLLINS • SEMINAR TICKET PASS", 55, 72);
+
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#ffffff")
+        .text("STAMPA @ CASA", 430, 58, { align: "right" });
+
+      // Customer Order Details Card
+      doc
+        .rect(40, 105, 515, 80)
+        .fillAndStroke("#f4f1e9", "#d8d2c4");
+
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(9)
+        .fillColor("#6b6459")
+        .text("DATI PARTECIPANTE ED ORDINE", 55, 115);
+
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(14)
+        .fillColor("#1c1a17")
+        .text(params.toName || "Partecipante Confermato", 55, 130);
+
+      doc
+        .font("Helvetica")
+        .fontSize(10)
+        .fillColor("#0074d4")
+        .text(`Codice Pass: ${params.ticketId}`, 55, 150);
+
+      doc
+        .font("Helvetica")
+        .fontSize(10)
+        .fillColor("#1c1a17")
+        .text(`Tipo Pass: ${params.tierName}`, 55, 165);
+
+      doc
+        .font("Helvetica")
+        .fontSize(9)
+        .fillColor("#6b6459")
+        .text(`Data: ${new Date().toLocaleDateString("it-IT")}`, 380, 130, { align: "right" });
+
+      doc
+        .font("Helvetica")
+        .fontSize(9)
+        .fillColor("#6b6459")
+        .text("Pagamento: Stripe Verified", 380, 148, { align: "right" });
+
+      // Official Ticket Card Box
+      doc
+        .rect(40, 200, 515, 220)
+        .strokeColor("#1c1a17")
+        .lineWidth(1.5)
+        .stroke();
+
+      // Ticket Card Header
+      doc
+        .rect(40, 200, 515, 28)
+        .fill("#1c1a17");
+
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(10)
+        .fillColor("#ffffff")
+        .text("2026 UNIVERSAL METHOD SEMINAR — PASS UFFICIALE INGRESSO", 55, 208);
+
+      // Ticket Main Details
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(18)
+        .fillColor("#0074d4")
+        .text(params.tierName, 55, 245);
+
+      doc
+        .font("Helvetica")
+        .fontSize(11)
+        .fillColor("#1c1a17")
+        .text("Luogo: Bracciano (RM), Italia — 7 & 8 Settembre 2026", 55, 270);
+
+      doc
+        .font("Helvetica-Oblique")
+        .fontSize(10)
+        .fillColor("#6b6459")
+        .text("Istruttore Principale: Chris Collins (BJJ Black Belt & Wing Tsun Sifu)", 55, 288);
+
+      // Specs
+      doc
+        .moveTo(55, 310)
+        .lineTo(535, 310)
+        .strokeColor("#d8d2c4")
+        .dash(3, { space: 3 })
+        .stroke();
+
+      doc.undash();
+
+      doc.font("Helvetica-Bold").fontSize(9).fillColor("#6b6459").text("LUOGO", 55, 322);
+      doc.font("Helvetica-Bold").fontSize(11).fillColor("#1c1a17").text("Bracciano (RM)", 55, 335);
+
+      doc.font("Helvetica-Bold").fontSize(9).fillColor("#6b6459").text("DATE", 195, 322);
+      doc.font("Helvetica-Bold").fontSize(11).fillColor("#1c1a17").text("7-8 Settembre 2026", 195, 335);
+
+      doc.font("Helvetica-Bold").fontSize(9).fillColor("#6b6459").text("TICKET ID", 345, 322);
+      doc.font("Helvetica-Bold").fontSize(11).fillColor("#0074d4").text(params.ticketId, 345, 335);
+
+      // Entry Instructions
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1c1a17")
+        .text("ISTRUZIONI PER L'ACCESSO AL SEMINARIO", 40, 445);
+
+      doc
+        .font("Helvetica")
+        .fontSize(9.5)
+        .fillColor("#3a352e")
+        .text("1. Presenta questo biglietto PDF all'ingresso (stampato oppure dallo smartphone).", 40, 465)
+        .text("2. Tieni a portata di mano un documento d'identità valido per il check-in.", 40, 483)
+        .text("3. Presentati al check-in almeno 15 minuti prima dell'inizio delle sessioni.", 40, 501);
+
+      // Footer
+      doc
+        .moveTo(40, 760)
+        .lineTo(555, 760)
+        .strokeColor("#1c1a17")
+        .lineWidth(1)
+        .stroke();
+
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(9.5)
+        .fillColor("#1c1a17")
+        .text("Universal Method Seminar — Chris Collins", 40, 770);
+
+      doc
+        .font("Helvetica")
+        .fontSize(9.5)
+        .fillColor("#6b6459")
+        .text("Pass Confermato • Pagina 1 / 1", 440, 770, { align: "right" });
+
+      doc.end();
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
 
 export async function sendConfirmationEmailAsync(params: {
   toEmail: string;
@@ -84,6 +259,17 @@ export async function sendConfirmationEmailAsync(params: {
         content: Buffer.from(pdfBase64, "base64"),
         contentType: "application/pdf",
       });
+    } else {
+      try {
+        const autoPdfBuffer = await generateTicketPDFBuffer({ toName, ticketId, tierName });
+        attachments.push({
+          filename: `Biglietto_Ingresso_UMS_${ticketId}.pdf`,
+          content: autoPdfBuffer,
+          contentType: "application/pdf",
+        });
+      } catch (pdfErr) {
+        console.warn("Could not generate automatic PDF attachment buffer:", pdfErr);
+      }
     }
 
     const cleanFrom = process.env.EMAIL_FROM

@@ -86,8 +86,12 @@ export async function sendConfirmationEmailAsync(params: {
       });
     }
 
+    const cleanFrom = process.env.EMAIL_FROM
+      ? process.env.EMAIL_FROM.replace(/^"/, "").replace(/"$/, "")
+      : `"Universal Method Seminar" <${smtpUser}>`;
+
     await transporter.sendMail({
-      from: process.env.EMAIL_FROM || `"Universal Method Seminar" <${smtpUser}>`,
+      from: cleanFrom,
       to: toEmail,
       subject: `🎉 Pass Confermato (${ticketId}) — Universal Method Seminar Chris Collins`,
       html: htmlBody,

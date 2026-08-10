@@ -26,21 +26,29 @@ function MainContent() {
   };
   const closeReservation = () => setIsReservationOpen(false);
 
-  // Auto-open modal on Step 4 (Confirmation Pass) & confirm payment with Stripe
+  // Auto-open modal on Step 5 (Confirmation Ticket Pass) & confirm payment with Stripe
   useEffect(() => {
     const isSuccess = searchParams.get("success") === "true";
     const sid = searchParams.get("session_id");
     if (isSuccess && sid) {
-      // Call backend API to confirm payment with Stripe & update MySQL DB status to PAID
+      // Call backend API to confirm payment with Stripe & update DB status to PAID
       fetch(`/api/stripe-confirm?session_id=${encodeURIComponent(sid)}`)
         .then((res) => res.json())
+        .then((data) => {
+          if (data.customerName && data.customerName !== "Partecipante") {
+            try { localStorage.setItem("ums_name", data.customerName); } catch (e) {}
+          }
+          if (data.customerEmail) {
+            try { localStorage.setItem("ums_email", data.customerEmail); } catch (e) {}
+          }
+        })
         .catch((err) => console.warn("Stripe confirm notice:", err));
 
-      setModalStep(4);
+      setModalStep(5);
       setSessionId(`STRIPE-${sid.slice(-6).toUpperCase()}`);
       setIsReservationOpen(true);
     } else if (isSuccess) {
-      setModalStep(4);
+      setModalStep(5);
       setSessionId(`UMS-${Math.floor(1000 + Math.random() * 9000)}`);
       setIsReservationOpen(true);
     }

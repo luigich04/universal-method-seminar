@@ -31,7 +31,25 @@ export async function POST(request: Request) {
 
     const origin = request.headers.get("origin") || "http://localhost:3000";
 
-    const session = await stripe.checkout.sessions.create({
+    const isFullPass = tierKey === "full" || price === 140;
+    const unitAmount = isFullPass ? 16000 : Math.round(price * 100);
+
+    let discountsArr: Stripe.Checkout.SessionCreateParams.Discount[] = [];
+    if (isFullPass) {
+      try {
+        const coupon = await stripe.coupons.create({
+          amount_off: 2000, // 20.00 EUR discount
+          currency: "eur",
+          name: "Sconto Bundle 2 Giorni (-12.5%)",
+          duration: "once",
+        });
+        discountsArr = [{ coupon: coupon.id }];
+      } catch (err) {
+        console.warn("Could not create Stripe coupon, falling back to net price:", err);
+      }
+    }
+
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card", "klarna", "paypal"],
       line_items: [
         {
@@ -39,13 +57,16 @@ export async function POST(request: Request) {
             currency: "eur",
             product_data: {
               name: `Universal Method Seminar — ${tierName}`,
-              description: "Bracciano, Italy • 7 & 8 September 2026",
+              description: isFullPass
+                ? "Pass Completo 2 Giorni (Sabato 7 & Domenica 8 Settembre 2026)"
+                : "Bracciano, Italy • 7 & 8 September 2026",
             },
-            unit_amount: Math.round(price * 100),
+            unit_amount: discountsArr.length > 0 ? 16000 : Math.round(price * 100),
           },
           quantity: 1,
         },
       ],
+      discounts: discountsArr.length > 0 ? discountsArr : undefined,
       mode: "payment",
       customer_email: customerEmail ? customerEmail : undefined,
       success_url: `${origin}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
@@ -57,7 +78,9 @@ export async function POST(request: Request) {
         experienceLevel: experienceLevel || "",
         tierName: tierName || "",
       },
-    });
+    };
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     // Record initial booking in internal CRM database with status PENDING
     await saveBookingAsync({

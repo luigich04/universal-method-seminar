@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./ReservationModal.module.css";
 
 export type TierType = "full" | "day1" | "day2";
@@ -17,44 +17,101 @@ export interface TierInfo {
 
 const TIERS: TierInfo[] = [
   {
-    id: "day1",
-    name: "DAY 1 PASS PERCEIVE",
-    price: 80,
-    subtitle: "Saturday 7 Sept (17:00 to 20:00)",
-    tag: "SINGLE DAY",
-    features: [
-      "Full access to Saturday session (3 Hours)",
-      "Structure, biomechanics and intent reading",
-      "Pressure testing and distance control",
-    ],
-  },
-  {
     id: "full",
     name: "FULL SEMINAR (2 DAYS)",
     price: 140,
-    subtitle: "Complete 2 day immersion in structure, timing and pressure",
-    tag: "RECOMMENDED • SAVE 13%",
+    subtitle: "Sabato 7 & Domenica 8 Settembre 2026 (6 Ore Totali)",
+    tag: "CONSIGLIATO",
     isFeatured: true,
     features: [
-      "Access to Day 1 (7 Sept) and Day 2 (8 Sept)",
-      "6 Total hours of direct training with Chris Collins",
-      "Official UMS Certificate of Completion",
-      "Exclusive post seminar video breakdown access",
+      "Accesso completo a entrambe le giornate (7 e 8 Settembre)",
+      "6 Ore di istruzione diretta con Chris Collins",
+      "Attestato di Partecipazione Ufficiale UMS",
+      "Accesso esclusivo ai video di analisi post-seminario",
+    ],
+  },
+  {
+    id: "day1",
+    name: "Day 1 Pass — Perceive",
+    price: 80,
+    subtitle: "Sabato 7 Settembre (17:00 - 20:00)",
+    tag: "SINGOLA GIORNATA",
+    features: [
+      "Accesso completo alla sessione di Sabato (3 Ore)",
+      "Struttura, biomeccanica e lettura dell'intenzione",
+      "Test di pressione e controllo della distanza",
     ],
   },
   {
     id: "day2",
-    name: "DAY 2 PASS ADAPT",
+    name: "Day 2 Pass — Adapt",
     price: 80,
-    subtitle: "Sunday 8 Sept (10:00 to 13:00)",
-    tag: "SINGLE DAY",
+    subtitle: "Domenica 8 Settembre (10:00 - 13:00)",
+    tag: "SINGOLA GIORNATA",
     features: [
-      "Full access to Sunday session (3 Hours)",
-      "Live timing, angles and application mechanics",
-      "Fluid response across martial systems",
+      "Accesso completo alla sessione di Domenica (3 Ore)",
+      "Timing dinamico, angoli e meccaniche applicative",
+      "Risposta fluida tra diversi sistemi marziali",
     ],
   },
 ];
+
+interface CustomSelectProps {
+  label: string;
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (val: string) => void;
+}
+
+function CustomSelect({ label, value, options, onChange }: CustomSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedOption = options.find((o) => o.value === value) || options[0];
+
+  return (
+    <div className={styles.customSelectContainer}>
+      {label && <label>{label}</label>}
+      <div
+        className={`${styles.customSelectTrigger} ${isOpen ? styles.customSelectOpen : ""}`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className={styles.customSelectLabel}>{selectedOption.label}</span>
+        <svg
+          className={`${styles.selectChevron} ${isOpen ? styles.chevronRotated : ""}`}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+
+      {isOpen && (
+        <>
+          <div className={styles.customSelectBackdrop} onClick={() => setIsOpen(false)} />
+          <div className={styles.customDropdownMenu}>
+            {options.map((opt) => {
+              const isSel = opt.value === value;
+              return (
+                <div
+                  key={opt.value}
+                  className={`${styles.customDropdownItem} ${isSel ? styles.customDropdownItemActive : ""}`}
+                  onClick={() => {
+                    onChange(opt.value);
+                    setIsOpen(false);
+                  }}
+                >
+                  <span>{opt.label}</span>
+                  {isSel && <span className={styles.checkmarkIcon}>✓</span>}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 interface ReservationModalProps {
   isOpen: boolean;
@@ -71,8 +128,16 @@ export default function ReservationModal({
 }: ReservationModalProps) {
   const [step, setStep] = useState<number>(initialStep);
   const [selectedTier, setSelectedTier] = useState<TierType>("full");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"card" | "klarna">("card");
   const [isProcessing, setIsProcessing] = useState(false);
   const [ticketId, setTicketId] = useState(initialSessionId);
+
+  // Active Tab Ref for Mobile Header Auto-Scroll
+  const activeTabRef = useRef<HTMLSpanElement>(null);
+
+  // Terms and Support Overlay States
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showSupportModal, setShowSupportModal] = useState(false);
 
   // Double Confirmation Modal State
   const [showDoubleConfirm, setShowDoubleConfirm] = useState(false);
@@ -81,6 +146,15 @@ export default function ReservationModal({
     existingTicketId?: string;
     existingTier?: string;
   }>({});
+  const [countryCode, setCountryCode] = useState("+39");
+
+  // Step 3 Sub-steps & SMS Verification State
+  const [contactSubStep, setContactSubStep] = useState<1 | 2 | 3>(1);
+  const [smsCode, setSmsCode] = useState("");
+  const [isSmsSent, setIsSmsSent] = useState(false);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [smsLoading, setSmsLoading] = useState(false);
+  const [smsNotice, setSmsNotice] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -90,36 +164,102 @@ export default function ReservationModal({
     experience: "intermediate",
   });
 
+  // Auto-scroll header active tab into center view on step change
+  useEffect(() => {
+    if (activeTabRef.current) {
+      activeTabRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  }, [step]);
+
   useEffect(() => {
     if (initialStep) setStep(initialStep);
     if (initialSessionId) setTicketId(initialSessionId);
   }, [initialStep, initialSessionId]);
 
+  // Restore attendee data from localStorage/sessionStorage when returning from Stripe
   useEffect(() => {
-    const lenis = (window as any).lenis;
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-      document.documentElement.style.overflow = "hidden";
-      if (lenis && typeof lenis.stop === "function") lenis.stop();
-    } else {
-      document.body.style.overflow = "";
-      document.documentElement.style.overflow = "";
-      if (lenis && typeof lenis.start === "function") lenis.start();
+    if (typeof window !== "undefined") {
+      const savedName = localStorage.getItem("ums_name") || sessionStorage.getItem("ums_name");
+      const savedEmail = localStorage.getItem("ums_email") || sessionStorage.getItem("ums_email");
+      const savedPhone = localStorage.getItem("ums_phone") || sessionStorage.getItem("ums_phone");
+      const savedSystem = localStorage.getItem("ums_system") || sessionStorage.getItem("ums_system");
+      const savedExp = localStorage.getItem("ums_experience") || sessionStorage.getItem("ums_experience");
+
+      if (savedName || savedEmail) {
+        setFormData((prev) => ({
+          ...prev,
+          name: prev.name || savedName || "",
+          email: prev.email || savedEmail || "",
+          phone: prev.phone || savedPhone || "",
+          system: savedSystem || prev.system,
+          experience: savedExp || prev.experience,
+        }));
+      }
     }
-    return () => {
-      document.body.style.overflow = "";
-      document.documentElement.style.overflow = "";
-      if (lenis && typeof lenis.start === "function") lenis.start();
+  }, [isOpen, initialStep, initialSessionId]);
+
+  const openTerms = () => {
+    window.history.pushState({ modalType: "terms" }, "");
+    setShowTermsModal(true);
+  };
+
+  const openSupport = () => {
+    window.history.pushState({ modalType: "support" }, "");
+    setShowSupportModal(true);
+  };
+
+  const closeTerms = () => {
+    setShowTermsModal(false);
+  };
+
+  const closeSupport = () => {
+    setShowSupportModal(false);
+  };
+
+  // Mobile Hardware Back Button (Popstate) Stack Protection
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Push initial history state when modal opens
+    window.history.pushState({ modalType: "reservation" }, "");
+
+    const handlePopState = () => {
+      if (showTermsModal) {
+        setShowTermsModal(false);
+        return;
+      }
+      if (showSupportModal) {
+        setShowSupportModal(false);
+        return;
+      }
+      onClose();
     };
-  }, [isOpen]);
+
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [isOpen, showTermsModal, showSupportModal, onClose]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
+        if (showTermsModal) {
+          setShowTermsModal(false);
+          return;
+        }
+        if (showSupportModal) {
+          setShowSupportModal(false);
+          return;
+        }
         onClose();
       }
     },
-    [isOpen, onClose]
+    [isOpen, showTermsModal, showSupportModal, onClose]
   );
 
   useEffect(() => {
@@ -132,17 +272,101 @@ export default function ReservationModal({
   const currentTierObj = TIERS.find((t) => t.id === selectedTier) || TIERS[0];
 
   const handleNextToTier = () => setStep(2);
-  const handleNextToInfo = () => setStep(3);
+  const handleNextToDati = () => setStep(3);
+  const handleNextToEsperienza = () => {
+    if (!formData.name.trim()) {
+      alert("Inserisci il tuo Nome e Cognome.");
+      return;
+    }
+    if (!formData.email.trim() || !formData.email.includes("@")) {
+      alert("Inserisci un indirizzo Email valido.");
+      return;
+    }
+    if (!formData.phone.trim() || formData.phone.trim().length < 6) {
+      alert("Inserisci un numero di cellulare valido.");
+      return;
+    }
+    setStep(4);
+  };
+
   const handleBack = () => {
     if (showDoubleConfirm) {
       setShowDoubleConfirm(false);
       return;
     }
-    if (step > 1 && step < 4) setStep((prev) => prev - 1);
+    if (step > 1 && step < 5) setStep((prev) => prev - 1);
+  };
+
+  const handleSendSmsCode = () => {
+    if (!formData.phone || formData.phone.trim().length < 6) {
+      alert("Inserisci un numero di cellulare valido prima di inviare il codice SMS.");
+      return;
+    }
+    setSmsLoading(true);
+    setTimeout(() => {
+      setSmsLoading(false);
+      setIsSmsSent(true);
+      setSmsNotice(`Codice di verifica inviato via SMS a ${countryCode} ${formData.phone}`);
+    }, 600);
+  };
+
+  const handleVerifySmsCode = (code: string) => {
+    setSmsCode(code);
+    if (code.trim().length >= 4) {
+      setIsPhoneVerified(true);
+    } else {
+      setIsPhoneVerified(false);
+    }
+  };
+
+  const handleNextContactSubStep1 = () => {
+    if (!formData.name.trim()) {
+      alert("Inserisci il tuo Nome e Cognome per proseguire.");
+      return;
+    }
+    setContactSubStep(2);
+  };
+
+  const handleNextContactSubStep2 = () => {
+    if (!formData.email.trim() || !formData.email.includes("@")) {
+      alert("Inserisci un indirizzo Email valido.");
+      return;
+    }
+    if (!formData.phone.trim() || formData.phone.trim().length < 6) {
+      alert("Inserisci un numero di cellulare valido per proseguire.");
+      return;
+    }
+    if (!isPhoneVerified) {
+      // Auto trigger SMS verify simulation if user didn't click manual button
+      setIsPhoneVerified(true);
+    }
+    setContactSubStep(3);
   };
 
   const executeStripeRedirect = async () => {
     setIsProcessing(true);
+    const fullPhone = formData.phone
+      ? formData.phone.startsWith("+")
+        ? formData.phone
+        : `${countryCode} ${formData.phone}`
+      : "";
+
+    if (typeof window !== "undefined") {
+      try {
+        sessionStorage.setItem("ums_name", formData.name);
+        sessionStorage.setItem("ums_email", formData.email);
+        sessionStorage.setItem("ums_phone", fullPhone);
+        sessionStorage.setItem("ums_system", formData.system);
+        sessionStorage.setItem("ums_experience", formData.experience);
+
+        localStorage.setItem("ums_name", formData.name);
+        localStorage.setItem("ums_email", formData.email);
+        localStorage.setItem("ums_phone", fullPhone);
+        localStorage.setItem("ums_system", formData.system);
+        localStorage.setItem("ums_experience", formData.experience);
+      } catch (e) {}
+    }
+
     try {
       const res = await fetch("/api/stripe-checkout", {
         method: "POST",
@@ -152,7 +376,7 @@ export default function ReservationModal({
           price: currentTierObj.price,
           customerEmail: formData.email,
           customerName: formData.name,
-          phone: formData.phone,
+          phone: fullPhone,
           martialSystem: formData.system,
           experienceLevel: formData.experience,
           tierKey: currentTierObj.id,
@@ -169,6 +393,22 @@ export default function ReservationModal({
       console.error("Stripe Checkout Error:", err);
       alert("Errore nella connessione a Stripe: " + (err.message || "Riprova più tardi."));
       setIsProcessing(false);
+    }
+  };
+
+  const handleContactFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (contactSubStep === 1) {
+      handleNextContactSubStep1();
+      return;
+    }
+    if (contactSubStep === 2) {
+      handleNextContactSubStep2();
+      return;
+    }
+    if (contactSubStep === 3) {
+      handleProceedToStripeCheckout(e);
+      return;
     }
   };
 
@@ -209,102 +449,234 @@ export default function ReservationModal({
     }
   };
 
-  const handleDownloadTicket = () => {
+  const handleDownloadTicket = async () => {
     const attendeeName = formData.name || "Partecipante Confermato";
     const passName = currentTierObj.name;
-    const currentTicketId = ticketId || "UMS-2026";
+    const currentTicketId = ticketId || "UMS-2026-00147";
+    const systemLabel =
+      formData.system === "bjj"
+        ? "BJJ (Jiu-Jitsu)"
+        : formData.system === "wing-tsun"
+        ? "Wing Tsun"
+        : formData.system === "mma"
+        ? "MMA / Striking"
+        : formData.system === "karate"
+        ? "Karate / Kung Fu"
+        : "Arti Marziali";
+    const expLabel =
+      formData.experience === "beginner"
+        ? "Principiante"
+        : formData.experience === "advanced"
+        ? "Avanzato / Cintura Nera"
+        : "Intermedio";
 
-    const ticketHtml = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Biglietto di Ingresso — ${currentTicketId}</title>
-  <style>
-    body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #070707; color: #f5f2ea; padding: 40px; margin: 0; }
-    .ticket { max-width: 600px; margin: 0 auto; border: 2px solid #e1a10b; border-radius: 12px; padding: 32px; background: #0d0d0d; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
-    .header { font-size: 16px; font-weight: bold; color: #e1a10b; text-align: center; border-bottom: 1px dashed #333; padding-bottom: 16px; letter-spacing: 2px; }
-    .title { font-size: 26px; font-weight: bold; text-align: center; margin: 20px 0 6px 0; color: #ffffff; }
-    .ticket-id { text-align: center; font-family: monospace; color: #e1a10b; font-size: 15px; font-weight: bold; margin-bottom: 24px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 24px 0; background: #141414; padding: 20px; border-radius: 8px; border: 1px solid #222; }
-    .label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1.5px; }
-    .val { font-size: 14px; font-weight: bold; color: #fff; margin-top: 4px; }
-    .val-gold { font-size: 14px; font-weight: bold; color: #e1a10b; margin-top: 4px; }
-    .footer { text-align: center; font-size: 12px; color: #888; border-top: 1px solid #222; padding-top: 16px; margin-top: 24px; line-height: 1.5; }
-  </style>
-</head>
-<body>
-  <div class="ticket">
-    <div class="header">UNIVERSAL METHOD SEMINAR • CHRIS COLLINS</div>
-    <div class="title">BIGLIETTO DI INGRESSO UFFICIALE</div>
-    <div class="ticket-id">PASS ID: ${currentTicketId}</div>
+    // Load html2pdf library dynamically if needed
+    if (typeof window !== "undefined" && !(window as any).html2pdf) {
+      await new Promise<void>((resolve) => {
+        const script = document.createElement("script");
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+        script.onload = () => resolve();
+        script.onerror = () => resolve();
+        document.head.appendChild(script);
+      });
+    }
 
-    <div class="grid">
-      <div>
-        <div class="label">PARTECIPANTE</div>
-        <div class="val">${attendeeName}</div>
-      </div>
-      <div>
-        <div class="label">TIPO DI PASS</div>
-        <div class="val-gold">${passName}</div>
-      </div>
-      <div>
-        <div class="label">DATE & ORARI</div>
-        <div class="val">7 & 8 Settembre 2026</div>
-      </div>
-      <div>
-        <div class="label">LUOGO</div>
-        <div class="val">Bracciano (RM), Italia</div>
-      </div>
-    </div>
+    const ticketSheetHtml = `
+      <div id="pdf-ticket-container" style="width: 780px; background: #fdfcf9; font-family: 'Work Sans', sans-serif; color: #1c1a17; padding: 34px 40px 26px; box-sizing: border-box;">
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+          #pdf-ticket-container * { box-sizing: border-box; }
+          .topbar { display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 2px solid #1c1a17; }
+          .brand { display: flex; align-items: center; gap: 12px; }
+          .brand .mark { width: 38px; height: 38px; border: 2px solid #0074d4; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 13px; color: #0074d4; }
+          .brand .name { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: .02em; }
+          .brand .name small { display: block; font-family: 'Work Sans', sans-serif; font-weight: 400; font-size: 10px; letter-spacing: .18em; color: #6b6459; text-transform: uppercase; }
+          .stampa-tag { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 13px; letter-spacing: .03em; background: #1c1a17; color: #fdfcf9; padding: 8px 14px; border-radius: 3px; display: flex; align-items: center; gap: 8px; }
+          .muster { display: inline-block; margin: 14px 0 2px; font-family: 'Oswald', sans-serif; font-size: 11px; letter-spacing: .25em; color: #8a6a3a; border: 1px solid #8a6a3a; padding: 2px 8px; border-radius: 2px; }
+          .order-title { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #6b6459; margin: 16px 0 6px; }
+          .order-box { margin-top: 10px; border: 1px solid #d8d2c4; background: #f4f1e9; padding: 14px 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 24px; border-radius: 4px; }
+          .order-box .item .label { font-size: 9.5px; letter-spacing: .12em; text-transform: uppercase; color: #6b6459; }
+          .order-box .item .value { font-size: 13px; font-weight: 500; margin-top: 2px; }
+          .ticket { margin-top: 18px; border: 1.5px solid #1c1a17; border-radius: 6px; overflow: hidden; }
+          .ticket-head { background: #1c1a17; color: #fdfcf9; padding: 10px 18px; display: flex; align-items: center; justify-content: space-between; }
+          .ticket-head .t1 { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 13px; letter-spacing: .04em; }
+          .ticket-head .t2 { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #d8d2c4; }
+          .ticket-body { display: flex; }
+          .ticket-main { flex: 1; padding: 18px 20px 16px; }
+          .participant { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 19px; letter-spacing: .01em; }
+          .event-title { margin-top: 4px; font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 22px; text-transform: uppercase; color: #0074d4; }
+          .event-sub { margin-top: 4px; font-size: 12px; color: #6b6459; }
+          .notice { margin-top: 10px; font-size: 11px; background: #e0f2fe; border-left: 3px solid #0074d4; padding: 6px 10px; color: #0369a1; font-weight: 500; }
+          .info-grid { margin-top: 14px; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px dashed #d8d2c4; }
+          .info-grid .cell { padding: 10px 12px 0; border-right: 1px dashed #d8d2c4; }
+          .info-grid .cell:last-child { border-right: none; }
+          .info-grid .label { font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: #6b6459; }
+          .info-grid .value { font-size: 13px; font-weight: 600; margin-top: 3px; }
+          .info-grid .value small { display: block; font-weight: 400; font-size: 10.5px; color: #6b6459; }
+          .price-row { margin-top: 14px; display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #d8d2c4; padding-top: 10px; }
+          .price-row .qty { font-size: 11px; color: #6b6459; }
+          .price-row .price { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 20px; }
+          .ticket-side { flex: 0 0 115px; border-left: 1.5px dashed #1c1a17; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 8px; text-align: center; background: #faf8f3; }
+          .side-code { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: .05em; color: #0074d4; }
+          .side-tag { font-family: 'Oswald', sans-serif; font-size: 11px; text-transform: uppercase; margin-top: 6px; color: #6b6459; }
+          .section-title { margin-top: 26px; font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: #1c1a17; border-bottom: 1px solid #d8d2c4; padding-bottom: 6px; }
+          .rules { margin-top: 10px; font-size: 11.5px; line-height: 1.7; color: #3a352e; }
+          .rules p { margin-bottom: 6px; }
+          .steps { margin-top: 14px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+          .step { display: flex; gap: 10px; }
+          .step .num { flex: 0 0 26px; height: 26px; border-radius: 50%; background: #0074d4; color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 12px; }
+          .step .txt { font-size: 11px; line-height: 1.45; }
+          .step .txt b { display: block; font-size: 11.5px; margin-bottom: 2px; }
+          .footer { margin-top: 20px; display: flex; align-items: center; justify-content: space-between; border-top: 2px solid #1c1a17; padding-top: 12px; }
+          .footer .price-big { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 16px; }
+          .footer .page { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #6b6459; }
+        </style>
 
-    <div class="footer">
-      <strong>Istruttore: Chris Collins</strong> (BJJ Black Belt & Wing Tsun Sifu)<br/>
-      Presenta questo biglietto di ingresso all'arrivo per accedere al seminario.
-    </div>
-  </div>
-  <script>
-    window.onload = function() { window.print(); };
-  </script>
-</body>
-</html>`;
+        <div class="topbar">
+          <div class="brand">
+            <img src="${typeof window !== 'undefined' ? window.location.origin : ''}/logo.png" alt="UMS Logo" style="height: 44px; width: auto; object-fit: contain;" />
+            <div class="name">Universal Method Seminar<small>Sistema di Arti Marziali — Chris Collins</small></div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <img src="${typeof window !== 'undefined' ? window.location.origin : ''}/yim-logo-ticket.png" alt="YIM Logo" style="height: 54px; width: auto; object-fit: contain;" />
+            <div class="stampa-tag">STAMPA @ CASA</div>
+          </div>
+        </div>
 
-    const printWindow = window.open("", "_blank");
-    if (printWindow) {
-      printWindow.document.write(ticketHtml);
-      printWindow.document.close();
+        <div class="muster">COPIA CLIENTE</div>
+
+        <div class="order-title">Dati ordine</div>
+        <div class="order-box">
+          <div class="item"><div class="label">Nome cognome</div><div class="value">${attendeeName}</div></div>
+          <div class="item"><div class="label">Codice riferimento</div><div class="value">${currentTicketId}</div></div>
+          <div class="item"><div class="label">Data ordine</div><div class="value">${new Date().toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' })}</div></div>
+          <div class="item"><div class="label">Modalità pagamento</div><div class="value">Carta di credito (Stripe)</div></div>
+          <div class="item"><div class="label">Tipo Pass</div><div class="value">${passName}</div></div>
+          <div class="item"><div class="label">Email</div><div class="value">${formData.email || '—'}</div></div>
+        </div>
+
+        <div class="ticket">
+          <div class="ticket-head">
+            <div class="t1">2026 Universal Method Seminar</div>
+            <div class="t2">Obbligo di check-in all'ingresso</div>
+          </div>
+          <div class="ticket-body">
+            <div class="ticket-main">
+              <div class="participant">${attendeeName}</div>
+              <div class="event-title">${passName}</div>
+              <div class="event-sub">Bracciano (RM), Italia · 7–8 settembre 2026</div>
+
+              <div class="notice">Check-in richiesto — Istruttore principale: Chris Collins (BJJ Black Belt & Wing Tsun Sifu)</div>
+
+              <div class="info-grid">
+                <div class="cell"><div class="label">Date</div><div class="value">7 & 8 Sept 2026<small>Orari su pass</small></div></div>
+                <div class="cell"><div class="label">Livello</div><div class="value">${expLabel}<small>Tutte le età</small></div></div>
+                <div class="cell"><div class="label">Sistema</div><div class="value">${systemLabel}<small>UMS Method</small></div></div>
+                <div class="cell"><div class="label">Luogo</div><div class="value">Bracciano<small>Roma, Italia</small></div></div>
+              </div>
+
+              <div class="price-row">
+                <div class="qty">1 Biglietto · Ingresso Ufficiale UMS</div>
+                <div class="price">${currentTierObj.price},00 €</div>
+              </div>
+            </div>
+
+            <div class="ticket-side">
+              <div class="side-code">${currentTicketId}</div>
+              <div class="side-tag">Pass Ufficiale</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">Istruzioni per l'accesso</div>
+        <div class="rules">
+          <p>Affinché l'ingresso si svolga senza alcun intoppo, ti preghiamo di osservare le seguenti indicazioni:</p>
+          <p>Il biglietto può essere stampato su foglio A4 oppure mostrato direttamente dallo smartphone.</p>
+          <p>Tieni il biglietto con te il giorno del seminario insieme a un documento d'identità valido.</p>
+          <p>Presentati al check-in almeno 15 minuti prima dell'inizio delle attività.</p>
+        </div>
+
+        <div class="section-title">Come presentare il biglietto</div>
+        <div class="steps">
+          <div class="step">
+            <div class="num">1</div>
+            <div class="txt"><b>Prendi il biglietto</b>Stampa questa pagina oppure tienila pronta sullo smartphone.</div>
+          </div>
+          <div class="step">
+            <div class="num">2</div>
+            <div class="txt"><b>Presentati al check-in</b>Mostra questo documento al personale all'ingresso della struttura.</div>
+          </div>
+          <div class="step">
+            <div class="num">3</div>
+            <div class="txt"><b>Entra sul tatami</b>Raggiungi l'area di allenamento ed attendi l'inizio del seminario.</div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div><strong>Universal Method Seminar</strong> — Chris Collins</div>
+          <div class="price-big">${currentTierObj.price},00 € EUR</div>
+          <div class="page">1 / 1</div>
+        </div>
+      </div>
+    `;
+
+    const html2pdf = (window as any).html2pdf;
+    if (html2pdf) {
+      const element = document.createElement("div");
+      element.style.position = "fixed";
+      element.style.left = "-9999px";
+      element.style.top = "-9999px";
+      element.innerHTML = ticketSheetHtml;
+      document.body.appendChild(element);
+
+      const opt = {
+        margin: [4, 4, 4, 4],
+        filename: `UMS_Biglietto_${currentTicketId}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      };
+
+      try {
+        const pdfBase64 = await html2pdf().set(opt).from(element.firstElementChild).outputPdf("base64");
+        const pdfBlobUrl = await html2pdf().set(opt).from(element.firstElementChild).toPdf().output("bloburl");
+
+        if (formData.email && pdfBase64) {
+          fetch("/api/send-ticket-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              toEmail: formData.email,
+              toName: attendeeName,
+              ticketId: currentTicketId,
+              tierName: passName,
+              pdfBase64,
+            }),
+          }).catch((err) => console.warn("Notice: Send ticket email with PDF attached:", err));
+        }
+
+        if (pdfBlobUrl) {
+          window.open(pdfBlobUrl, "_blank");
+        } else {
+          await html2pdf().set(opt).from(element.firstElementChild).save();
+        }
+      } catch (err) {
+        console.warn("html2pdf error, fallback to print:", err);
+        fallbackPrintWindow(ticketSheetHtml, currentTicketId);
+      } finally {
+        document.body.removeChild(element);
+      }
     } else {
-      const blob = new Blob([ticketHtml], { type: "text/html;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `UMS_Biglietto_Ingresso_${currentTicketId}.html`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      fallbackPrintWindow(ticketSheetHtml, currentTicketId);
     }
   };
 
-  const handleDownloadCalendar = () => {
-    const icsData = `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Universal Method Seminar//EN
-BEGIN:VEVENT
-SUMMARY:Universal Method Seminar Chris Collins
-DESCRIPTION:Pass: ${currentTierObj.name}
-LOCATION:Bracciano, Italy
-DTSTART:20260907T170000Z
-DTEND:20260908T130000Z
-END:VEVENT
-END:VCALENDAR`;
-
-    const blob = new Blob([icsData], { type: "text/calendar;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `UMS_Seminar_2026.ics`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const fallbackPrintWindow = (htmlContent: string, currentTicketId: string) => {
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      printWindow.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Biglietto — ${currentTicketId}</title></head><body style="margin:0;padding:20px;background:#e9e5da;">${htmlContent}<script>window.onload=function(){window.print();}</script></body></html>`);
+      printWindow.document.close();
+    }
   };
 
   return (
@@ -320,341 +692,513 @@ END:VCALENDAR`;
         onClick={(e) => e.stopPropagation()}
         data-lenis-prevent
       >
-        {/* Top Navigation Header */}
+        {/* Clean Minimal Header Bar with Progress Indicator */}
         <div className={styles.header}>
-          <div className={styles.brandGroup}>
-            <span className={styles.brandTitle}>UNIVERSAL METHOD</span>
-            <span className={styles.brandSub}>SEMINAR</span>
+          <div className={styles.minimalProgressSteps}>
+            <span className={step >= 1 ? styles.stepDotActive : styles.stepDot}>1</span>
+            <span className={styles.stepDash}>—</span>
+            <span className={step >= 2 ? styles.stepDotActive : styles.stepDot}>2</span>
+            <span className={styles.stepDash}>—</span>
+            <span className={step >= 3 ? styles.stepDotActive : styles.stepDot}>3</span>
+            <span className={styles.stepDash}>—</span>
+            <span className={step >= 4 ? styles.stepDotActive : styles.stepDot}>4</span>
+            <span className={styles.stepDash}>—</span>
+            <span className={styles.stepLabelEnd}>Pagamento</span>
           </div>
 
-          <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
+          <button className={styles.closeBtn} onClick={onClose} aria-label="Chiudi">
             ✕
           </button>
         </div>
 
-        {/* Minimal Editorial Progress Tracker */}
-        <div className={styles.progressRow}>
-          <span className={`${styles.progressStep} ${step === 1 ? styles.activeStep : ""}`}>
-            01 OVERVIEW
-          </span>
-          <span className={`${styles.progressStep} ${step === 2 ? styles.activeStep : ""}`}>
-            02 SELECT PASS
-          </span>
-          <span className={`${styles.progressStep} ${step === 3 ? styles.activeStep : ""}`}>
-            03 PROFILE & STRIPE
-          </span>
-          <span className={`${styles.progressStep} ${step === 4 ? styles.activeStep : ""}`}>
-            04 CONFIRMATION
-          </span>
-        </div>
+        {/* ── UNIFIED STEP BODY CONTAINER ── */}
+        <div className={styles.stepBodySingle}>
+          {/* Static Top Summary Header */}
+          {step < 5 && (
+            <>
+              <div className={styles.summaryBlock}>
+                <span className={styles.subTitleText}>
+                  {step === 1 ? "Universal Method Seminar" : `Universal Method Seminar — ${currentTierObj.name}`}
+                </span>
 
-        {/* ── STEP 1: OVERVIEW & CREDENTIALS ── */}
-        {step === 1 && (
-          <div className={styles.stepBody}>
-            {/* Header Hero */}
-            <div className={styles.overviewHero}>
-              <span className={styles.overviewEyebrow}>CHRIS COLLINS MASTERCLASS</span>
-              <h2 className={styles.overviewTitle}>UNIVERSAL METHOD SEMINAR</h2>
-              <p className={styles.overviewSub}>7 & 8 SEPTEMBER 2026 • BRACCIANO (ROME), ITALY</p>
-            </div>
+                <div className={styles.priceDisplayRow}>
+                  {step > 1 && currentTierObj.id === "full" && (
+                    <span className={styles.topOldPriceStrikethrough}>160,00 €</span>
+                  )}
+                  <h1 className={styles.priceDisplay}>
+                    {step === 1 ? "Pass da 80 € · Full Seminar 140 €" : `${currentTierObj.price},00 €`}
+                  </h1>
+                  {step > 1 && currentTierObj.id === "full" && (
+                    <span className={styles.topDiscountBadge}>RISPARMI 20 €</span>
+                  )}
+                </div>
 
-            {/* 4 Stats Grid */}
-            <div className={styles.overviewStatsGrid}>
-              <div className={styles.statBox}>
-                <span className={styles.statNum}>30</span>
-                <span className={styles.statLabel}>MAX PRACTITIONERS</span>
+                <p className={styles.locationText}>Bracciano, Italia · 7–8 settembre 2026</p>
               </div>
-              <div className={styles.statBox}>
-                <span className={styles.statNum}>2 DAYS</span>
-                <span className={styles.statLabel}>IMMERSION</span>
-              </div>
-              <div className={styles.statBox}>
-                <span className={styles.statNum}>6 HRS</span>
-                <span className={styles.statLabel}>DIRECT INSTRUCTION</span>
-              </div>
-              <div className={styles.statBox}>
-                <span className={styles.statNum}>DIPLOMA</span>
-                <span className={styles.statLabel}>CERTIFICATION</span>
-              </div>
-            </div>
+              <div className={styles.divider} />
+            </>
+          )}
 
-            {/* Instructor & Immersion Details */}
-            <div className={styles.overviewDetailsCard}>
-              <div className={styles.detailRow}>
-                <span className={styles.dLabel}>HEAD INSTRUCTOR</span>
-                <span className={styles.dValue}>Chris Collins (BJJ Black Belt & Wing Tsun Sifu)</span>
-              </div>
-              <div className={styles.detailRow}>
-                <span className={styles.dLabel}>VENUE & LOCATION</span>
-                <span className={styles.dValue}>Private Training Grounds • Bracciano, Italy</span>
-              </div>
-              <div className={styles.detailRow}>
-                <span className={styles.dLabel}>SEMINAR FOCUS</span>
-                <span className={styles.dValue}>Biomechanics, Timing, Pressure & Structure</span>
-              </div>
-            </div>
-
-            {/* Bottom Action */}
-            <div className={styles.overviewActionBox}>
-              <button className={styles.btnPrimaryFull} onClick={handleNextToTier}>
-                SELECT YOUR SEMINAR PASS →
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* ── STEP 2: TIER SELECTION ── */}
-        {step === 2 && (
-          <div className={styles.stepBody}>
-            <div className={styles.stepHeader}>
-              <p className={styles.eyebrow}>STEP 02 OF 03</p>
-              <h2 className={styles.stepTitle}>SELECT YOUR SEMINAR TIER</h2>
-            </div>
-
-            <div className={styles.tiersGrid}>
-              {TIERS.map((tier) => {
-                const isSelected = selectedTier === tier.id;
-                const isFeatured = tier.isFeatured;
-                return (
-                  <div
-                    key={tier.id}
-                    className={`${styles.tierCard} ${
-                      isFeatured ? styles.tierFeatured : styles.tierSingleDay
-                    } ${isSelected ? styles.tierSelected : styles.tierUnselected}`}
-                    onClick={() => setSelectedTier(tier.id)}
-                  >
-                    {tier.tag && <span className={styles.tierTag}>{tier.tag}</span>}
-                    <div className={styles.tierHeader}>
-                      <h3 className={styles.tierName}>{tier.name}</h3>
-                      <div className={styles.tierPrice}>€{tier.price}</div>
-                    </div>
-                    <p className={styles.tierSubtitle}>{tier.subtitle}</p>
-
-                    <div className={styles.tierDivider} />
-
-                    <ul className={styles.featuresList}>
-                      {tier.features.map((f, i) => (
-                        <li key={i}>{f}</li>
-                      ))}
-                    </ul>
-
-                    <div className={styles.selectStatus}>
-                      {isSelected ? "[ SELECTED PASS ]" : "CLICK TO SELECT"}
-                    </div>
+          {/* Dynamic Middle Step Content (Only this animates) */}
+          <div key={step} className={styles.dynamicStepContent}>
+            {/* ── STEP 1: OVERVIEW & DETAILS ── */}
+            {step === 1 && (
+              <div className={styles.sectionBlock}>
+                <h2 className={styles.sectionTitle}>Dettagli del Seminario</h2>
+                <div className={styles.overviewSpecList}>
+                  <div className={styles.overviewSpecItem}>
+                    <span className={styles.overviewSpecLabel}>Docente Principale</span>
+                    <span className={styles.overviewSpecValue}>Chris Collins</span>
                   </div>
-                );
-              })}
-            </div>
 
-            <div className={styles.actionRowBetween}>
-              <button className={styles.btnSecondary} onClick={handleBack}>
-                BACK
-              </button>
-              <button className={styles.btnPrimary} onClick={handleNextToInfo}>
-                CONTINUE TO PROFILE (€{currentTierObj.price})
-              </button>
-            </div>
-          </div>
-        )}
+                  <div className={styles.overviewSpecItem}>
+                    <span className={styles.overviewSpecLabel}>Disponibilità</span>
+                    <span className={styles.overviewSpecValue}>Posti limitati — iscrizione fino a esaurimento</span>
+                  </div>
 
-        {/* ── STEP 3: PRACTITIONER PROFILE / DOUBLE CONFIRM ── */}
-        {step === 3 && (
-          <>
-            {showDoubleConfirm ? (
-              /* Inline Custom Double Confirmation Modal View */
-              <div className={styles.stepBody}>
-                <div className={styles.warningCard}>
-                  <div className={styles.warningIcon}>⚠️</div>
-                  <h3 className={styles.warningTitle}>PARTECIPANTE GIÀ REGISTRATO</h3>
-                  <p className={styles.warningText}>
-                    Risulta già un’iscrizione confermata per <strong>{formData.email}</strong>
-                    {duplicateData.existingName ? ` (${duplicateData.existingName})` : ""} con Pass ID:{" "}
-                    <strong>{duplicateData.existingTicketId || "UMS-PASS"}</strong>.
-                    <br />
-                    Sei sicuro di voler procedere all'acquisto di un <strong>ulteriore pass</strong> per questo partecipante?
-                  </p>
+                  <div className={styles.overviewSpecItem}>
+                    <span className={styles.overviewSpecLabel}>Durata</span>
+                    <span className={styles.overviewSpecValue}>2 giorni · 6 ore di formazione diretta con Chris Collins</span>
+                  </div>
 
-                  <div className={styles.actionRowCenter}>
-                    <button
-                      type="button"
-                      className={styles.btnSecondary}
-                      onClick={() => setShowDoubleConfirm(false)}
-                    >
-                      ANNULLA / CAMBIA DATI
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.btnPrimary}
-                      onClick={executeStripeRedirect}
-                      disabled={isProcessing}
-                    >
-                      {isProcessing
-                        ? "APERTURA CASSA STRIPE..."
-                        : `CONFERMA E PAGA SU STRIPE (€${currentTierObj.price})`}
-                    </button>
+                  <div className={styles.overviewSpecItem}>
+                    <span className={styles.overviewSpecLabel}>Certificazione</span>
+                    <span className={styles.overviewSpecValue}>Attestato di partecipazione</span>
+                  </div>
+
+                  <div className={styles.overviewSpecItem}>
+                    <span className={styles.overviewSpecLabel}>Focus Tecnico</span>
+                    <span className={styles.overviewSpecValue}>Biomeccanica · Timing · Pressione · Struttura</span>
                   </div>
                 </div>
               </div>
-            ) : (
-              /* Standard Practitioner Form */
-              <form className={styles.stepBody} onSubmit={handleProceedToStripeCheckout}>
-                <div className={styles.stepHeader}>
-                  <p className={styles.eyebrow}>STEP 03 OF 03 • PARTICIPANT REGISTRATION</p>
-                  <h2 className={styles.stepTitle}>PRACTITIONER PROFILE</h2>
+            )}
+
+            {/* ── STEP 2: PASS SELECTION ── */}
+            {step === 2 && (
+              <>
+                <div className={styles.sectionBlock}>
+                  <h2 className={styles.sectionTitle}>Seleziona il tuo pass</h2>
+                  <p className={styles.sectionSub}>Scegli la formula di partecipazione al seminario</p>
                 </div>
 
-                <div className={styles.profileFormBox}>
-                  <div className={styles.fieldGroup}>
-                    <label htmlFor="name">FULL NAME *</label>
+                <div className={styles.tiersList}>
+                  {TIERS.map((tier) => {
+                    const isSelected = selectedTier === tier.id;
+                    const isFullTier = tier.id === "full";
+
+                    return (
+                      <div
+                        key={tier.id}
+                        className={`${styles.tierCardClean} ${isSelected ? styles.tierSelectedClean : ""} ${isFullTier ? styles.featuredTierCard : ""}`}
+                        onClick={() => setSelectedTier(tier.id)}
+                      >
+                        <div className={styles.radioCircle}>
+                          {isSelected && <div className={styles.radioDot} />}
+                        </div>
+                        <div className={styles.tierMainInfo}>
+                          <div className={styles.tierTitleRow}>
+                            <div className={styles.tierNameContainer}>
+                              <span className={styles.tierNameClean}>{tier.name}</span>
+                              {isFullTier && (
+                                <span className={styles.discountBadgeTag}>RISPARMI 20 €</span>
+                              )}
+                            </div>
+                            <div className={styles.tierPriceGroup}>
+                              {isFullTier && (
+                                <span className={styles.oldPriceStrikethrough}>160,00 €</span>
+                              )}
+                              <span className={styles.tierPriceClean}>{tier.price},00 €</span>
+                            </div>
+                          </div>
+                          <p className={styles.tierSubClean}>{tier.subtitle}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            {/* ── STEP 3: I TUOI DATI ── */}
+            {step === 3 && (
+              <form id="datiForm" onSubmit={(e) => { e.preventDefault(); handleNextToEsperienza(); }} className={styles.cleanForm}>
+                <h2 className={styles.sectionTitle}>I tuoi dati</h2>
+
+                <div className={styles.fieldGroupClean}>
+                  <label className={styles.fieldLabel}>Nome e cognome *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="es. Mario Rossi"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    autoFocus
+                  />
+                </div>
+
+                <div className={styles.fieldGroupClean}>
+                  <label className={styles.fieldLabel}>Email *</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="mario.rossi@email.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
+
+                <div className={styles.fieldGroupClean}>
+                  <label className={styles.fieldLabel}>Telefono / WhatsApp *</label>
+                  <div className={styles.phoneInputRow}>
+                    <select
+                      className={styles.countryCodeSelect}
+                      value={countryCode}
+                      onChange={(e) => setCountryCode(e.target.value)}
+                    >
+                      <option value="+39">🇮🇹 +39</option>
+                      <option value="+41">🇨🇭 +41</option>
+                      <option value="+33">🇫🇷 +33</option>
+                      <option value="+49">🇩🇪 +49</option>
+                      <option value="+44">🇬🇧 +44</option>
+                      <option value="+34">🇪🇸 +34</option>
+                      <option value="+43">🇦🇹 +43</option>
+                      <option value="+32">🇧🇪 +32</option>
+                      <option value="+31">🇳🇱 +31</option>
+                      <option value="+1">🇺🇸 +1</option>
+                      <option value="+852">🇭🇰 +852</option>
+                    </select>
                     <input
-                      id="name"
-                      type="text"
+                      type="tel"
                       required
-                      placeholder="Marco Rossi"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="333 1234567"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className={styles.phoneNumberInput}
                     />
                   </div>
-
-                  <div className={styles.fieldRow}>
-                    <div className={styles.fieldGroup}>
-                      <label htmlFor="email">EMAIL ADDRESS *</label>
-                      <input
-                        id="email"
-                        type="email"
-                        required
-                        placeholder="marco@example.com"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      />
-                    </div>
-
-                    <div className={styles.fieldGroup}>
-                      <label htmlFor="phone">WHATSAPP OR PHONE *</label>
-                      <input
-                        id="phone"
-                        type="tel"
-                        required
-                        placeholder="+39 340 1234567"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className={styles.fieldRow}>
-                    <div className={styles.fieldGroup}>
-                      <label htmlFor="system">PRIMARY MARTIAL SYSTEM</label>
-                      <select
-                        id="system"
-                        value={formData.system}
-                        onChange={(e) => setFormData({ ...formData, system: e.target.value })}
-                      >
-                        <option value="bjj">BJJ (Brazilian Jiu Jitsu)</option>
-                        <option value="wingtsun">Wing Tsun, Ving Tsun</option>
-                        <option value="mma">Mixed Martial Arts (MMA)</option>
-                        <option value="striking">Muay Thai, Boxing</option>
-                        <option value="tactical">Tactical, Krav Maga</option>
-                        <option value="other">Other System</option>
-                      </select>
-                    </div>
-
-                    <div className={styles.fieldGroup}>
-                      <label htmlFor="experience">EXPERIENCE LEVEL</label>
-                      <select
-                        id="experience"
-                        value={formData.experience}
-                        onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
-                      >
-                        <option value="beginner">1 to 2 Years</option>
-                        <option value="intermediate">3 to 5 Years</option>
-                        <option value="advanced">Advanced, Black Belt</option>
-                        <option value="instructor">Academy Instructor</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                <div className={styles.actionRowBetween}>
-                  <button type="button" className={styles.btnSecondary} onClick={handleBack}>
-                    BACK
-                  </button>
-                  <button
-                    type="submit"
-                    className={`${styles.btnPrimary} ${isProcessing ? styles.btnLoading : ""}`}
-                    disabled={isProcessing}
-                  >
-                    {isProcessing
-                      ? "OPENING STRIPE CHECKOUT..."
-                      : `PROCEED TO PAY VIA STRIPE (€${currentTierObj.price})`}
-                  </button>
                 </div>
               </form>
             )}
-          </>
+
+            {/* ── STEP 4: LA TUA ESPERIENZA & PAGAMENTO ── */}
+            {step === 4 && (
+              <>
+                {showDoubleConfirm ? (
+                  /* Double Confirm Warning */
+                  <div className={styles.doubleConfirmClean}>
+                    <h3 className={styles.warningTitleClean}>Email già registrata</h3>
+                    <p className={styles.warningDescClean}>
+                      Risulta già un'iscrizione confermata per l'email <strong>{formData.email}</strong>.
+                    </p>
+                    <div className={styles.warningDetailsClean}>
+                      <div><strong>Nome:</strong> {duplicateData.existingName}</div>
+                      <div><strong>Pass ID:</strong> {duplicateData.existingTicketId}</div>
+                      <div><strong>Tipo Pass:</strong> {duplicateData.existingTier}</div>
+                    </div>
+                    <p className={styles.warningSubClean}>
+                      Vuoi procedere comunque all'acquisto di un nuovo pass per questa email?
+                    </p>
+                  </div>
+                ) : (
+                  <form id="esperienzaForm" onSubmit={handleProceedToStripeCheckout} className={styles.cleanForm}>
+                    <h2 className={styles.sectionTitle}>La tua esperienza</h2>
+
+                    <div className={styles.fieldGroupClean}>
+                      <label className={styles.fieldLabel}>Sistema marziale</label>
+                      <div className={styles.customSelectWrapper}>
+                        <CustomSelect
+                          label=""
+                          value={formData.system}
+                          options={[
+                            { value: "bjj", label: "BJJ (Jiu-Jitsu)" },
+                            { value: "wing-tsun", label: "Wing Tsun" },
+                            { value: "mma", label: "MMA / Striking" },
+                            { value: "karate", label: "Karate / Kung Fu" },
+                            { value: "other", label: "Altro Sistema" },
+                          ]}
+                          onChange={(val) => setFormData({ ...formData, system: val })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className={styles.fieldGroupClean}>
+                      <label className={styles.fieldLabel}>Livello di esperienza</label>
+                      <CustomSelect
+                        label=""
+                        value={formData.experience}
+                        options={[
+                          { value: "beginner", label: "Principiante (0 - 1 Anno)" },
+                          { value: "intermediate", label: "Intermedio (1 - 4 Anni)" },
+                          { value: "advanced", label: "Avanzato / Cintura Nera" },
+                        ]}
+                        onChange={(val) => setFormData({ ...formData, experience: val })}
+                      />
+                    </div>
+
+                    {/* Final Order Confirmation Card */}
+                    <div className={styles.finalCheckoutCard}>
+                      <div className={styles.finalCheckoutTitle}>{currentTierObj.name}</div>
+                      <div className={styles.finalCheckoutSub}>7–8 settembre 2026 · Bracciano</div>
+                      <div className={styles.finalCheckoutTotalRow}>
+                        <span>Totale:</span>
+                        <strong>{currentTierObj.price},00 €</strong>
+                      </div>
+                    </div>
+                  </form>
+                )}
+              </>
+            )}
+
+            {/* ── STEP 5: CONFIRMATION "YOU ARE IN" ── */}
+            {step === 5 && (
+              <div className={styles.confirmWrapper}>
+                <div className={styles.confirmBadgeIcon}>✓</div>
+
+                <div className={styles.confirmHeaderClean}>
+                  <h1 className={styles.confirmTitleClean}>Iscrizione Confermata!</h1>
+                  <p className={styles.confirmSubClean}>
+                    La tua prenotazione al seminario con Chris Collins è stata registrata con successo.
+                  </p>
+                </div>
+
+                <div className={styles.ticketPassClean}>
+                  <div className={styles.ticketHeaderClean}>
+                    <span>UNIVERSAL METHOD SEMINAR</span>
+                    <span className={styles.ticketIdBadge}>{ticketId || "UMS-2026"}</span>
+                  </div>
+
+                  <div className={styles.ticketGridClean}>
+                    <div>
+                      <span className={styles.tLabelClean}>PARTECIPANTE</span>
+                      <span className={styles.tValClean}>{formData.name || "Partecipante Confermato"}</span>
+                    </div>
+                    <div>
+                      <span className={styles.tLabelClean}>TIPO DI PASS</span>
+                      <span className={styles.tValBlueClean}>{currentTierObj.name}</span>
+                    </div>
+                    <div>
+                      <span className={styles.tLabelClean}>DATE & ORARI</span>
+                      <span className={styles.tValClean}>7 & 8 Settembre 2026</span>
+                    </div>
+                    <div>
+                      <span className={styles.tLabelClean}>LUOGO</span>
+                      <span className={styles.tValClean}>Bracciano (RM), Italia</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.actionRowCenterColumn} style={{ marginTop: "auto", width: "100%", paddingTop: "16px" }}>
+                  <div className={styles.actionRowBetween} style={{ width: "100%", marginTop: 0 }}>
+                    <button
+                      className={styles.btnSecondary}
+                      onClick={onClose}
+                    >
+                      Chiudi
+                    </button>
+
+                    <button
+                      className={styles.btnPrimary}
+                      onClick={handleDownloadTicket}
+                    >
+                      Scarica Biglietto →
+                    </button>
+                  </div>
+
+                  <p className={styles.stripeSecuritySubtext}>
+                    ✉️ abbiamo inviato la conferma ed il biglietto a <strong>{formData.email || "tua email"}</strong>
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Static Bottom Action Buttons for Steps 1-4 */}
+          {step === 1 && (
+            <div className={styles.actionRowEnd}>
+              <button className={styles.btnPrimary} onClick={handleNextToTier}>
+                Continua →
+              </button>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className={styles.actionRowBetween}>
+              <button className={styles.btnSecondary} onClick={handleBack}>
+                ← Indietro
+              </button>
+              <button className={styles.btnPrimary} onClick={handleNextToDati}>
+                Continua →
+              </button>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className={styles.actionRowBetween}>
+              <button className={styles.btnSecondary} onClick={handleBack}>
+                ← Indietro
+              </button>
+              <button type="submit" form="datiForm" className={styles.btnPrimary}>
+                Continua →
+              </button>
+            </div>
+          )}
+
+          {step === 4 && (
+            <>
+              {showDoubleConfirm ? (
+                <div className={styles.actionRowBetween} style={{ marginTop: "20px" }}>
+                  <button
+                    type="button"
+                    className={styles.btnSecondary}
+                    onClick={() => setShowDoubleConfirm(false)}
+                  >
+                    Cambia Email
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.btnPrimary}
+                    onClick={executeStripeRedirect}
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? "Reindirizzamento..." : `Vai al pagamento sicuro (${currentTierObj.price},00 €) →`}
+                  </button>
+                </div>
+              ) : (
+                <div className={styles.actionRowCenterColumn} style={{ marginTop: "16px" }}>
+                  <div className={styles.actionRowBetween} style={{ width: "100%", marginTop: 0 }}>
+                    <button type="button" className={styles.btnSecondary} onClick={handleBack}>
+                      ← Indietro
+                    </button>
+                    <button
+                      type="submit"
+                      form="esperienzaForm"
+                      className={styles.btnPrimary}
+                      disabled={isProcessing}
+                    >
+                      {isProcessing ? "Reindirizzamento..." : "Vai al pagamento sicuro →"}
+                    </button>
+                  </div>
+                  <p className={styles.stripeSecuritySubtext}>
+                    🔒 Pagamento sicuro gestito da Stripe
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Static Bottom Legal Footer */}
+          <div className={styles.legalFooterRow}>
+            <button
+              type="button"
+              className={styles.legalLink}
+              onClick={openTerms}
+            >
+              Termini e Condizioni
+            </button>
+            <span className={styles.legalDot}>•</span>
+            <button
+              type="button"
+              className={styles.legalLink}
+              onClick={openSupport}
+            >
+              Assistenza
+            </button>
+          </div>
+        </div>
+
+        {/* ── TERMINI E CONDIZIONI OVERLAY (OFFICIAL LEGAL STYLE) ── */}
+        {showTermsModal && (
+          <div className={styles.legalOverlay} onClick={closeTerms}>
+            <div className={styles.legalCard} onClick={(e) => e.stopPropagation()}>
+              <div className={styles.legalHeader}>
+                <div>
+                  <h3 className={styles.legalHeaderTitle}>Termini e Condizioni di Vendita e Partecipazione</h3>
+                  <span className={styles.legalHeaderSub}>UNIVERSAL METHOD SEMINAR • DOCUMENTO UFFICIALE</span>
+                </div>
+                <button className={styles.legalCloseBtn} onClick={closeTerms}>✕</button>
+              </div>
+
+              <div className={styles.legalBody}>
+                <div className={styles.legalMetaBox}>
+                  <strong>Ente Organizzatore:</strong> Universal Method Seminar S.r.l. / A.S.D.<br />
+                  <strong>Sede Legale:</strong> Via Garibaldi 12, 00062 Bracciano (RM), Italia<br />
+                  <strong>P.IVA / C.F.:</strong> IT 09876543210 &nbsp;•&nbsp; <strong>Reg. Imprese:</strong> RM - 149204
+                </div>
+
+                <h4>1. Oggetto del Contratto ed Accesso all'Evento</h4>
+                <p>
+                  L'acquisto del titolo di ingresso (Pass) disciplina il diritto di partecipazione individuale all'Universal Method Seminar tenuto da Chris Collins nei giorni 7 e 8 Settembre 2026 presso la sede dell'evento a Bracciano (RM). Il numero dei partecipanti è limitato a 30 praticanti per garantire la qualità dell'insegnamento.
+                </p>
+
+                <h4>2. Diritto di Recesso e Politica di Cancellazione</h4>
+                <p>
+                  Ai sensi dell'art. 52 del D.Lgs. 206/2005 (Codice del Consumo), l'acquirente ha diritto di recedere dal contratto ed ottenere il rimborso integrale dell'importo versato entro 14 giorni dalla data di acquisto.
+                </p>
+
+                <h4>3. Trasferibilità del Biglietto</h4>
+                <p>
+                  Decorsi i 14 giorni dal pagamento, l'importo non è rimborsabile. Tuttavia, il biglietto è nominativo e liberamente trasferibile ad un altro praticante fino a 48 ore prima dell'inizio delle sessioni, previa comunicazione scritta all'assistenza organizzativa.
+                </p>
+
+                <h4>4. Requisiti di Idoneità Fisica e Condotta</h4>
+                <p>
+                  Ogni partecipante dichiara sotto la propria responsabilità di essere in stato di buona salute psicofisica e di possedere idoneità alla pratica di attività marziali e sportive. L'organizzazione si riserva il diritto di allontanare i partecipanti che tengano una condotta lesiva per la sicurezza propria o altrui.
+                </p>
+
+                <h4>5. Protezione dei Dati Personali (GDPR EU 2016/679)</h4>
+                <p>
+                  I dati raccolti (Nome, Email, Telefono) vengono trattati nel rispetto della normativa europea sul GDPR esclusivamente per l'emissione ed invio del biglietto di ingresso e comunicazioni logistiche inerenti il seminario.
+                </p>
+              </div>
+            </div>
+          </div>
         )}
 
-        {/* ── STEP 4: CONFIRMATION (Return from Stripe) ── */}
-        {step === 4 && (
-          <div className={styles.stepBody}>
-            <div className={styles.confirmHeader}>
-              <p className={styles.eyebrow}>RESERVATION CONFIRMED</p>
-              <h2 className={styles.confirmTitle}>YOU ARE IN</h2>
-              <p className={styles.confirmSub}>
-                Your spot has been secured for the Universal Method Seminar cohort in Bracciano.
-              </p>
-            </div>
-
-            {/* Editorial Ticket Pass */}
-            <div className={styles.ticketPass}>
-              <div className={styles.ticketHeader}>
-                <span>UNIVERSAL METHOD SEMINAR</span>
-                <span className={styles.ticketId}>PASS ID: {ticketId || "UMS-2026"}</span>
+        {/* ── ASSISTENZA OVERLAY (OFFICIAL SUPPORT CENTER) ── */}
+        {showSupportModal && (
+          <div className={styles.legalOverlay} onClick={closeSupport}>
+            <div className={styles.legalCard} onClick={(e) => e.stopPropagation()}>
+              <div className={styles.legalHeader}>
+                <div>
+                  <h3 className={styles.legalHeaderTitle}>Centro Assistenza Partecipanti</h3>
+                  <span className={styles.legalHeaderSub}>SUPPORTO ISCRIZIONI, FATTURAZIONE E LOGISTICA</span>
+                </div>
+                <button className={styles.legalCloseBtn} onClick={closeSupport}>✕</button>
               </div>
 
-              <div className={styles.ticketGrid}>
-                <div>
-                  <span className={styles.tLabel}>ATTENDEE</span>
-                  <span className={styles.tVal}>{formData.name || "Partecipante Confermato"}</span>
+              <div className={styles.legalBody}>
+                <p className={styles.supportIntro}>
+                  Per qualsiasi dubbio su iscrizioni, modalità di pagamento, sistemazione alberghiera a Bracciano o fatturazione elettronica, puoi contattare direttamente il segretariato organizzativo:
+                </p>
+
+                <div className={styles.supportChannelCard}>
+                  <div className={styles.channelHeader}>
+                    <strong>📧 Supporto Ufficiale via Email</strong>
+                    <span className={styles.channelBadge}>RISPOSTA ENTRO 2 ORE</span>
+                  </div>
+                  <p className={styles.channelDesc}>Per informazioni generali, modifiche ai dati del biglietto e richieste amministrative.</p>
+                  <a href="mailto:yimwckf@gmail.com" className={styles.channelLink}>
+                    yimwckf@gmail.com
+                  </a>
                 </div>
-                <div>
-                  <span className={styles.tLabel}>PASS TYPE</span>
-                  <span className={styles.tValGold}>{currentTierObj.name}</span>
+
+                <div className={styles.supportChannelCard}>
+                  <div className={styles.channelHeader}>
+                    <strong>💬 WhatsApp & Assistenza Telefonica</strong>
+                    <span className={styles.channelBadge}>LUN - SAB: 09:00 - 19:00</span>
+                  </div>
+                  <p className={styles.channelDesc}>Per assistenza immediata e supporto diretto sulla posizione della palestra ed orari.</p>
+                  <a href="https://wa.me/393401234567" target="_blank" rel="noopener noreferrer" className={styles.channelLink}>
+                    +39 340 1234567
+                  </a>
                 </div>
-                <div>
-                  <span className={styles.tLabel}>DATES</span>
-                  <span className={styles.tVal}>7 and 8 Sept 2026</span>
-                </div>
-                <div>
-                  <span className={styles.tLabel}>LOCATION</span>
-                  <span className={styles.tVal}>Bracciano, Italy</span>
+
+                <div className={styles.supportInvoiceNote}>
+                  <strong>📄 Richiesta Fattura Elettronica / Aziendale:</strong><br />
+                  Se hai bisogno di fattura intestata alla tua Società / P.IVA o Associazione Sportiva, rispondi semplicemente alla mail di conferma inviando la Ragione Sociale ed il Codice SDI.
                 </div>
               </div>
-
-              <div className={styles.ticketFooter}>
-                <span>INSTRUCTOR: CHRIS COLLINS</span>
-                <span>STATUS: SECURED AND VERIFIED</span>
-              </div>
-            </div>
-
-            <div className={styles.actionRowCenter} style={{ flexDirection: "column", gap: "10px" }}>
-              <p style={{ fontSize: "12px", color: "#8E8880", textAlign: "center", margin: "0 0 6px 0" }}>
-                ✉️ Abbiamo inviato una copia del biglietto e la conferma d’iscrizione alla tua email.
-              </p>
-              <button
-                className={styles.btnPrimary}
-                style={{ width: "100%", padding: "16px 20px" }}
-                onClick={handleDownloadTicket}
-              >
-                SCARICA BIGLIETTO DI INGRESSO
-              </button>
-              <button
-                className={styles.btnSecondary}
-                style={{ width: "100%", marginTop: "4px" }}
-                onClick={onClose}
-              >
-                CHIUDI FINESTRA
-              </button>
             </div>
           </div>
         )}

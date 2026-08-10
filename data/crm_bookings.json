@@ -1,14 +1,14 @@
 [
   {
-    "id": "rec-1786279669592-he7k1",
-    "ticketId": "UMS-3346",
-    "stripeSessionId": "cs_test_a1pmaGZFLsStCAMqAszmnk2Mw8fgPd1eHNfUWsjsQLF3PBU3xX0r2mJxac",
+    "id": "rec-1786372352707-gq5h4",
+    "ticketId": "UMS-1307",
+    "stripeSessionId": "cs_test_a11BC5kYqRhMsN0VtA9gxhlHGPX00fBnERAmKSkgQKPPo4lGuQ6553RGjX",
     "fullName": "Luigi Chioccarelli",
     "email": "luigichioccarelli04@gmail.com",
-    "phone": "+393923018431",
+    "phone": "+39 3923018431",
     "address": "",
-    "martialSystem": "bjj",
-    "experienceLevel": "intermediate",
+    "martialSystem": "mma",
+    "experienceLevel": "advanced",
     "tierKey": "full",
     "tierName": "FULL SEMINAR (2 DAYS)",
     "amountPaid": 140,
@@ -17,8 +17,8 @@
     "paymentMethod": "stripe",
     "attended": false,
     "notes": "",
-    "createdAt": "2026-08-09T12:47:49.593Z",
-    "updatedAt": "2026-08-09T12:57:53.896Z"
+    "createdAt": "2026-08-10T14:32:32.707Z",
+    "updatedAt": "2026-08-10T15:13:39.766Z"
   },
   {
     "id": "rec-1786277500456-5a89f",

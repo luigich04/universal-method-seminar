@@ -55,6 +55,9 @@ export function getMySQLPool() {
 }
 
 // ── JSON Fallback Helper ──
+const DATA_DIR = path.join(process.cwd(), "data");
+const DB_FILE = path.join(DATA_DIR, "crm_bookings.json");
+
 // Safe JSON Write Helper (Supports Vercel Read-Only File System & /tmp fallback)
 function safeWriteJSON(filePath: string, data: any) {
   try {

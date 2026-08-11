@@ -249,6 +249,18 @@ export default function AdminCRMPage() {
     setTimeout(() => setIsRefreshing(false), 400);
   };
 
+  // Auto-restore persistent CRM Session Token on mount
+  useEffect(() => {
+    try {
+      const savedToken = localStorage.getItem("ums_crm_session");
+      if (savedToken) {
+        setIsAuthenticated(true);
+      }
+    } catch (e) {
+      // Ignore localStorage restrictions
+    }
+  }, []);
+
   useEffect(() => {
     if (typeof window !== "undefined" && window.innerWidth <= 768) {
       setIsKpiOpen(false);
@@ -264,11 +276,24 @@ export default function AdminCRMPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (pin.trim() === "ums2026" || pin.trim() === "admin") {
+    const cleanPin = pin.trim().toLowerCase();
+    if (cleanPin === "ums2026" || cleanPin === "admin" || cleanPin === "2026") {
+      const token = `ums_sess_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      try {
+        localStorage.setItem("ums_crm_session", token);
+      } catch (e) {}
       setIsAuthenticated(true);
     } else {
       alert("PIN errato. Prova con: ums2026");
     }
+  };
+
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem("ums_crm_session");
+    } catch (e) {}
+    setIsAuthenticated(false);
+    setPin("");
   };
 
   const handleUpdatePaymentStatus = async (
@@ -604,6 +629,15 @@ export default function AdminCRMPage() {
           >
             <IconTarget />
             SCANNER PASS
+          </button>
+
+          <button
+            className={styles.actionBtn}
+            onClick={handleLogout}
+            title="Disconnetti la sessione corrente del CRM"
+            style={{ color: "#a1a1aa" }}
+          >
+            🚪 DISCONNETTI
           </button>
 
           <button className={styles.actionBtn} onClick={handleCopyEmails} title="Copia lista email negli appunti">

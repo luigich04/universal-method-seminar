@@ -17,9 +17,22 @@ const interTight = Inter_Tight({
 });
 
 export const metadata: Metadata = {
-  title: "Chris Collins — Universal Method Seminar",
+  title: "Universal Method Seminar 2026 — Chris Collins (Bracciano, Italy)",
   description:
-    "Join Chris Collins for the Universal Method Seminar in Bracciano, 7–8 September 2026. Train with the best.",
+    "Official 2-Day Martial Arts Seminar in Bracciano (Rome), Italy. Master Chris Collins (BJJ Black Belt & Wing Tsun Sifu). Reserve your official pass.",
+  icons: {
+    icon: [
+      { url: "/logo-header.png", type: "image/png" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    shortcut: "/logo-header.png",
+    apple: "/logo-header.png",
+  },
+  openGraph: {
+    title: "Universal Method Seminar 2026 — Chris Collins",
+    description: "Official 2-Day Martial Arts Seminar in Bracciano (Rome), Italy — 7–8 September 2026.",
+    images: ["/logo.png"],
+  },
 };
 
 export default function RootLayout({

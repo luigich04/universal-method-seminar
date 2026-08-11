@@ -353,9 +353,76 @@ export default function ScannerModal({
         </form>
       )}
 
+      {/* Global CSS Overrides to force 100vw x 100vh Camera Video Stream */}
+      <style>{`
+        #reader {
+          width: 100vw !important;
+          height: 100vh !important;
+          position: fixed !important;
+          inset: 0 !important;
+          background: #000000 !important;
+          border: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        #reader video {
+          width: 100vw !important;
+          height: 100vh !important;
+          object-fit: cover !important;
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+        }
+        #reader canvas {
+          display: none !important;
+        }
+        #reader__scan_region {
+          width: 100% !important;
+          height: 100% !important;
+          background: transparent !important;
+        }
+        #reader__dashboard {
+          display: none !important;
+        }
+      `}</style>
+
       {/* ── FULLSCREEN LIVE CAMERA VIEWPORT ── */}
-      <div style={{ flex: 1, width: "100%", height: "100%", position: "relative" }}>
-        <div id="reader" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      <div style={{ position: "fixed", inset: 0, width: "100vw", height: "100vh", background: "#000000", overflow: "hidden" }}>
+        <div id="reader" />
+
+        {/* Central Targeting Viewfinder Box */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "280px",
+            height: "280px",
+            border: "2px solid rgba(225, 161, 11, 0.7)",
+            borderRadius: "24px",
+            boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.45)",
+            pointerEvents: "none",
+            zIndex: 10,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "16px",
+          }}
+        >
+          <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+            <div style={{ width: "24px", height: "24px", borderTop: "3px solid #e1a10b", borderLeft: "3px solid #e1a10b", borderRadius: "4px 0 0 0" }} />
+            <div style={{ width: "24px", height: "24px", borderTop: "3px solid #e1a10b", borderRight: "3px solid #e1a10b", borderRadius: "0 4px 0 0" }} />
+          </div>
+          <div style={{ fontSize: "11px", color: "#e1a10b", fontWeight: 800, letterSpacing: "0.1em", background: "rgba(0,0,0,0.75)", padding: "5px 12px", borderRadius: "14px", border: "1px solid rgba(225, 161, 11, 0.3)" }}>
+            INQUADRA IL QR CODE
+          </div>
+          <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+            <div style={{ width: "24px", height: "24px", borderBottom: "3px solid #e1a10b", borderLeft: "3px solid #e1a10b", borderRadius: "0 0 0 4px" }} />
+            <div style={{ width: "24px", height: "24px", borderBottom: "3px solid #e1a10b", borderRight: "3px solid #e1a10b", borderRadius: "0 0 4px 0" }} />
+          </div>
+        </div>
 
         {cameraError && (
           <div
@@ -371,6 +438,7 @@ export default function ScannerModal({
               color: "#f87171",
               maxWidth: "85vw",
               textAlign: "center",
+              zIndex: 30,
             }}
           >
             <div style={{ fontSize: "16px", fontWeight: 700, marginBottom: "8px" }}>ERRORE FOTOCAMERA</div>

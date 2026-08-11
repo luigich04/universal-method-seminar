@@ -344,6 +344,33 @@ export async function saveBookingAsync(
   return fullRecord;
 }
 
+export async function updatePaymentStatusAsync(ticketId: string, paymentStatus: "PAID" | "PENDING" | "REFUNDED" | "CANCELLED") {
+  const now = new Date().toISOString();
+  const sb = getSupabaseClient();
+  if (sb) {
+    try {
+      await sb.from("bookings").update({ payment_status: paymentStatus, updated_at: now }).eq("ticket_id", ticketId);
+    } catch (err) {
+      console.warn("Supabase update payment status notice:", err);
+    }
+  }
+  const p = getMySQLPool();
+  if (p) {
+    try {
+      await p.execute("UPDATE bookings SET payment_status = ?, updated_at = NOW() WHERE ticket_id = ?", [paymentStatus, ticketId]);
+    } catch (err) {
+      console.warn("MySQL update payment status notice:", err);
+    }
+  }
+  ensureDirectoryExists();
+  const bookings = getAllBookingsLocal();
+  const index = bookings.findIndex((b) => b.ticketId === ticketId);
+  if (index >= 0) {
+    bookings[index].paymentStatus = paymentStatus;
+    safeWriteJSON(DB_FILE, bookings);
+  }
+}
+
 export async function updateBookingNotesAsync(ticketId: string, notes: string) {
   const sb = getSupabaseClient();
   if (sb) {

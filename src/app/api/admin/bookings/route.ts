@@ -3,6 +3,7 @@ import {
   getAllBookingsAsync,
   saveBookingAsync,
   updateBookingNotesAsync,
+  updatePaymentStatusAsync,
   toggleAttendanceAsync,
   deleteBookingAsync,
   getCRMStatsAsync,
@@ -34,10 +35,15 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const { ticketId, action, notes, attended } = body;
+    const { ticketId, action, notes, attended, paymentStatus } = body;
 
     if (!ticketId) {
       return NextResponse.json({ error: "ticketId is required" }, { status: 400 });
+    }
+
+    if (action === "update_status") {
+      const updated = await updatePaymentStatusAsync(ticketId, paymentStatus);
+      return NextResponse.json({ success: true, updated });
     }
 
     if (action === "update_notes") {

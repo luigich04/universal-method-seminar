@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import PDFDocument from "pdfkit";
+import { encodeCode128B } from "@/components/TicketBarcode";
 
 export function generateTicketPDFBuffer(params: {
   toName: string;
@@ -132,6 +133,25 @@ export function generateTicketPDFBuffer(params: {
 
       doc.font("Helvetica-Bold").fontSize(9).fillColor("#6b6459").text("TICKET ID", 345, 322);
       doc.font("Helvetica-Bold").fontSize(11).fillColor("#0074d4").text(params.ticketId, 345, 335);
+
+      // Official Code 128 Barcode Vector Draw
+      try {
+        const pattern = encodeCode128B(params.ticketId);
+        let bX = 345;
+        const bY = 352;
+        const bHeight = 36;
+        const unitW = 1.25;
+
+        for (let i = 0; i < pattern.length; i++) {
+          const w = parseInt(pattern[i], 10) * unitW;
+          if (i % 2 === 0) {
+            doc.rect(bX, bY, w, bHeight).fill("#000000");
+          }
+          bX += w;
+        }
+      } catch (barcodeErr) {
+        console.warn("Could not draw PDF barcode:", barcodeErr);
+      }
 
       // Entry Instructions
       doc

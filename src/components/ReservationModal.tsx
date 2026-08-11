@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./ReservationModal.module.css";
+import { encodeCode128B } from "./TicketBarcode";
 
 export type TierType = "full" | "day1" | "day2";
 
@@ -596,9 +597,30 @@ export default function ReservationModal({
               </div>
             </div>
 
-            <div class="ticket-side">
-              <div class="side-code">${currentTicketId}</div>
-              <div class="side-tag">Pass Ufficiale</div>
+            <div class="ticket-side" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px 10px;text-align:center;">
+              <div class="side-code" style="font-family:monospace;font-weight:bold;color:#0074d4;font-size:11px;letter-spacing:0.05em;white-space:nowrap;">${currentTicketId}</div>
+              <svg width="95" height="32" viewBox="0 0 95 32" style="background:#ffffff;padding:2px;border-radius:3px;">
+                ${(() => {
+                  try {
+                    const pattern = encodeCode128B(currentTicketId);
+                    let currentX = 0;
+                    const totalUnits = pattern.split("").reduce((acc, char) => acc + parseInt(char, 10), 0);
+                    const unitW = 95 / totalUnits;
+                    let rects = "";
+                    for (let i = 0; i < pattern.length; i++) {
+                      const w = parseInt(pattern[i], 10) * unitW;
+                      if (i % 2 === 0) {
+                        rects += `<rect x="${currentX}" y="0" width="${w}" height="28" fill="#000000"/>`;
+                      }
+                      currentX += w;
+                    }
+                    return rects;
+                  } catch (e) {
+                    return "";
+                  }
+                })()}
+              </svg>
+              <div class="side-tag" style="font-size:9.5px;color:#6b6459;text-transform:uppercase;font-weight:600;white-space:nowrap;">Pass Ufficiale</div>
             </div>
           </div>
         </div>

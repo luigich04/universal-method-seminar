@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./checkout.module.css";
+import TicketBarcode from "@/components/TicketBarcode";
 
 // ── REAL PAYMENT VECTOR LOGOS ──
 const VisaLogo = () => (
@@ -272,6 +273,14 @@ END:VCALENDAR`;
                 <span className={styles.ticketLabel}>LUOGO</span>
                 <span className={styles.ticketValue}>Bracciano (RM), Italia</span>
               </div>
+            </div>
+
+            {/* Official Barcode for Event Scanner Entrance */}
+            <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "16px", borderTop: "1px dashed #e1e1e6" }}>
+              <span style={{ fontSize: "10px", color: "#888888", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "8px" }}>
+                CODICE A BARRE ACCESSO SEMINARIO (MOSTRA ALL'INGRESSO)
+              </span>
+              <TicketBarcode ticketId={generatedTicketId} height={46} width={240} />
             </div>
           </div>
 

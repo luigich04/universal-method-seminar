@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { getMySQLPool } from "@/lib/db";
+import { getMySQLPool, getSupabaseClient, updatePaymentStatusAsync } from "@/lib/db";
 import { sendConfirmationEmailAsync } from "@/lib/emailer";
 import fs from "fs";
 import path from "path";
@@ -37,6 +37,19 @@ export async function GET(request: Request) {
         session.customer_details?.name || (session.metadata?.customerName as string) || "Partecipante";
       const tierName = (session.metadata?.tierName as string) || "Full Seminar (2 Days)";
       const ticketId = (session.metadata?.ticketId as string) || `UMS-${sessionId.slice(-6).toUpperCase()}`;
+
+      // Update Supabase Cloud DB status to PAID
+      try {
+        const sb = getSupabaseClient();
+        if (sb) {
+          await sb
+            .from("bookings")
+            .update({ payment_status: "PAID", updated_at: new Date().toISOString() })
+            .or(`stripe_session_id.eq.${sessionId},ticket_id.eq.${ticketId}`);
+        }
+      } catch (sbErr) {
+        console.warn("Supabase update notice in stripe-confirm:", sbErr);
+      }
 
       // Update MySQL database if available
       try {

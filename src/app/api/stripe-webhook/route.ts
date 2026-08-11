@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { getMySQLPool } from "@/lib/db";
+import { getMySQLPool, getSupabaseClient } from "@/lib/db";
 import fs from "fs";
 import path from "path";
 
@@ -33,6 +33,19 @@ export async function POST(request: Request) {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
       const sessionId = session.id;
+
+      // Update Supabase Cloud DB status to PAID
+      try {
+        const sb = getSupabaseClient();
+        if (sb) {
+          await sb
+            .from("bookings")
+            .update({ payment_status: "PAID", updated_at: new Date().toISOString() })
+            .eq("stripe_session_id", sessionId);
+        }
+      } catch (sbErr) {
+        console.warn("Supabase webhook update notice:", sbErr);
+      }
 
       // Update MySQL database
       try {

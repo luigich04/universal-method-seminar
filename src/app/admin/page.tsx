@@ -602,6 +602,25 @@ export default function AdminCRMPage() {
             <h1 className={styles.brandTitle}>CRM SEMINARIO UMS</h1>
             <span className={styles.beaconDot} title="Supabase Cloud Active" />
           </div>
+
+          {/* Mobile-only Hamburger Menu Icon Button (Header Right - Borderless) */}
+          <button
+            className={styles.showMobile}
+            onClick={() => setIsMobileDrawerOpen(true)}
+            title="Apri Menu Strumenti"
+            style={{
+              background: "none",
+              border: "none",
+              padding: "4px 8px",
+              fontSize: "26px",
+              lineHeight: 1,
+              color: "#ffffff",
+              cursor: "pointer",
+              marginLeft: "auto",
+            }}
+          >
+            ☰
+          </button>
         </div>
 
         {/* Action Buttons (Desktop Full View & Mobile Streamlined Bar) */}
@@ -658,15 +677,6 @@ export default function AdminCRMPage() {
             style={{ color: "#a1a1aa" }}
           >
             🚪 DISCONNETTI
-          </button>
-
-          {/* Mobile-only Hamburger Menu Button */}
-          <button
-            className={`${styles.actionBtn} ${styles.showMobile}`}
-            onClick={() => setIsMobileDrawerOpen(true)}
-            style={{ padding: "10px 14px", fontSize: "14px", fontWeight: 800 }}
-          >
-            ☰ MENU
           </button>
         </div>
       </header>

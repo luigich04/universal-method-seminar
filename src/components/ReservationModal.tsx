@@ -180,6 +180,21 @@ export default function ReservationModal({
     if (initialSessionId) setTicketId(initialSessionId);
   }, [initialStep, initialSessionId]);
 
+  // 1-Second Skeleton Loading State on Modal Open
+  const [isLoadingSkeleton, setIsLoadingSkeleton] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && initialStep !== 5) {
+      setIsLoadingSkeleton(true);
+      const timer = setTimeout(() => {
+        setIsLoadingSkeleton(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setIsLoadingSkeleton(false);
+    }
+  }, [isOpen, initialStep]);
+
   // Restore attendee data from localStorage/sessionStorage when returning from Stripe
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -713,398 +728,410 @@ export default function ReservationModal({
 
         {/* ── UNIFIED STEP BODY CONTAINER ── */}
         <div className={styles.stepBodySingle}>
-          {/* Static Top Summary Header */}
-          {step < 5 && (
+          {isLoadingSkeleton ? (
+            <div className={styles.skeletonContainer}>
+              <div className={styles.skeletonTopBlock} />
+              <div className={styles.skeletonPillSmall} />
+              <div className={styles.skeletonMediumBlock} />
+              <div className={styles.skeletonPillSmall} />
+              <div className={styles.skeletonLargeBlock} />
+              <div className={styles.skeletonLargeBlock} />
+            </div>
+          ) : (
             <>
-              <div className={styles.summaryBlock}>
-                <span className={styles.subTitleText}>
-                  {step === 1 ? "Universal Method Seminar" : `Universal Method Seminar — ${currentTierObj.name}`}
-                </span>
+              {/* Static Top Summary Header */}
+              {step < 5 && (
+                <>
+                  <div className={styles.summaryBlock}>
+                    <span className={styles.subTitleText}>
+                      {step === 1 ? "Universal Method Seminar" : `Universal Method Seminar — ${currentTierObj.name}`}
+                    </span>
 
-                <div className={styles.priceDisplayRow}>
-                  {step > 1 && currentTierObj.id === "full" && (
-                    <span className={styles.topOldPriceStrikethrough}>160,00 €</span>
-                  )}
-                  <h1 className={styles.priceDisplay}>
-                    {step === 1 ? "Pass da 80 € · Full Seminar 140 €" : `${currentTierObj.price},00 €`}
-                  </h1>
-                  {step > 1 && currentTierObj.id === "full" && (
-                    <span className={styles.topDiscountBadge}>RISPARMI 20 €</span>
-                  )}
-                </div>
+                    <div className={styles.priceDisplayRow}>
+                      {step > 1 && currentTierObj.id === "full" && (
+                        <span className={styles.topOldPriceStrikethrough}>160,00 €</span>
+                      )}
+                      <h1 className={styles.priceDisplay}>
+                        {step === 1 ? "Pass da 80 € · Full Seminar 140 €" : `${currentTierObj.price},00 €`}
+                      </h1>
+                      {step > 1 && currentTierObj.id === "full" && (
+                        <span className={styles.topDiscountBadge}>RISPARMI 20 €</span>
+                      )}
+                    </div>
 
-                <p className={styles.locationText}>Bracciano, Italia · 7–8 settembre 2026</p>
-              </div>
-              <div className={styles.divider} />
-            </>
-          )}
-
-          {/* Dynamic Middle Step Content (Only this animates) */}
-          <div key={step} className={styles.dynamicStepContent}>
-            {/* ── STEP 1: OVERVIEW & DETAILS ── */}
-            {step === 1 && (
-              <div className={styles.sectionBlock}>
-                <h2 className={styles.sectionTitle}>Dettagli del Seminario</h2>
-                <div className={styles.overviewSpecList}>
-                  <div className={styles.overviewSpecItem}>
-                    <span className={styles.overviewSpecLabel}>Docente Principale</span>
-                    <span className={styles.overviewSpecValue}>Chris Collins</span>
+                    <p className={styles.locationText}>Bracciano, Italia · 7–8 settembre 2026</p>
                   </div>
+                  <div className={styles.divider} />
+                </>
+              )}
 
-                  <div className={styles.overviewSpecItem}>
-                    <span className={styles.overviewSpecLabel}>Disponibilità</span>
-                    <span className={styles.overviewSpecValue}>Posti limitati — iscrizione fino a esaurimento</span>
+              {/* Dynamic Middle Step Content (Only this animates) */}
+              <div key={step} className={styles.dynamicStepContent}>
+                {/* ── STEP 1: OVERVIEW & DETAILS ── */}
+                {step === 1 && (
+                  <div className={styles.sectionBlock}>
+                    <h2 className={styles.sectionTitle}>Dettagli del Seminario</h2>
+                    <div className={styles.overviewSpecList}>
+                      <div className={styles.overviewSpecItem}>
+                        <span className={styles.overviewSpecLabel}>Docente Principale</span>
+                        <span className={styles.overviewSpecValue}>Chris Collins</span>
+                      </div>
+
+                      <div className={styles.overviewSpecItem}>
+                        <span className={styles.overviewSpecLabel}>Disponibilità</span>
+                        <span className={styles.overviewSpecValue}>Posti limitati — iscrizione fino a esaurimento</span>
+                      </div>
+
+                      <div className={styles.overviewSpecItem}>
+                        <span className={styles.overviewSpecLabel}>Durata</span>
+                        <span className={styles.overviewSpecValue}>2 giorni · 6 ore di formazione diretta con Chris Collins</span>
+                      </div>
+
+                      <div className={styles.overviewSpecItem}>
+                        <span className={styles.overviewSpecLabel}>Certificazione</span>
+                        <span className={styles.overviewSpecValue}>Attestato di partecipazione</span>
+                      </div>
+
+                      <div className={styles.overviewSpecItem}>
+                        <span className={styles.overviewSpecLabel}>Focus Tecnico</span>
+                        <span className={styles.overviewSpecValue}>Biomeccanica · Timing · Pressione · Struttura</span>
+                      </div>
+                    </div>
                   </div>
+                )}
 
-                  <div className={styles.overviewSpecItem}>
-                    <span className={styles.overviewSpecLabel}>Durata</span>
-                    <span className={styles.overviewSpecValue}>2 giorni · 6 ore di formazione diretta con Chris Collins</span>
-                  </div>
+                {/* ── STEP 2: PASS SELECTION ── */}
+                {step === 2 && (
+                  <>
+                    <div className={styles.sectionBlock}>
+                      <h2 className={styles.sectionTitle}>Seleziona il tuo pass</h2>
+                      <p className={styles.sectionSub}>Scegli la formula di partecipazione al seminario</p>
+                    </div>
 
-                  <div className={styles.overviewSpecItem}>
-                    <span className={styles.overviewSpecLabel}>Certificazione</span>
-                    <span className={styles.overviewSpecValue}>Attestato di partecipazione</span>
-                  </div>
+                    <div className={styles.tiersList}>
+                      {TIERS.map((tier) => {
+                        const isSelected = selectedTier === tier.id;
+                        const isFullTier = tier.id === "full";
 
-                  <div className={styles.overviewSpecItem}>
-                    <span className={styles.overviewSpecLabel}>Focus Tecnico</span>
-                    <span className={styles.overviewSpecValue}>Biomeccanica · Timing · Pressione · Struttura</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* ── STEP 2: PASS SELECTION ── */}
-            {step === 2 && (
-              <>
-                <div className={styles.sectionBlock}>
-                  <h2 className={styles.sectionTitle}>Seleziona il tuo pass</h2>
-                  <p className={styles.sectionSub}>Scegli la formula di partecipazione al seminario</p>
-                </div>
-
-                <div className={styles.tiersList}>
-                  {TIERS.map((tier) => {
-                    const isSelected = selectedTier === tier.id;
-                    const isFullTier = tier.id === "full";
-
-                    return (
-                      <div
-                        key={tier.id}
-                        className={`${styles.tierCardClean} ${isSelected ? styles.tierSelectedClean : ""} ${isFullTier ? styles.featuredTierCard : ""}`}
-                        onClick={() => setSelectedTier(tier.id)}
-                      >
-                        <div className={styles.radioCircle}>
-                          {isSelected && <div className={styles.radioDot} />}
-                        </div>
-                        <div className={styles.tierMainInfo}>
-                          <div className={styles.tierTitleRow}>
-                            <div className={styles.tierNameContainer}>
-                              <span className={styles.tierNameClean}>{tier.name}</span>
-                              {isFullTier && (
-                                <span className={styles.discountBadgeTag}>RISPARMI 20 €</span>
-                              )}
+                        return (
+                          <div
+                            key={tier.id}
+                            className={`${styles.tierCardClean} ${isSelected ? styles.tierSelectedClean : ""} ${isFullTier ? styles.featuredTierCard : ""}`}
+                            onClick={() => setSelectedTier(tier.id)}
+                          >
+                            <div className={styles.radioCircle}>
+                              {isSelected && <div className={styles.radioDot} />}
                             </div>
-                            <div className={styles.tierPriceGroup}>
-                              {isFullTier && (
-                                <span className={styles.oldPriceStrikethrough}>160,00 €</span>
-                              )}
-                              <span className={styles.tierPriceClean}>{tier.price},00 €</span>
+                            <div className={styles.tierMainInfo}>
+                              <div className={styles.tierTitleRow}>
+                                <div className={styles.tierNameContainer}>
+                                  <span className={styles.tierNameClean}>{tier.name}</span>
+                                  {isFullTier && (
+                                    <span className={styles.discountBadgeTag}>RISPARMI 20 €</span>
+                                  )}
+                                </div>
+                                <div className={styles.tierPriceGroup}>
+                                  {isFullTier && (
+                                    <span className={styles.oldPriceStrikethrough}>160,00 €</span>
+                                  )}
+                                  <span className={styles.tierPriceClean}>{tier.price},00 €</span>
+                                </div>
+                              </div>
+                              <p className={styles.tierSubClean}>{tier.subtitle}</p>
                             </div>
                           </div>
-                          <p className={styles.tierSubClean}>{tier.subtitle}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </>
-            )}
-
-            {/* ── STEP 3: I TUOI DATI ── */}
-            {step === 3 && (
-              <form id="datiForm" onSubmit={(e) => { e.preventDefault(); handleNextToEsperienza(); }} className={styles.cleanForm}>
-                <h2 className={styles.sectionTitle}>I tuoi dati</h2>
-
-                <div className={styles.fieldGroupClean}>
-                  <label className={styles.fieldLabel}>Nome e cognome *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="es. Mario Rossi"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    autoFocus
-                  />
-                </div>
-
-                <div className={styles.fieldGroupClean}>
-                  <label className={styles.fieldLabel}>Email *</label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="mario.rossi@email.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  />
-                </div>
-
-                <div className={styles.fieldGroupClean}>
-                  <label className={styles.fieldLabel}>Telefono / WhatsApp *</label>
-                  <div className={styles.phoneInputRow}>
-                    <select
-                      className={styles.countryCodeSelect}
-                      value={countryCode}
-                      onChange={(e) => setCountryCode(e.target.value)}
-                    >
-                      <option value="+39">🇮🇹 +39</option>
-                      <option value="+41">🇨🇭 +41</option>
-                      <option value="+33">🇫🇷 +33</option>
-                      <option value="+49">🇩🇪 +49</option>
-                      <option value="+44">🇬🇧 +44</option>
-                      <option value="+34">🇪🇸 +34</option>
-                      <option value="+43">🇦🇹 +43</option>
-                      <option value="+32">🇧🇪 +32</option>
-                      <option value="+31">🇳🇱 +31</option>
-                      <option value="+1">🇺🇸 +1</option>
-                      <option value="+852">🇭🇰 +852</option>
-                    </select>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="333 1234567"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className={styles.phoneNumberInput}
-                    />
-                  </div>
-                </div>
-              </form>
-            )}
-
-            {/* ── STEP 4: LA TUA ESPERIENZA & PAGAMENTO ── */}
-            {step === 4 && (
-              <>
-                {showDoubleConfirm ? (
-                  /* Double Confirm Warning */
-                  <div className={styles.doubleConfirmClean}>
-                    <h3 className={styles.warningTitleClean}>Email già registrata</h3>
-                    <p className={styles.warningDescClean}>
-                      Risulta già un'iscrizione confermata per l'email <strong>{formData.email}</strong>.
-                    </p>
-                    <div className={styles.warningDetailsClean}>
-                      <div><strong>Nome:</strong> {duplicateData.existingName}</div>
-                      <div><strong>Pass ID:</strong> {duplicateData.existingTicketId}</div>
-                      <div><strong>Tipo Pass:</strong> {duplicateData.existingTier}</div>
+                        );
+                      })}
                     </div>
-                    <p className={styles.warningSubClean}>
-                      Vuoi procedere comunque all'acquisto di un nuovo pass per questa email?
-                    </p>
-                  </div>
-                ) : (
-                  <form id="esperienzaForm" onSubmit={handleProceedToStripeCheckout} className={styles.cleanForm}>
-                    <h2 className={styles.sectionTitle}>La tua esperienza</h2>
+                  </>
+                )}
+
+                {/* ── STEP 3: I TUOI DATI ── */}
+                {step === 3 && (
+                  <form id="datiForm" onSubmit={(e) => { e.preventDefault(); handleNextToEsperienza(); }} className={styles.cleanForm}>
+                    <h2 className={styles.sectionTitle}>I tuoi dati</h2>
 
                     <div className={styles.fieldGroupClean}>
-                      <label className={styles.fieldLabel}>Sistema marziale</label>
-                      <div className={styles.customSelectWrapper}>
-                        <CustomSelect
-                          label=""
-                          value={formData.system}
-                          options={[
-                            { value: "bjj", label: "BJJ (Jiu-Jitsu)" },
-                            { value: "wing-tsun", label: "Wing Tsun" },
-                            { value: "mma", label: "MMA / Striking" },
-                            { value: "karate", label: "Karate / Kung Fu" },
-                            { value: "other", label: "Altro Sistema" },
-                          ]}
-                          onChange={(val) => setFormData({ ...formData, system: val })}
-                        />
-                      </div>
-                    </div>
-
-                    <div className={styles.fieldGroupClean}>
-                      <label className={styles.fieldLabel}>Livello di esperienza</label>
-                      <CustomSelect
-                        label=""
-                        value={formData.experience}
-                        options={[
-                          { value: "beginner", label: "Principiante (0 - 1 Anno)" },
-                          { value: "intermediate", label: "Intermedio (1 - 4 Anni)" },
-                          { value: "advanced", label: "Avanzato / Cintura Nera" },
-                        ]}
-                        onChange={(val) => setFormData({ ...formData, experience: val })}
+                      <label className={styles.fieldLabel}>Nome e cognome *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="es. Mario Rossi"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        autoFocus
                       />
                     </div>
 
-                    {/* Final Order Confirmation Card */}
-                    <div className={styles.finalCheckoutCard}>
-                      <div className={styles.finalCheckoutTitle}>{currentTierObj.name}</div>
-                      <div className={styles.finalCheckoutSub}>7–8 settembre 2026 · Bracciano</div>
-                      <div className={styles.finalCheckoutTotalRow}>
-                        <span>Totale:</span>
-                        <strong>{currentTierObj.price},00 €</strong>
+                    <div className={styles.fieldGroupClean}>
+                      <label className={styles.fieldLabel}>Email *</label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="mario.rossi@email.com"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      />
+                    </div>
+
+                    <div className={styles.fieldGroupClean}>
+                      <label className={styles.fieldLabel}>Telefono / WhatsApp *</label>
+                      <div className={styles.phoneInputRow}>
+                        <select
+                          className={styles.countryCodeSelect}
+                          value={countryCode}
+                          onChange={(e) => setCountryCode(e.target.value)}
+                        >
+                          <option value="+39">🇮🇹 +39</option>
+                          <option value="+41">🇨🇭 +41</option>
+                          <option value="+33">🇫🇷 +33</option>
+                          <option value="+49">🇩🇪 +49</option>
+                          <option value="+44">🇬🇧 +44</option>
+                          <option value="+34">🇪🇸 +34</option>
+                          <option value="+43">🇦🇹 +43</option>
+                          <option value="+32">🇧🇪 +32</option>
+                          <option value="+31">🇳🇱 +31</option>
+                          <option value="+1">🇺🇸 +1</option>
+                          <option value="+852">🇭🇰 +852</option>
+                        </select>
+                        <input
+                          type="tel"
+                          required
+                          placeholder="333 1234567"
+                          value={formData.phone}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          className={styles.phoneNumberInput}
+                        />
                       </div>
                     </div>
                   </form>
                 )}
-              </>
-            )}
 
-            {/* ── STEP 5: CONFIRMATION "YOU ARE IN" ── */}
-            {step === 5 && (
-              <div className={styles.confirmWrapper}>
-                <div className={styles.confirmBadgeIcon}>✓</div>
+                {/* ── STEP 4: LA TUA ESPERIENZA & PAGAMENTO ── */}
+                {step === 4 && (
+                  <>
+                    {showDoubleConfirm ? (
+                      <div className={styles.doubleConfirmClean}>
+                        <h3 className={styles.warningTitleClean}>Email già registrata</h3>
+                        <p className={styles.warningDescClean}>
+                          Risulta già un'iscrizione confermata per l'email <strong>{formData.email}</strong>.
+                        </p>
+                        <div className={styles.warningDetailsClean}>
+                          <div><strong>Nome:</strong> {duplicateData.existingName}</div>
+                          <div><strong>Pass ID:</strong> {duplicateData.existingTicketId}</div>
+                          <div><strong>Tipo Pass:</strong> {duplicateData.existingTier}</div>
+                        </div>
+                        <p className={styles.warningSubClean}>
+                          Vuoi procedere comunque all'acquisto di un nuovo pass per questa email?
+                        </p>
+                      </div>
+                    ) : (
+                      <form id="esperienzaForm" onSubmit={handleProceedToStripeCheckout} className={styles.cleanForm}>
+                        <h2 className={styles.sectionTitle}>La tua esperienza</h2>
 
-                <div className={styles.confirmHeaderClean}>
-                  <h1 className={styles.confirmTitleClean}>Iscrizione Confermata!</h1>
-                  <p className={styles.confirmSubClean}>
-                    La tua prenotazione al seminario con Chris Collins è stata registrata con successo.
-                  </p>
-                </div>
+                        <div className={styles.fieldGroupClean}>
+                          <label className={styles.fieldLabel}>Sistema marziale</label>
+                          <div className={styles.customSelectWrapper}>
+                            <CustomSelect
+                              label=""
+                              value={formData.system}
+                              options={[
+                                { value: "bjj", label: "BJJ (Jiu-Jitsu)" },
+                                { value: "wing-tsun", label: "Wing Tsun" },
+                                { value: "mma", label: "MMA / Striking" },
+                                { value: "karate", label: "Karate / Kung Fu" },
+                                { value: "other", label: "Altro Sistema" },
+                              ]}
+                              onChange={(val) => setFormData({ ...formData, system: val })}
+                            />
+                          </div>
+                        </div>
 
-                <div className={styles.ticketPassClean}>
-                  <div className={styles.ticketHeaderClean}>
-                    <span>UNIVERSAL METHOD SEMINAR</span>
-                    <span className={styles.ticketIdBadge}>{ticketId || "UMS-2026"}</span>
+                        <div className={styles.fieldGroupClean}>
+                          <label className={styles.fieldLabel}>Livello di esperienza</label>
+                          <CustomSelect
+                            label=""
+                            value={formData.experience}
+                            options={[
+                              { value: "beginner", label: "Principiante (0 - 1 Anno)" },
+                              { value: "intermediate", label: "Intermedio (1 - 4 Anni)" },
+                              { value: "advanced", label: "Avanzato / Cintura Nera" },
+                            ]}
+                            onChange={(val) => setFormData({ ...formData, experience: val })}
+                          />
+                        </div>
+
+                        {/* Final Order Confirmation Card */}
+                        <div className={styles.finalCheckoutCard}>
+                          <div className={styles.finalCheckoutTitle}>{currentTierObj.name}</div>
+                          <div className={styles.finalCheckoutSub}>7–8 settembre 2026 · Bracciano</div>
+                          <div className={styles.finalCheckoutTotalRow}>
+                            <span>Totale:</span>
+                            <strong>{currentTierObj.price},00 €</strong>
+                          </div>
+                        </div>
+                      </form>
+                    )}
+                  </>
+                )}
+
+                {/* ── STEP 5: CONFIRMATION "YOU ARE IN" ── */}
+                {step === 5 && (
+                  <div className={styles.confirmWrapper}>
+                    <div className={styles.confirmBadgeIcon}>✓</div>
+
+                    <div className={styles.confirmHeaderClean}>
+                      <h1 className={styles.confirmTitleClean}>Iscrizione Confermata!</h1>
+                      <p className={styles.confirmSubClean}>
+                        La tua prenotazione al seminario con Chris Collins è stata registrata con successo.
+                      </p>
+                    </div>
+
+                    <div className={styles.ticketPassClean}>
+                      <div className={styles.ticketHeaderClean}>
+                        <span>UNIVERSAL METHOD SEMINAR</span>
+                        <span className={styles.ticketIdBadge}>{ticketId || "UMS-2026"}</span>
+                      </div>
+
+                      <div className={styles.ticketGridClean}>
+                        <div>
+                          <span className={styles.tLabelClean}>PARTECIPANTE</span>
+                          <span className={styles.tValClean}>{formData.name || "Partecipante Confermato"}</span>
+                        </div>
+                        <div>
+                          <span className={styles.tLabelClean}>TIPO DI PASS</span>
+                          <span className={styles.tValBlueClean}>{currentTierObj.name}</span>
+                        </div>
+                        <div>
+                          <span className={styles.tLabelClean}>DATE & ORARI</span>
+                          <span className={styles.tValClean}>7 & 8 Settembre 2026</span>
+                        </div>
+                        <div>
+                          <span className={styles.tLabelClean}>LUOGO</span>
+                          <span className={styles.tValClean}>Bracciano (RM), Italia</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={styles.actionRowCenterColumn} style={{ marginTop: "auto", width: "100%", paddingTop: "16px" }}>
+                      <div className={styles.actionRowBetween} style={{ width: "100%", marginTop: 0 }}>
+                        <button
+                          className={styles.btnSecondary}
+                          onClick={onClose}
+                        >
+                          Chiudi
+                        </button>
+
+                        <button
+                          className={styles.btnPrimary}
+                          onClick={handleDownloadTicket}
+                        >
+                          Scarica Biglietto →
+                        </button>
+                      </div>
+
+                      <p className={styles.stripeSecuritySubtext}>
+                        ✉️ abbiamo inviato la conferma ed il biglietto a <strong>{formData.email || "tua email"}</strong>
+                      </p>
+                    </div>
                   </div>
-
-                  <div className={styles.ticketGridClean}>
-                    <div>
-                      <span className={styles.tLabelClean}>PARTECIPANTE</span>
-                      <span className={styles.tValClean}>{formData.name || "Partecipante Confermato"}</span>
-                    </div>
-                    <div>
-                      <span className={styles.tLabelClean}>TIPO DI PASS</span>
-                      <span className={styles.tValBlueClean}>{currentTierObj.name}</span>
-                    </div>
-                    <div>
-                      <span className={styles.tLabelClean}>DATE & ORARI</span>
-                      <span className={styles.tValClean}>7 & 8 Settembre 2026</span>
-                    </div>
-                    <div>
-                      <span className={styles.tLabelClean}>LUOGO</span>
-                      <span className={styles.tValClean}>Bracciano (RM), Italia</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className={styles.actionRowCenterColumn} style={{ marginTop: "auto", width: "100%", paddingTop: "16px" }}>
-                  <div className={styles.actionRowBetween} style={{ width: "100%", marginTop: 0 }}>
-                    <button
-                      className={styles.btnSecondary}
-                      onClick={onClose}
-                    >
-                      Chiudi
-                    </button>
-
-                    <button
-                      className={styles.btnPrimary}
-                      onClick={handleDownloadTicket}
-                    >
-                      Scarica Biglietto →
-                    </button>
-                  </div>
-
-                  <p className={styles.stripeSecuritySubtext}>
-                    ✉️ abbiamo inviato la conferma ed il biglietto a <strong>{formData.email || "tua email"}</strong>
-                  </p>
-                </div>
+                )}
               </div>
-            )}
-          </div>
 
-          {/* Static Bottom Action Buttons for Steps 1-4 */}
-          {step === 1 && (
-            <div className={styles.actionRowEnd}>
-              <button className={styles.btnPrimary} onClick={handleNextToTier}>
-                Continua →
-              </button>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className={styles.actionRowBetween}>
-              <button className={styles.btnSecondary} onClick={handleBack}>
-                ← Indietro
-              </button>
-              <button className={styles.btnPrimary} onClick={handleNextToDati}>
-                Continua →
-              </button>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className={styles.actionRowBetween}>
-              <button className={styles.btnSecondary} onClick={handleBack}>
-                ← Indietro
-              </button>
-              <button type="submit" form="datiForm" className={styles.btnPrimary}>
-                Continua →
-              </button>
-            </div>
-          )}
-
-          {step === 4 && (
-            <>
-              {showDoubleConfirm ? (
-                <div className={styles.actionRowBetween} style={{ marginTop: "20px" }}>
-                  <button
-                    type="button"
-                    className={styles.btnSecondary}
-                    onClick={() => setShowDoubleConfirm(false)}
-                  >
-                    Cambia Email
+              {/* Static Bottom Action Buttons for Steps 1-4 */}
+              {step === 1 && (
+                <div className={styles.actionRowEnd}>
+                  <button className={styles.btnPrimary} onClick={handleNextToTier}>
+                    Continua →
                   </button>
-                  <button
-                    type="button"
-                    className={styles.btnPrimary}
-                    onClick={executeStripeRedirect}
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? "Reindirizzamento..." : `Vai al pagamento sicuro (${currentTierObj.price},00 €) →`}
-                  </button>
-                </div>
-              ) : (
-                <div className={styles.actionRowCenterColumn} style={{ marginTop: "16px" }}>
-                  <div className={styles.actionRowBetween} style={{ width: "100%", marginTop: 0 }}>
-                    <button type="button" className={styles.btnSecondary} onClick={handleBack}>
-                      ← Indietro
-                    </button>
-                    <button
-                      type="submit"
-                      form="esperienzaForm"
-                      className={styles.btnPrimary}
-                      disabled={isProcessing}
-                    >
-                      {isProcessing ? "Reindirizzamento..." : "Vai al pagamento sicuro →"}
-                    </button>
-                  </div>
-                  <p className={styles.stripeSecuritySubtext}>
-                    🔒 Pagamento sicuro gestito da Stripe
-                  </p>
                 </div>
               )}
+
+              {step === 2 && (
+                <div className={styles.actionRowBetween}>
+                  <button className={styles.btnSecondary} onClick={handleBack}>
+                    ← Indietro
+                  </button>
+                  <button className={styles.btnPrimary} onClick={handleNextToDati}>
+                    Continua →
+                  </button>
+                </div>
+              )}
+
+              {step === 3 && (
+                <div className={styles.actionRowBetween}>
+                  <button className={styles.btnSecondary} onClick={handleBack}>
+                    ← Indietro
+                  </button>
+                  <button type="submit" form="datiForm" className={styles.btnPrimary}>
+                    Continua →
+                  </button>
+                </div>
+              )}
+
+              {step === 4 && (
+                <>
+                  {showDoubleConfirm ? (
+                    <div className={styles.actionRowBetween} style={{ marginTop: "20px" }}>
+                      <button
+                        type="button"
+                        className={styles.btnSecondary}
+                        onClick={() => setShowDoubleConfirm(false)}
+                      >
+                        Cambia Email
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.btnPrimary}
+                        onClick={executeStripeRedirect}
+                        disabled={isProcessing}
+                      >
+                        {isProcessing ? "Reindirizzamento..." : `Vai al pagamento sicuro (${currentTierObj.price},00 €) →`}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className={styles.actionRowCenterColumn} style={{ marginTop: "16px" }}>
+                      <div className={styles.actionRowBetween} style={{ width: "100%", marginTop: 0 }}>
+                        <button type="button" className={styles.btnSecondary} onClick={handleBack}>
+                          ← Indietro
+                        </button>
+                        <button
+                          type="submit"
+                          form="esperienzaForm"
+                          className={styles.btnPrimary}
+                          disabled={isProcessing}
+                        >
+                          {isProcessing ? "Reindirizzamento..." : "Vai al pagamento sicuro →"}
+                        </button>
+                      </div>
+                      <p className={styles.stripeSecuritySubtext}>
+                        🔒 Pagamento sicuro gestito da Stripe
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* Static Bottom Legal Footer */}
+              <div className={styles.legalFooterRow}>
+                <button
+                  type="button"
+                  className={styles.legalLink}
+                  onClick={openTerms}
+                >
+                  Termini e Condizioni
+                </button>
+                <span className={styles.legalDot}>•</span>
+                <button
+                  type="button"
+                  className={styles.legalLink}
+                  onClick={openSupport}
+                >
+                  Assistenza
+                </button>
+              </div>
             </>
           )}
-
-          {/* Static Bottom Legal Footer */}
-          <div className={styles.legalFooterRow}>
-            <button
-              type="button"
-              className={styles.legalLink}
-              onClick={openTerms}
-            >
-              Termini e Condizioni
-            </button>
-            <span className={styles.legalDot}>•</span>
-            <button
-              type="button"
-              className={styles.legalLink}
-              onClick={openSupport}
-            >
-              Assistenza
-            </button>
-          </div>
         </div>
 
         {/* ── TERMINI E CONDIZIONI OVERLAY (OFFICIAL LEGAL STYLE) ── */}

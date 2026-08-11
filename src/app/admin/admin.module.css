@@ -842,7 +842,17 @@
   }
 }
 
+.showMobile {
+  display: none !important;
+}
+
 @media (max-width: 768px) {
+  .hideMobile {
+    display: none !important;
+  }
+  .showMobile {
+    display: inline-flex !important;
+  }
   .adminPage {
     padding: 16px 14px 48px 14px;
   }
@@ -951,9 +961,6 @@
 }
 
 @media (max-width: 480px) {
-  .headerActions {
-    grid-template-columns: 1fr;
-  }
   .loginCard {
     padding: 28px 18px;
   }
@@ -961,3 +968,91 @@
     font-size: 24px;
   }
 }
+
+/* ── Mobile Side Drawer Menu ── */
+.mobileMenuOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mobileMenuDrawer {
+  width: 85%;
+  max-width: 320px;
+  height: 100%;
+  background: #121215;
+  border-left: 1px solid #27272a;
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8);
+  animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.mobileMenuHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #27272a;
+  margin-bottom: 20px;
+}
+
+.mobileMenuTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.mobileMenuList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.mobileMenuBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  background: #18181c;
+  border: 1px solid #27272a;
+  border-radius: 8px;
+  color: #f4f4f5;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.mobileMenuBtn:hover {
+  background: #27272a;
+  color: #ffffff;
+}
+
+.mobileMenuBtnPrimary {
+  background: #e1a10b;
+  border-color: #e1a10b;
+  color: #000000;
+  font-weight: 800;
+}
+

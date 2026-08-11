@@ -202,6 +202,7 @@ export default function AdminCRMPage() {
   const [selectedBooking, setSelectedBooking] = useState<BookingRecord | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showScannerModal, setShowScannerModal] = useState(false);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   // Manual Add Form State
@@ -603,9 +604,30 @@ export default function AdminCRMPage() {
           </div>
         </div>
 
+        {/* Action Buttons (Desktop Full View & Mobile Streamlined Bar) */}
         <div className={styles.headerActions}>
           <button
-            className={styles.actionBtn}
+            className={`${styles.actionBtn} ${styles.actionBtnPrimary}`}
+            onClick={() => setShowScannerModal(true)}
+            title="Apri scanner fotocamera / lettore laser USB"
+            style={{ background: "#1c1913", color: "#e1a10b", border: "1px solid #3d321d" }}
+          >
+            <IconTarget />
+            SCANNER PASS
+          </button>
+
+          <button
+            className={`${styles.actionBtn} ${styles.actionBtnPrimary}`}
+            onClick={() => setShowAddModal(true)}
+          >
+            <IconPlus />
+            <span className={styles.hideMobile}>NUOVA PRENOTAZIONE</span>
+            <span className={styles.showMobile}>+ NUOVA</span>
+          </button>
+
+          {/* Desktop-only secondary action buttons */}
+          <button
+            className={`${styles.actionBtn} ${styles.hideMobile}`}
             onClick={handleLiveRefresh}
             disabled={isRefreshing}
             title="Sincronizza con Supabase Cloud DB"
@@ -614,25 +636,23 @@ export default function AdminCRMPage() {
             {isRefreshing ? "AGGIORNAMENTO..." : "AGGIORNA"}
           </button>
 
-          <button
-            className={`${styles.actionBtn} ${styles.actionBtnPrimary}`}
-            onClick={() => setShowAddModal(true)}
-          >
-            <IconPlus />
-            NUOVA PRENOTAZIONE
+          <button className={`${styles.actionBtn} ${styles.hideMobile}`} onClick={handleCopyEmails} title="Copia lista email negli appunti">
+            <IconCopy />
+            COPIA EMAIL
+          </button>
+
+          <button className={`${styles.actionBtn} ${styles.hideMobile}`} onClick={handleExportCSV} title="Scarica report CSV">
+            <IconDownload />
+            EXPORT CSV
+          </button>
+
+          <button className={`${styles.actionBtn} ${styles.hideMobile}`} onClick={handlePrintRoster} title="Stampa registro check-in">
+            <IconPrint />
+            STAMPA
           </button>
 
           <button
-            className={styles.actionBtn}
-            onClick={() => setShowScannerModal(true)}
-            title="Apri scanner fotocamera / lettore laser USB per verificare biglietti"
-          >
-            <IconTarget />
-            SCANNER PASS
-          </button>
-
-          <button
-            className={styles.actionBtn}
+            className={`${styles.actionBtn} ${styles.hideMobile}`}
             onClick={handleLogout}
             title="Disconnetti la sessione corrente del CRM"
             style={{ color: "#a1a1aa" }}
@@ -640,26 +660,110 @@ export default function AdminCRMPage() {
             🚪 DISCONNETTI
           </button>
 
-          <button className={styles.actionBtn} onClick={handleCopyEmails} title="Copia lista email negli appunti">
-            <IconCopy />
-            COPIA EMAIL
-          </button>
-
-          <button className={styles.actionBtn} onClick={handleExportCSV} title="Scarica report CSV">
-            <IconDownload />
-            EXPORT CSV
-          </button>
-
-          <button className={styles.actionBtn} onClick={handlePrintRoster} title="Stampa registro check-in">
-            <IconPrint />
-            STAMPA
-          </button>
-
-          <button className={styles.logoutBtn} onClick={() => setIsAuthenticated(false)}>
-            ESCI
+          {/* Mobile-only Hamburger Menu Button */}
+          <button
+            className={`${styles.actionBtn} ${styles.showMobile}`}
+            onClick={() => setIsMobileDrawerOpen(true)}
+            style={{ padding: "10px 14px", fontSize: "14px", fontWeight: 800 }}
+          >
+            ☰ MENU
           </button>
         </div>
       </header>
+
+      {/* ── MOBILE SIDE DRAWER MENU ── */}
+      {isMobileDrawerOpen && (
+        <div className={styles.mobileMenuOverlay} onClick={() => setIsMobileDrawerOpen(false)}>
+          <div className={styles.mobileMenuDrawer} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.mobileMenuHeader}>
+              <div className={styles.mobileMenuTitle}>MENU STRUMENTI CRM</div>
+              <button
+                type="button"
+                className={styles.closeModalBtn}
+                onClick={() => setIsMobileDrawerOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className={styles.mobileMenuList}>
+              <button
+                type="button"
+                className={styles.mobileMenuBtn}
+                onClick={() => {
+                  setIsMobileDrawerOpen(false);
+                  handleLiveRefresh();
+                }}
+              >
+                <IconRefresh />
+                Sincronizza Supabase Cloud
+              </button>
+
+              <button
+                type="button"
+                className={styles.mobileMenuBtn}
+                onClick={() => {
+                  setIsMobileDrawerOpen(false);
+                  handleCopyEmails();
+                }}
+              >
+                <IconCopy />
+                Copia Lista Email ({bookings.length})
+              </button>
+
+              <button
+                type="button"
+                className={styles.mobileMenuBtn}
+                onClick={() => {
+                  setIsMobileDrawerOpen(false);
+                  handleExportCSV();
+                }}
+              >
+                <IconDownload />
+                Esporta Report CSV
+              </button>
+
+              <button
+                type="button"
+                className={styles.mobileMenuBtn}
+                onClick={() => {
+                  setIsMobileDrawerOpen(false);
+                  handlePrintRoster();
+                }}
+              >
+                <IconPrint />
+                Stampa Registro Check-in
+              </button>
+
+              <button
+                type="button"
+                className={styles.mobileMenuBtn}
+                onClick={() => {
+                  setIsMobileDrawerOpen(false);
+                  setIsKpiOpen(!isKpiOpen);
+                  setIsFiltersOpen(!isFiltersOpen);
+                }}
+              >
+                📊 Toggle Metriche & Filtri
+              </button>
+
+              <div style={{ marginTop: "auto", paddingTop: "16px", borderTop: "1px solid #27272a" }}>
+                <button
+                  type="button"
+                  className={styles.mobileMenuBtn}
+                  style={{ color: "#f87171", borderColor: "#7f1d1d", background: "#1f1212" }}
+                  onClick={() => {
+                    setIsMobileDrawerOpen(false);
+                    handleLogout();
+                  }}
+                >
+                  🚪 Disconnetti Sessione CRM
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Collapsible KPI Section */}
       <div className={styles.sectionToggleHeader} onClick={() => setIsKpiOpen(!isKpiOpen)}>

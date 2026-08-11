@@ -49,6 +49,8 @@ export async function POST(request: Request) {
       }
     }
 
+    const generatedTicketId = `UMS-${Math.floor(1000 + Math.random() * 9000)}`;
+
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card", "klarna", "paypal"],
       line_items: [
@@ -69,9 +71,10 @@ export async function POST(request: Request) {
       discounts: discountsArr.length > 0 ? discountsArr : undefined,
       mode: "payment",
       customer_email: customerEmail ? customerEmail : undefined,
-      success_url: `${origin}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/?canceled=true`,
+      success_url: `${origin}/checkout?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/checkout?canceled=true`,
       metadata: {
+        ticketId: generatedTicketId,
         customerName: customerName || "",
         phone: phone || "",
         martialSystem: martialSystem || "",
@@ -84,7 +87,7 @@ export async function POST(request: Request) {
 
     // Record initial booking in internal CRM database with status PENDING
     await saveBookingAsync({
-      ticketId: `UMS-${Math.floor(1000 + Math.random() * 9000)}`,
+      ticketId: generatedTicketId,
       stripeSessionId: session.id,
       fullName: customerName || "Partecipante",
       email: customerEmail || "iscritto@example.com",

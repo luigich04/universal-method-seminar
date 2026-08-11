@@ -65,6 +65,8 @@ export default function ScannerModal({
 
   // Fullscreen Customer Profile Modal State
   const [scannedCustomer, setScannedCustomer] = useState<BookingRecord | null>(null);
+  const scannedCustomerRef = useRef<BookingRecord | null>(null);
+  scannedCustomerRef.current = scannedCustomer;
 
   const inputRef = useRef<HTMLInputElement>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
@@ -103,6 +105,9 @@ export default function ScannerModal({
         { facingMode: "environment" },
         config,
         (decodedText) => {
+          // Pause camera processing if customer profile modal is currently open
+          if (scannedCustomerRef.current) return;
+
           const now = Date.now();
           if (now - lastProcessedTimeRef.current > 1800) {
             lastProcessedTimeRef.current = now;
@@ -137,6 +142,8 @@ export default function ScannerModal({
     let timeout: NodeJS.Timeout;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (scannedCustomerRef.current) return;
+
       if (e.key === "Enter") {
         if (buffer.length >= 3) {
           processTicketScan(buffer.trim());
@@ -166,6 +173,7 @@ export default function ScannerModal({
   };
 
   const processTicketScan = async (code: string) => {
+    if (scannedCustomerRef.current) return;
     const cleanCode = code.trim().toUpperCase();
     if (!cleanCode) return;
 

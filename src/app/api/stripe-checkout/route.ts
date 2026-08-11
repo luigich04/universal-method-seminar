@@ -71,8 +71,8 @@ export async function POST(request: Request) {
       discounts: discountsArr.length > 0 ? discountsArr : undefined,
       mode: "payment",
       customer_email: customerEmail ? customerEmail : undefined,
-      success_url: `${origin}/checkout?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/checkout?canceled=true`,
+      success_url: `${origin}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/?canceled=true`,
       metadata: {
         ticketId: generatedTicketId,
         customerName: customerName || "",

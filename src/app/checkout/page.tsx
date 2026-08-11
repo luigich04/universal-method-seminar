@@ -143,9 +143,22 @@ function CheckoutContent() {
     const sessionId = searchParams.get("session_id");
     if (isSuccess) {
       setTicketConfirmed(true);
-      setGeneratedTicketId(
-        sessionId ? `STRIPE-${sessionId.slice(-6).toUpperCase()}` : `UMS-${Math.floor(1000 + Math.random() * 9000)}`
-      );
+      if (sessionId) {
+        fetch(`/api/stripe-confirm?session_id=${sessionId}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.ticketId) {
+              setGeneratedTicketId(data.ticketId);
+            } else {
+              setGeneratedTicketId(`UMS-${Math.floor(1000 + Math.random() * 9000)}`);
+            }
+          })
+          .catch(() => {
+            setGeneratedTicketId(`UMS-${Math.floor(1000 + Math.random() * 9000)}`);
+          });
+      } else {
+        setGeneratedTicketId(`UMS-${Math.floor(1000 + Math.random() * 9000)}`);
+      }
     }
   }, [searchParams]);
 
@@ -275,9 +288,9 @@ END:VCALENDAR`;
               </div>
             </div>
 
-            {/* Official Dual Pass Codes (QR Code + Barcode) */}
-            <div style={{ marginTop: "20px", paddingTop: "16px", borderTop: "1px dashed #e1e1e6" }}>
-              <TicketPassCodes ticketId={generatedTicketId} qrSize={100} barcodeWidth={190} barcodeHeight={42} />
+            {/* Official 2D QR Code Pass */}
+            <div style={{ marginTop: "20px", display: "flex", justifyContent: "center", paddingTop: "16px", borderTop: "1px dashed #e1e1e6" }}>
+              <TicketPassCodes ticketId={generatedTicketId} qrSize={130} />
             </div>
           </div>
 

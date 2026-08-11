@@ -605,31 +605,11 @@ export default function ReservationModal({
               </div>
             </div>
 
-            <div class="ticket-side" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px 10px;text-align:center;">
-              ${qrDataUrl ? `<img src="${qrDataUrl}" width="64" height="64" style="background:#ffffff;padding:2px;border-radius:3px;border:1px solid #d8d2c4;" />` : ""}
-              <svg width="95" height="26" viewBox="0 0 95 26" style="background:#ffffff;padding:2px;border-radius:3px;">
-                ${(() => {
-                  try {
-                    const pattern = encodeCode128B(currentTicketId);
-                    let currentX = 0;
-                    const totalUnits = pattern.split("").reduce((acc, char) => acc + parseInt(char, 10), 0);
-                    const unitW = 95 / totalUnits;
-                    let rects = "";
-                    for (let i = 0; i < pattern.length; i++) {
-                      const w = parseInt(pattern[i], 10) * unitW;
-                      if (i % 2 === 0) {
-                        rects += `<rect x="${currentX}" y="0" width="${w}" height="22" fill="#000000"/>`;
-                      }
-                      currentX += w;
-                    }
-                    return rects;
-                  } catch (e) {
-                    return "";
-                  }
-                })()}
-              </svg>
-              <div class="side-code" style="font-family:monospace;font-weight:bold;color:#0074d4;font-size:10px;letter-spacing:0.05em;white-space:nowrap;">${currentTicketId}</div>
-              <div class="side-tag" style="font-size:9px;color:#6b6459;text-transform:uppercase;font-weight:600;white-space:nowrap;">Pass Ufficiale</div>
+            <div class="ticket-side" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px 10px;text-align:center;">
+              <div style="font-size:8.5px;color:#6b6459;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">QR CODE PASS</div>
+              ${qrDataUrl ? `<img src="${qrDataUrl}" width="80" height="80" style="background:#ffffff;padding:3px;border-radius:4px;border:1px solid #d8d2c4;" />` : ""}
+              <div class="side-code" style="font-family:monospace;font-weight:bold;color:#0074d4;font-size:11px;letter-spacing:0.05em;white-space:nowrap;">${currentTicketId}</div>
+              <div class="side-tag" style="font-size:9.5px;color:#6b6459;text-transform:uppercase;font-weight:600;white-space:nowrap;">Pass Ufficiale</div>
             </div>
           </div>
         </div>

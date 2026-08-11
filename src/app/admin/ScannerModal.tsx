@@ -2,21 +2,25 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./admin.module.css";
-import TicketBarcode from "@/components/TicketBarcode";
 import TicketPassCodes from "@/components/TicketPassCodes";
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 
 interface BookingRecord {
   id: string;
   ticketId: string;
+  stripeSessionId?: string;
   fullName: string;
   email: string;
   phone: string;
+  address?: string;
   martialSystem: string;
   experienceLevel: string;
   tierName: string;
+  amountPaid: number;
   paymentStatus: string;
+  paymentMethod: string;
   attended: boolean;
+  notes?: string;
 }
 
 interface ScannerModalProps {
@@ -35,14 +39,14 @@ const playBeep = (freq = 880, duration = 0.18) => {
     const gain = ctx.createGain();
     osc.type = "sine";
     osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.setValueAtTime(0.35, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + duration);
     osc.connect(gain);
     gain.connect(ctx.destination);
     osc.start();
     osc.stop(ctx.currentTime + duration);
   } catch (e) {
-    // Ignore audio autoplay policy restrictions
+    // Ignore audio policy notices
   }
 };
 
@@ -52,22 +56,79 @@ export default function ScannerModal({
   onAttendanceToggle,
 }: ScannerModalProps) {
   const [scannedCode, setScannedCode] = useState("");
-  const [activeCamera, setActiveCamera] = useState(false);
+  const [showManualInput, setShowManualInput] = useState(false);
   const [cameraError, setCameraError] = useState("");
-  const [isScanningActive, setIsScanningActive] = useState(false);
-  const [lastScannedResult, setLastScannedResult] = useState<{
-    status: "success" | "already" | "not_found";
-    message: string;
-    booking?: BookingRecord;
+  const [bubbleNotice, setBubbleNotice] = useState<{
+    type: "success" | "already" | "error";
+    text: string;
   } | null>(null);
+
+  // Fullscreen Customer Profile Modal State
+  const [scannedCustomer, setScannedCustomer] = useState<BookingRecord | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const lastProcessedTimeRef = useRef<number>(0);
 
-  // Auto-focus manual/laser input on mount
+  // Auto-start camera on mount
   useEffect(() => {
-    inputRef.current?.focus();
+    setCameraError("");
+
+    const html5Qrcode = new Html5Qrcode("reader", {
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.CODE_39,
+        Html5QrcodeSupportedFormats.QR_CODE,
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.UPC_A,
+      ],
+      verbose: false,
+    });
+
+    scannerRef.current = html5Qrcode;
+
+    const config = {
+      fps: 15,
+      qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
+        const minDim = Math.min(viewfinderWidth, viewfinderHeight);
+        const width = Math.min(Math.floor(minDim * 0.75), 320);
+        return { width, height: width };
+      },
+      aspectRatio: 1.0,
+    };
+
+    html5Qrcode
+      .start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+          const now = Date.now();
+          if (now - lastProcessedTimeRef.current > 1800) {
+            lastProcessedTimeRef.current = now;
+            if (decodedText) {
+              processTicketScan(decodedText);
+            }
+          }
+        },
+        () => {
+          // Frame decode notice
+        }
+      )
+      .catch((err) => {
+        console.warn("Camera start error:", err);
+        setCameraError(
+          "Impossibile accedere alla fotocamera. Verifica che i permessi siano concessi sul browser."
+        );
+      });
+
+    return () => {
+      if (scannerRef.current) {
+        if (scannerRef.current.isScanning) {
+          scannerRef.current.stop().catch((e) => console.warn("Error stopping scanner:", e));
+        }
+      }
+    };
   }, []);
 
   // Global listener for USB laser barcode scanners
@@ -76,7 +137,6 @@ export default function ScannerModal({
     let timeout: NodeJS.Timeout;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Hardware laser scanners send characters rapidly followed by Enter key
       if (e.key === "Enter") {
         if (buffer.length >= 3) {
           processTicketScan(buffer.trim());
@@ -98,297 +158,355 @@ export default function ScannerModal({
     };
   }, [bookings]);
 
-  // Universal Html5Qrcode Camera Scanner Engine with 1D Barcode Support
-  useEffect(() => {
-    if (activeCamera) {
-      setCameraError("");
-      setIsScanningActive(true);
-
-      // Support Code 128, Code 39, QR Code, EAN, UPC formats
-      const html5Qrcode = new Html5Qrcode("reader", {
-        formatsToSupport: [
-          Html5QrcodeSupportedFormats.CODE_128,
-          Html5QrcodeSupportedFormats.CODE_39,
-          Html5QrcodeSupportedFormats.QR_CODE,
-          Html5QrcodeSupportedFormats.EAN_13,
-          Html5QrcodeSupportedFormats.EAN_8,
-          Html5QrcodeSupportedFormats.UPC_A,
-          Html5QrcodeSupportedFormats.UPC_E,
-        ],
-        verbose: false,
-      });
-
-      scannerRef.current = html5Qrcode;
-
-      const config = {
-        fps: 15,
-        qrbox: { width: 300, height: 180 },
-        aspectRatio: 1.333333,
-      };
-
-      html5Qrcode
-        .start(
-          { facingMode: "environment" },
-          config,
-          (decodedText) => {
-            const now = Date.now();
-            // Throttle duplicate reads within 2 seconds
-            if (now - lastProcessedTimeRef.current > 2000) {
-              lastProcessedTimeRef.current = now;
-              if (decodedText) {
-                processTicketScan(decodedText);
-              }
-            }
-          },
-          () => {
-            // Frame decode notice
-          }
-        )
-        .catch((err) => {
-          console.warn("Camera start error:", err);
-          setCameraError(
-            "Impossibile accedere alla fotocamera. Assicurati che il browser abbia i permessi attivi e stia usando HTTPS o Localhost."
-          );
-          setActiveCamera(false);
-          setIsScanningActive(false);
-        });
-    }
-
-    return () => {
-      if (scannerRef.current) {
-        if (scannerRef.current.isScanning) {
-          scannerRef.current.stop().catch((e) => console.warn("Error stopping scanner:", e));
-        }
-      }
-      setIsScanningActive(false);
-    };
-  }, [activeCamera]);
+  const triggerBubbleNotice = (type: "success" | "already" | "error", text: string) => {
+    setBubbleNotice({ type, text });
+    setTimeout(() => {
+      setBubbleNotice(null);
+    }, 4500);
+  };
 
   const processTicketScan = async (code: string) => {
     const cleanCode = code.trim().toUpperCase();
     if (!cleanCode) return;
 
     setScannedCode(cleanCode);
+    const cleanCodeNoDash = cleanCode.replace(/[^A-Z0-9]/g, "");
 
-    // Find participant by Ticket ID or Email or Phone
-    const found = bookings.find(
-      (b) =>
+    // Find participant by Ticket ID, Stripe Session ID, Email, or Short Suffix Code
+    const found = bookings.find((b) => {
+      const bTicketNoDash = (b.ticketId || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+      const bStripeNoDash = (b.stripeSessionId || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+      const bEmail = (b.email || "").toLowerCase();
+
+      return (
         b.ticketId.toUpperCase() === cleanCode ||
-        b.email.toLowerCase() === cleanCode.toLowerCase() ||
-        b.ticketId.toUpperCase().replace("-", "") === cleanCode.replace("-", "")
-    );
+        bEmail === cleanCode.toLowerCase() ||
+        (b.stripeSessionId && b.stripeSessionId.toUpperCase() === cleanCode) ||
+        bTicketNoDash === cleanCodeNoDash ||
+        bTicketNoDash.endsWith(cleanCodeNoDash) ||
+        cleanCodeNoDash.endsWith(bTicketNoDash) ||
+        (bStripeNoDash && bStripeNoDash.endsWith(cleanCodeNoDash)) ||
+        (bStripeNoDash && cleanCodeNoDash.endsWith(bStripeNoDash.slice(-6)))
+      );
+    });
 
     if (!found) {
-      playBeep(350, 0.25); // Warning low beep
-      setLastScannedResult({
-        status: "not_found",
-        message: `❌ Nessun biglietto trovato per il codice: ${cleanCode}`,
-      });
+      playBeep(350, 0.25);
+      triggerBubbleNotice("error", `❌ Codice non trovato: ${cleanCode}`);
       return;
     }
 
-    if (found.attended) {
-      playBeep(520, 0.2); // Double notice beep
-      setLastScannedResult({
-        status: "already",
-        message: `⚠️ Partecipante GIÀ PRESENTE al seminario!`,
-        booking: found,
-      });
-    } else {
-      playBeep(880, 0.18); // Success high beep
-      // Mark as attended
+    // Automatically mark attendance as PRESENTE if not already attended
+    if (!found.attended) {
       await onAttendanceToggle(found.ticketId, false);
-      setLastScannedResult({
-        status: "success",
-        message: `✓ CHECK-IN CONFERMATO! Presenza registrata.`,
-        booking: { ...found, attended: true },
-      });
+      found.attended = true;
+      playBeep(880, 0.18);
+      triggerBubbleNotice("success", `✓ PRESENTE REGISTRATO: ${found.fullName}`);
+    } else {
+      playBeep(520, 0.2);
+      triggerBubbleNotice("already", `⚠️ Già registrato: ${found.fullName}`);
     }
+
+    // Open Fullscreen Customer Profile Modal
+    setScannedCustomer(found);
   };
 
-  const handleSubmitManual = (e: React.FormEvent) => {
+  const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     processTicketScan(scannedCode);
   };
 
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modalCard} onClick={(e) => e.stopPropagation()} style={{ maxWidth: "620px" }}>
-        <div className={styles.modalHeader}>
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        width: "100vw",
+        height: "100vh",
+        background: "#000000",
+        zIndex: 99999,
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      {/* ── Top Floating Glassmorphism Navigation Bar ── */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "16px 20px",
+          background: "linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#10b981", boxShadow: "0 0 10px #10b981" }} />
           <div>
-            <h3 className={styles.modalTitle}>SCANNER PASS & CHECK-IN IN SALA</h3>
-            <p style={{ fontSize: "12px", color: "#a1a1aa", marginTop: "2px" }}>
-              Fotocamera live con feedback sonoro, lettore laser USB o ricerca Ticket ID
-            </p>
+            <div style={{ fontSize: "14px", fontWeight: 800, color: "#ffffff", letterSpacing: "0.05em" }}>
+              SCANNER LIVE SALA
+            </div>
+            <div style={{ fontSize: "11px", color: "#a1a1aa" }}>Inquadra QR Code o Barcode</div>
           </div>
-          <button className={styles.closeModalBtn} onClick={onClose}>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <button
+            type="button"
+            className={styles.actionBtn}
+            style={{ padding: "8px 14px", fontSize: "12px", background: "rgba(39,39,42,0.8)" }}
+            onClick={() => {
+              setShowManualInput(!showManualInput);
+              setTimeout(() => inputRef.current?.focus(), 100);
+            }}
+          >
+            {showManualInput ? "NASTRI FOTOCAMERA" : "🔍 CERCA TICKET"}
+          </button>
+          <button
+            type="button"
+            className={styles.closeModalBtn}
+            style={{ width: "36px", height: "36px", fontSize: "16px", background: "rgba(255,255,255,0.15)", borderRadius: "50%" }}
+            onClick={onClose}
+          >
             ✕
           </button>
         </div>
+      </div>
 
-        {/* Camera Toggle & Scanner Viewport */}
-        <div style={{ marginBottom: "20px" }}>
-          {!activeCamera ? (
+      {/* ── TOP NOTIFICATION BUBBLE (FLOAT CENTER) ── */}
+      {bubbleNotice && (
+        <div
+          style={{
+            position: "absolute",
+            top: "80px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 200,
+            padding: "12px 22px",
+            borderRadius: "30px",
+            background:
+              bubbleNotice.type === "success"
+                ? "#0c271d"
+                : bubbleNotice.type === "already"
+                ? "#281d09"
+                : "#2b1111",
+            border: `1px solid ${
+              bubbleNotice.type === "success"
+                ? "#10b981"
+                : bubbleNotice.type === "already"
+                ? "#f59e0b"
+                : "#ef4444"
+            }`,
+            color:
+              bubbleNotice.type === "success"
+                ? "#34d399"
+                : bubbleNotice.type === "already"
+                ? "#fbbf24"
+                : "#f87171",
+            fontSize: "14px",
+            fontWeight: 800,
+            boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+            whiteSpace: "nowrap",
+            maxWidth: "90vw",
+            textAlign: "center",
+          }}
+        >
+          {bubbleNotice.text}
+        </div>
+      )}
+
+      {/* ── Manual Search / Laser Barcode Form Drawer ── */}
+      {showManualInput && (
+        <form
+          onSubmit={handleManualSubmit}
+          style={{
+            position: "absolute",
+            top: "75px",
+            left: "20px",
+            right: "20px",
+            zIndex: 150,
+            background: "#121215",
+            border: "1px solid #27272a",
+            padding: "14px",
+            borderRadius: "12px",
+            display: "flex",
+            gap: "10px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.8)",
+          }}
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            className={styles.formInput}
+            placeholder="Digita Ticket ID (es. UMS-4616), Nome o Email..."
+            value={scannedCode}
+            onChange={(e) => setScannedCode(e.target.value)}
+            style={{ fontSize: "15px", fontFamily: "monospace" }}
+          />
+          <button type="submit" className={`${styles.actionBtn} ${styles.actionBtnPrimary}`} style={{ whiteSpace: "nowrap" }}>
+            VERIFICA
+          </button>
+        </form>
+      )}
+
+      {/* ── FULLSCREEN LIVE CAMERA VIEWPORT ── */}
+      <div style={{ flex: 1, width: "100%", height: "100%", position: "relative" }}>
+        <div id="reader" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+
+        {cameraError && (
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              background: "#18181b",
+              border: "1px solid #ef4444",
+              padding: "24px",
+              borderRadius: "12px",
+              color: "#f87171",
+              maxWidth: "85vw",
+              textAlign: "center",
+            }}
+          >
+            <div style={{ fontSize: "16px", fontWeight: 700, marginBottom: "8px" }}>ERRORE FOTOCAMERA</div>
+            <div style={{ fontSize: "13px", color: "#a1a1aa" }}>{cameraError}</div>
+          </div>
+        )}
+      </div>
+
+      {/* ── FULLSCREEN CUSTOMER PROFILE SHEET MODAL (ON SCAN MATCH) ── */}
+      {scannedCustomer && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 100000,
+            background: "rgba(0,0,0,0.85)",
+            backdropFilter: "blur(8px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+          }}
+          onClick={() => setScannedCustomer(null)}
+        >
+          <div
+            style={{
+              width: "100%",
+              maxWidth: "520px",
+              background: "#121215",
+              border: "1px solid #27272a",
+              borderRadius: "16px",
+              padding: "24px",
+              boxShadow: "0 20px 50px rgba(0,0,0,0.9)",
+              position: "relative",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header Close */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <span className={styles.badgePaid} style={{ background: "#0c271d", color: "#34d399", border: "1px solid #10b981", fontSize: "12px", fontWeight: 800 }}>
+                ✓ REGISTRATO PRESENTE
+              </span>
+              <button
+                type="button"
+                className={styles.closeModalBtn}
+                onClick={() => setScannedCustomer(null)}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Customer Avatar & Primary Info */}
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
+              <div
+                style={{
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "50%",
+                  background: "#1f1f24",
+                  border: "2px solid #e1a10b",
+                  color: "#e1a10b",
+                  fontSize: "18px",
+                  fontWeight: 800,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {scannedCustomer.fullName.substring(0, 2).toUpperCase()}
+              </div>
+              <div>
+                <h2 style={{ fontSize: "22px", fontWeight: 800, color: "#ffffff", margin: 0 }}>
+                  {scannedCustomer.fullName}
+                </h2>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
+                  <span className={styles.ticketCode}>{scannedCustomer.ticketId}</span>
+                  <span style={{ fontSize: "12px", color: "#71717a" }}>• {scannedCustomer.email}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Details Box */}
+            <div style={{ background: "#18181c", borderRadius: "10px", padding: "16px", border: "1px solid #27272a", marginBottom: "20px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px", fontSize: "13px" }}>
+                <span style={{ color: "#a1a1aa" }}>Tipo Pass:</span>
+                <strong style={{ color: "#e1a10b" }}>{scannedCustomer.tierName} (€{scannedCustomer.amountPaid}.00)</strong>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px", fontSize: "13px" }}>
+                <span style={{ color: "#a1a1aa" }}>Disciplina:</span>
+                <strong style={{ color: "#ffffff" }}>{scannedCustomer.martialSystem} — {scannedCustomer.experienceLevel}</strong>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px" }}>
+                <span style={{ color: "#a1a1aa" }}>Stato Pagamento:</span>
+                <span className={styles.badgePaid}>{scannedCustomer.paymentStatus} ({scannedCustomer.paymentMethod})</span>
+              </div>
+
+              {scannedCustomer.phone && (
+                <div style={{ marginTop: "14px", paddingTop: "12px", borderTop: "1px solid #27272a", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "13px", color: "#a1a1aa" }}>Telefono: {scannedCustomer.phone}</span>
+                  <a
+                    href={`https://wa.me/${scannedCustomer.phone.replace(/[^0-9]/g, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.waBtn}
+                    style={{ padding: "4px 10px", fontSize: "12px" }}
+                  >
+                    💬 WhatsApp
+                  </a>
+                </div>
+              )}
+            </div>
+
+            {/* QR Code Pass Display */}
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
+              <TicketPassCodes ticketId={scannedCustomer.ticketId} darkTheme={true} qrSize={90} />
+            </div>
+
+            {/* Large Next Scan Action Button */}
             <button
               type="button"
-              className={styles.actionBtn}
+              className={`${styles.actionBtn} ${styles.actionBtnPrimary}`}
               style={{
                 width: "100%",
                 justifyContent: "center",
-                padding: "14px",
-                fontSize: "13px",
-                fontWeight: 700,
-                background: "#1c1913",
-                color: "#e1a10b",
-                border: "1px solid #3d321d",
-              }}
-              onClick={() => setActiveCamera(true)}
-            >
-              📷 ATTIVA FOTOCAMERA SCANNER LIVE (CODE 128 / BARCODE / QR)
-            </button>
-          ) : (
-            <div style={{ position: "relative", background: "#09090b", borderRadius: "8px", overflow: "hidden", border: "1px solid #27272a" }}>
-              {isScanningActive && (
-                <div style={{ position: "absolute", top: "10px", left: "10px", zIndex: 10, background: "rgba(12,39,29,0.85)", color: "#34d399", padding: "4px 10px", borderRadius: "4px", fontSize: "11px", fontWeight: 700, display: "flex", alignItems: "center", gap: "6px" }}>
-                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981" }} />
-                  FOTOCAMERA ATTIVA — Inquadra il codice
-                </div>
-              )}
-              <div id="reader" style={{ width: "100%", minHeight: "260px" }} />
-              <button
-                type="button"
-                className={styles.actionBtn}
-                style={{
-                  position: "absolute",
-                  top: "10px",
-                  right: "10px",
-                  padding: "6px 12px",
-                  fontSize: "11px",
-                  zIndex: 10,
-                  background: "#27272a",
-                }}
-                onClick={() => setActiveCamera(false)}
-              >
-                SPEGNI FOTOCAMERA
-              </button>
-            </div>
-          )}
-
-          {cameraError && (
-            <div style={{ marginTop: "10px", padding: "10px", borderRadius: "6px", background: "#2b1111", border: "1px solid #ef4444", color: "#f87171", fontSize: "12px" }}>
-              {cameraError}
-            </div>
-          )}
-        </div>
-
-        {/* Laser / Manual Code Input Form */}
-        <form onSubmit={handleSubmitManual} style={{ marginBottom: "20px" }}>
-          <label className={styles.formLabel}>TICKET ID O SCANNER LASER USB</label>
-          <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
-            <input
-              ref={inputRef}
-              type="text"
-              className={styles.formInput}
-              placeholder="Es. UMS-4616..."
-              value={scannedCode}
-              onChange={(e) => setScannedCode(e.target.value)}
-              style={{ fontSize: "15px", fontFamily: "monospace", letterSpacing: "0.08em" }}
-            />
-            <button type="submit" className={`${styles.actionBtn} ${styles.actionBtnPrimary}`}>
-              VERIFICA
-            </button>
-          </div>
-        </form>
-
-        {/* Quick Test Sample Ticket Buttons */}
-        {bookings.length > 0 && (
-          <div style={{ marginBottom: "20px", padding: "12px", background: "#121215", borderRadius: "6px", border: "1px solid #27272a" }}>
-            <div style={{ fontSize: "11px", color: "#a1a1aa", fontWeight: 700, textTransform: "uppercase", marginBottom: "8px" }}>
-              TEST RAPIDO — CLICCA UN ISCRITTO PER PROVARE IL CHECK-IN:
-            </div>
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-              {bookings.slice(0, 4).map((b) => (
-                <button
-                  key={b.ticketId}
-                  type="button"
-                  onClick={() => processTicketScan(b.ticketId)}
-                  className={styles.badgeTag}
-                  style={{
-                    cursor: "pointer",
-                    background: b.attended ? "#0c271d" : "#241d11",
-                    color: b.attended ? "#34d399" : "#e1a10b",
-                    border: `1px solid ${b.attended ? "#10b981" : "#e1a10b"}`,
-                  }}
-                >
-                  {b.fullName} ({b.ticketId}) {b.attended ? "✓" : ""}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Scan Result Feedback Card */}
-        {lastScannedResult && (
-          <div
-            style={{
-              padding: "18px",
-              borderRadius: "8px",
-              border: `1px solid ${
-                lastScannedResult.status === "success"
-                  ? "#10b981"
-                  : lastScannedResult.status === "already"
-                  ? "#f59e0b"
-                  : "#ef4444"
-              }`,
-              background:
-                lastScannedResult.status === "success"
-                  ? "#0c271d"
-                  : lastScannedResult.status === "already"
-                  ? "#281d09"
-                  : "#2b1111",
-              marginBottom: "20px",
-            }}
-          >
-            <div
-              style={{
+                padding: "16px",
                 fontSize: "15px",
                 fontWeight: 800,
-                color:
-                  lastScannedResult.status === "success"
-                    ? "#34d399"
-                    : lastScannedResult.status === "already"
-                    ? "#fbbf24"
-                    : "#f87171",
+                borderRadius: "10px",
               }}
+              onClick={() => setScannedCustomer(null)}
             >
-              {lastScannedResult.message}
-            </div>
-
-            {lastScannedResult.booking && (
-              <div style={{ marginTop: "12px", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "12px" }}>
-                <div style={{ fontSize: "16px", fontWeight: 800, color: "#ffffff" }}>
-                  {lastScannedResult.booking.fullName}
-                </div>
-                <div style={{ fontSize: "13px", color: "#a1a1aa", marginTop: "2px" }}>
-                  {lastScannedResult.booking.email} • {lastScannedResult.booking.phone}
-                </div>
-                <div style={{ fontSize: "12px", color: "#e1a10b", marginTop: "4px" }}>
-                  Pass: <strong>{lastScannedResult.booking.tierName}</strong> | Disciplina: {lastScannedResult.booking.martialSystem}
-                </div>
-                <div style={{ marginTop: "12px" }}>
-                  <TicketPassCodes ticketId={lastScannedResult.booking.ticketId} darkTheme={true} qrSize={85} barcodeWidth={170} barcodeHeight={38} />
-                </div>
-              </div>
-            )}
+              PROSSIMA SCANSIONE ➔
+            </button>
           </div>
-        )}
-
-        <div className={styles.modalFooter}>
-          <button className={styles.actionBtn} onClick={onClose}>
-            CHIUDI SCANNER
-          </button>
         </div>
-      </div>
+      )}
     </div>
   );
 }

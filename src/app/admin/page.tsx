@@ -1155,9 +1155,9 @@ export default function AdminCRMPage() {
                       </select>
                     </div>
 
-                    {/* Official Dual Pass Codes Preview */}
-                    <div style={{ marginTop: "14px" }}>
-                      <TicketPassCodes ticketId={selectedBooking.ticketId} darkTheme={true} qrSize={90} barcodeWidth={180} barcodeHeight={40} />
+                    {/* Official 2D QR Code Pass Preview */}
+                    <div style={{ marginTop: "14px", display: "flex", justifyContent: "center" }}>
+                      <TicketPassCodes ticketId={selectedBooking.ticketId} darkTheme={true} qrSize={110} />
                     </div>
                   </div>
                 )}

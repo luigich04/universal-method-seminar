@@ -1,5 +1,26 @@
 [
   {
+    "id": "rec-1786454039136-obrj8",
+    "ticketId": "UMS-9064",
+    "stripeSessionId": "cs_test_a1AP1RqdCo4Uexfeg0qf0fw2c4jZYaZIxFYyNWBP9UMpgiG1LX3rJHLvmI",
+    "fullName": "Luigi Chioccarelli",
+    "email": "luigichioccarelli04@gmail.com",
+    "phone": "+39 3923018431",
+    "address": "",
+    "martialSystem": "wing-tsun",
+    "experienceLevel": "advanced",
+    "tierKey": "full",
+    "tierName": "FULL SEMINAR (2 DAYS)",
+    "amountPaid": 140,
+    "currency": "EUR",
+    "paymentStatus": "PENDING",
+    "paymentMethod": "stripe",
+    "attended": false,
+    "notes": "",
+    "createdAt": "2026-08-11T13:13:59.136Z",
+    "updatedAt": "2026-08-11T13:13:59.136Z"
+  },
+  {
     "id": "rec-1786372352707-gq5h4",
     "ticketId": "UMS-1307",
     "stripeSessionId": "cs_test_a11BC5kYqRhMsN0VtA9gxhlHGPX00fBnERAmKSkgQKPPo4lGuQ6553RGjX",

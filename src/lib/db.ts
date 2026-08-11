@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import mysql from "mysql2/promise";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 export interface BookingRecord {
   id: string;
@@ -22,6 +23,27 @@ export interface BookingRecord {
   notes?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+// Supabase Configuration from Environment Variables
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+let supabaseClient: SupabaseClient | null = null;
+
+export function getSupabaseClient() {
+  if (!supabaseClient && supabaseUrl && supabaseKey) {
+    try {
+      supabaseClient = createClient(supabaseUrl, supabaseKey);
+    } catch (err) {
+      console.warn("Supabase Client Notice:", err);
+      supabaseClient = null;
+    }
+  }
+  return supabaseClient;
 }
 
 // MySQL Pool Configuration from environment variables
@@ -141,9 +163,41 @@ export function getAllBookingsLocal(): BookingRecord[] {
   }
 }
 
-// ── Async Database Operations (MySQL / phpMyAdmin + Fallback) ──
+// ── Async Database Operations (Supabase + MySQL + Local JSON Fallback) ──
 
 export async function getAllBookingsAsync(): Promise<BookingRecord[]> {
+  const sb = getSupabaseClient();
+  if (sb) {
+    try {
+      const { data, error } = await sb.from("bookings").select("*").order("created_at", { ascending: false });
+      if (!error && data && data.length > 0) {
+        return data.map((r: any) => ({
+          id: r.id,
+          ticketId: r.ticket_id,
+          stripeSessionId: r.stripe_session_id || "",
+          fullName: r.full_name,
+          email: r.email,
+          phone: r.phone || "",
+          address: r.address || "",
+          martialSystem: r.martial_system || "",
+          experienceLevel: r.experience_level || "",
+          tierKey: r.tier_key,
+          tierName: r.tier_name,
+          amountPaid: Number(r.amount_paid),
+          currency: r.currency || "EUR",
+          paymentStatus: r.payment_status || "PAID",
+          paymentMethod: r.payment_method || "stripe",
+          attended: Boolean(r.attended),
+          notes: r.notes || "",
+          createdAt: new Date(r.created_at).toISOString(),
+          updatedAt: new Date(r.updated_at).toISOString(),
+        }));
+      }
+    } catch (err) {
+      console.warn("Supabase query notice:", err);
+    }
+  }
+
   const p = getMySQLPool();
   if (p) {
     try {
@@ -184,6 +238,37 @@ export async function saveBookingAsync(
   const ticketId = record.ticketId || `UMS-${Math.floor(1000 + Math.random() * 9000)}`;
   const recordId = record.id || `rec-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
   const now = new Date().toISOString();
+
+  const sb = getSupabaseClient();
+  if (sb) {
+    try {
+      await sb.from("bookings").upsert(
+        {
+          id: recordId,
+          ticket_id: ticketId,
+          stripe_session_id: record.stripeSessionId || null,
+          full_name: record.fullName || "Partecipante",
+          email: record.email,
+          phone: record.phone || "",
+          address: record.address || "",
+          martial_system: record.martialSystem || "BJJ",
+          experience_level: record.experienceLevel || "Intermediate",
+          tier_key: record.tierKey || "full",
+          tier_name: record.tierName || "Full Seminar (2 Days)",
+          amount_paid: record.amountPaid !== undefined ? record.amountPaid : 140,
+          currency: record.currency || "EUR",
+          payment_status: record.paymentStatus || "PAID",
+          payment_method: record.paymentMethod || "stripe",
+          attended: record.attended ? true : false,
+          notes: record.notes || "",
+          updated_at: now,
+        },
+        { onConflict: "ticket_id" }
+      );
+    } catch (err) {
+      console.warn("Supabase upsert notice:", err);
+    }
+  }
 
   const p = getMySQLPool();
   if (p) {
@@ -256,6 +341,14 @@ export async function saveBookingAsync(
 }
 
 export async function updateBookingNotesAsync(ticketId: string, notes: string) {
+  const sb = getSupabaseClient();
+  if (sb) {
+    try {
+      await sb.from("bookings").update({ notes, updated_at: new Date().toISOString() }).eq("ticket_id", ticketId);
+    } catch (err) {
+      console.warn("Supabase update notes notice:", err);
+    }
+  }
   const p = getMySQLPool();
   if (p) {
     try {
@@ -274,6 +367,14 @@ export async function updateBookingNotesAsync(ticketId: string, notes: string) {
 }
 
 export async function toggleAttendanceAsync(ticketId: string, attended: boolean) {
+  const sb = getSupabaseClient();
+  if (sb) {
+    try {
+      await sb.from("bookings").update({ attended, updated_at: new Date().toISOString() }).eq("ticket_id", ticketId);
+    } catch (err) {
+      console.warn("Supabase update attendance notice:", err);
+    }
+  }
   const p = getMySQLPool();
   if (p) {
     try {
@@ -292,6 +393,14 @@ export async function toggleAttendanceAsync(ticketId: string, attended: boolean)
 }
 
 export async function deleteBookingAsync(ticketId: string) {
+  const sb = getSupabaseClient();
+  if (sb) {
+    try {
+      await sb.from("bookings").delete().eq("ticket_id", ticketId);
+    } catch (err) {
+      console.warn("Supabase delete notice:", err);
+    }
+  }
   const p = getMySQLPool();
   if (p) {
     try {

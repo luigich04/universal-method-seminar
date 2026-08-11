@@ -170,7 +170,8 @@ export async function getAllBookingsAsync(): Promise<BookingRecord[]> {
   if (sb) {
     try {
       const { data, error } = await sb.from("bookings").select("*").order("created_at", { ascending: false });
-      if (!error && data && data.length > 0) {
+      if (!error && data) {
+        console.log(`[SUPABASE ACTIVE] Fetched ${data.length} records from Supabase cloud database.`);
         return data.map((r: any) => ({
           id: r.id,
           ticketId: r.ticket_id,
@@ -192,6 +193,9 @@ export async function getAllBookingsAsync(): Promise<BookingRecord[]> {
           createdAt: new Date(r.created_at).toISOString(),
           updatedAt: new Date(r.updated_at).toISOString(),
         }));
+      }
+      if (error) {
+        console.warn("Supabase query notice:", error.message);
       }
     } catch (err) {
       console.warn("Supabase query notice:", err);

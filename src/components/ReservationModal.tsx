@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./ReservationModal.module.css";
 import { encodeCode128B } from "./TicketBarcode";
+import QRCode from "qrcode";
 
 export type TierType = "full" | "day1" | "day2";
 
@@ -497,6 +498,13 @@ export default function ReservationModal({
       });
     }
 
+    let qrDataUrl = "";
+    try {
+      qrDataUrl = await QRCode.toDataURL(currentTicketId, { margin: 1, width: 140 });
+    } catch (e) {
+      console.warn("Could not generate QR code data URL:", e);
+    }
+
     const ticketSheetHtml = `
       <div id="pdf-ticket-container" style="width: 780px; background: #fdfcf9; font-family: 'Work Sans', sans-serif; color: #1c1a17; padding: 34px 40px 26px; box-sizing: border-box;">
         <style>
@@ -532,7 +540,7 @@ export default function ReservationModal({
           .price-row { margin-top: 14px; display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #d8d2c4; padding-top: 10px; }
           .price-row .qty { font-size: 11px; color: #6b6459; }
           .price-row .price { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 20px; }
-          .ticket-side { flex: 0 0 115px; border-left: 1.5px dashed #1c1a17; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 8px; text-align: center; background: #faf8f3; }
+          .ticket-side { flex: 0 0 140px; border-left: 1.5px dashed #1c1a17; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 8px; text-align: center; background: #faf8f3; }
           .side-code { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: .05em; color: #0074d4; }
           .side-tag { font-family: 'Oswald', sans-serif; font-size: 11px; text-transform: uppercase; margin-top: 6px; color: #6b6459; }
           .section-title { margin-top: 26px; font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: #1c1a17; border-bottom: 1px solid #d8d2c4; padding-bottom: 6px; }
@@ -598,8 +606,8 @@ export default function ReservationModal({
             </div>
 
             <div class="ticket-side" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px 10px;text-align:center;">
-              <div class="side-code" style="font-family:monospace;font-weight:bold;color:#0074d4;font-size:11px;letter-spacing:0.05em;white-space:nowrap;">${currentTicketId}</div>
-              <svg width="95" height="32" viewBox="0 0 95 32" style="background:#ffffff;padding:2px;border-radius:3px;">
+              ${qrDataUrl ? `<img src="${qrDataUrl}" width="64" height="64" style="background:#ffffff;padding:2px;border-radius:3px;border:1px solid #d8d2c4;" />` : ""}
+              <svg width="95" height="26" viewBox="0 0 95 26" style="background:#ffffff;padding:2px;border-radius:3px;">
                 ${(() => {
                   try {
                     const pattern = encodeCode128B(currentTicketId);
@@ -610,7 +618,7 @@ export default function ReservationModal({
                     for (let i = 0; i < pattern.length; i++) {
                       const w = parseInt(pattern[i], 10) * unitW;
                       if (i % 2 === 0) {
-                        rects += `<rect x="${currentX}" y="0" width="${w}" height="28" fill="#000000"/>`;
+                        rects += `<rect x="${currentX}" y="0" width="${w}" height="22" fill="#000000"/>`;
                       }
                       currentX += w;
                     }
@@ -620,7 +628,8 @@ export default function ReservationModal({
                   }
                 })()}
               </svg>
-              <div class="side-tag" style="font-size:9.5px;color:#6b6459;text-transform:uppercase;font-weight:600;white-space:nowrap;">Pass Ufficiale</div>
+              <div class="side-code" style="font-family:monospace;font-weight:bold;color:#0074d4;font-size:10px;letter-spacing:0.05em;white-space:nowrap;">${currentTicketId}</div>
+              <div class="side-tag" style="font-size:9px;color:#6b6459;text-transform:uppercase;font-weight:600;white-space:nowrap;">Pass Ufficiale</div>
             </div>
           </div>
         </div>

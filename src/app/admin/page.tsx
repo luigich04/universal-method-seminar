@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import styles from "./admin.module.css";
 import TicketBarcode from "@/components/TicketBarcode";
+import TicketPassCodes from "@/components/TicketPassCodes";
 import ScannerModal from "./ScannerModal";
 
 // ── SVG Icon Components ──
@@ -1154,12 +1155,9 @@ export default function AdminCRMPage() {
                       </select>
                     </div>
 
-                    {/* Official Barcode Preview */}
-                    <div style={{ marginTop: "14px", display: "flex", flexDirection: "column", alignItems: "center", padding: "14px", background: "#141417", borderRadius: "6px", border: "1px solid #27272a" }}>
-                      <span style={{ fontSize: "10px", color: "#a1a1aa", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.08em", marginBottom: "8px" }}>
-                        CODICE A BARRE UFFICIALE (CODE 128)
-                      </span>
-                      <TicketBarcode ticketId={selectedBooking.ticketId} height={46} width={220} />
+                    {/* Official Dual Pass Codes Preview */}
+                    <div style={{ marginTop: "14px" }}>
+                      <TicketPassCodes ticketId={selectedBooking.ticketId} darkTheme={true} qrSize={90} barcodeWidth={180} barcodeHeight={40} />
                     </div>
                   </div>
                 )}

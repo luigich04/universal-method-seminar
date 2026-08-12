@@ -19,15 +19,16 @@
 
 @media (max-width: 768px) {
   .martialDivider {
-    height: 250px;
+    height: 220px;
+    margin-top: -2px;
     margin-bottom: -2px;
-    background: var(--bg-dark);
+    background: transparent;
   }
 
   .martialDivider img {
     width: 170%;
     max-width: none;
-    height: 252px;
+    height: 222px;
     object-fit: cover;
     object-position: left center;
     transform: translateX(-40px);

@@ -23,8 +23,8 @@
   background-image: url("/pattern-3.png");
   background-size: cover;
   background-position: center;
-  opacity: 0.15;
-  mix-blend-mode: overlay;
+  background-repeat: no-repeat;
+  opacity: 0.18;
   pointer-events: none;
   z-index: 1;
 }

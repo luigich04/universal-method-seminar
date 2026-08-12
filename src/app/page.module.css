@@ -5,6 +5,13 @@
   background: var(--bg-dark);
 }
 
+.programmeWrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-dark, #070707);
+}
+
 .seminarWrapper::before {
   content: "";
   position: absolute;

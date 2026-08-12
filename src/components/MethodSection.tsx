@@ -35,13 +35,13 @@ const PRINCIPLES = [
 ];
 
 export default function MethodSection() {
-  const sectionRef    = useRef<HTMLElement>(null);
-  const labelRef      = useRef<HTMLParagraphElement>(null);
-  const headlineRef   = useRef<HTMLHeadingElement>(null);
-  const introRef      = useRef<HTMLParagraphElement>(null);
-  const introSubRef   = useRef<HTMLParagraphElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const labelRef = useRef<HTMLParagraphElement>(null);
+  const headlineRef = useRef<HTMLHeadingElement>(null);
+  const introRef = useRef<HTMLParagraphElement>(null);
+  const introSubRef = useRef<HTMLParagraphElement>(null);
   const principlesRef = useRef<HTMLDivElement>(null);
-  const closingRef    = useRef<HTMLDivElement>(null);
+  const closingRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {

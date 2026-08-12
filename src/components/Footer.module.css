@@ -1,0 +1,479 @@
+/* ─────────────────────────────────────────
+   Footer — Editorial Martial Arts Footer
+───────────────────────────────────────── */
+
+.footerContainer {
+  position: relative;
+  width: 100%;
+  background: #ece0d2;
+  color: #f5f5f5;
+  overflow: hidden;
+  line-height: 1.4;
+  margin-top: -80px;
+  z-index: 5;
+}
+
+/* Brush Top Divider Transition */
+.brushTop {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: transparent;
+  line-height: 0;
+  margin-top: -2px;
+  margin-bottom: -6px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.brushTop img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  margin-bottom: -4px;
+}
+
+/* Main Content Wrapper (Overlaps into divisore-footer.png) */
+.footerContent {
+  position: relative;
+  width: 100%;
+  padding: 50px 80px 40px;
+  margin-top: -110px;
+  z-index: 3;
+  background: transparent;
+}
+
+/* Background Layer (#030302 + texture-footer.png overlay with top mask) */
+.footerContent::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #030302;
+  background-image: url("/texture-footer.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 90px, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 90px, #000 100%);
+}
+
+
+.inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══════════════════════════
+   TOP BAR (Brand Logo Only)
+═══════════════════════════ */
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 15px;
+  padding-bottom: 35px;
+}
+
+/* Brand */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.logo {
+  object-fit: contain;
+}
+
+.logoYim {
+  object-fit: contain;
+  width: 84px;
+  height: auto;
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+}
+
+.brandTitle {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.brandSub {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #e1a10b;
+  margin-top: 3px;
+}
+
+/* Vertical Line Separator */
+.vertDivider {
+  width: 1px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.18);
+  flex-shrink: 0;
+}
+
+/* Center Slogan */
+.slogan {
+  font-family: var(--font-title, serif);
+  font-size: clamp(14px, 1.4vw, 18px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+  line-height: 1.25;
+}
+
+/* Reserve CTA Button */
+.reserveBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: linear-gradient(135deg, #e1a10b 0%, #c88d08 100%);
+  color: #070707;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 16px 28px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(225, 161, 11, 0.2);
+  white-space: nowrap;
+}
+
+.reserveBtn:hover {
+  background: linear-gradient(135deg, #f3b216 0%, #d8990c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(225, 161, 11, 0.35);
+}
+
+.reserveBtnArrow {
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+
+.reserveBtn:hover .reserveBtnArrow {
+  transform: translateX(4px);
+}
+
+/* ═══════════════════════════
+   3 COLUMNS GRID
+═══════════════════════════ */
+.columnsGrid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 65px;
+  padding-top: 15px;
+  padding-bottom: 50px;
+  align-items: start;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  width: fit-content;
+  justify-self: center;
+}
+
+.colLeft {
+  justify-self: center;
+}
+
+.colCenter {
+  justify-self: center;
+}
+
+.colRight {
+  justify-self: center;
+}
+
+.colTitle {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #e1a10b;
+  margin-bottom: 22px;
+}
+
+/* Quick Links List */
+.linksList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.linkItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.linkItem:hover {
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+.linkArrow {
+  font-size: 12px;
+  color: #e1a10b;
+}
+
+/* Info List (Event Details & Contact) */
+.infoList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.contactLink {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contactLink:hover {
+  color: #ffffff;
+}
+
+/* Emblem Watermark */
+.watermarkWrapper {
+  position: absolute;
+  right: 0;
+  bottom: 30px;
+  pointer-events: none;
+  opacity: 0.08;
+  z-index: 0;
+}
+
+.watermark {
+  width: 140px;
+  height: auto;
+  filter: grayscale(100%) brightness(200%);
+}
+
+/* ═══════════════════════════
+   BOTTOM BAR
+═══════════════════════════ */
+.bottomBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+}
+
+.bottomCenter {
+  text-align: center;
+}
+
+.meedaCredit {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.14em;
+  margin-top: 4px;
+}
+
+.meedaLink {
+  color: #e1a10b;
+  text-decoration: none;
+  font-weight: 700;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.meedaLink:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* ═══════════════════════════
+   RESPONSIVE
+═══════════════════════════ */
+@media (max-width: 1024px) {
+  .footerContent {
+    padding: 35px 48px 30px;
+    margin-top: -130px;
+  }
+
+  .columnsGrid {
+    gap: 36px;
+  }
+
+  .slogan {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .footerContainer {
+    margin-top: -40px;
+  }
+
+  .brushTop {
+    transform: translateY(8px);
+    margin-bottom: -10px;
+  }
+
+  .footerContent {
+    padding: 25px 20px 40px;
+    margin-top: -35px;
+  }
+
+  .footerContent::before {
+    background-image: none;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 40px, #000 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 40px, #000 100%);
+  }
+
+  .topBar {
+    justify-content: center;
+    align-items: center;
+    padding-top: 20px;
+    padding-bottom: 30px;
+  }
+
+  .brand {
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: nowrap;
+  }
+
+  .logoYim {
+    width: 54px;
+    height: auto;
+  }
+
+  .logo {
+    width: 42px;
+    height: auto;
+  }
+
+  .brandTitle {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+  }
+
+  .brandSub {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+  }
+
+  .columnsGrid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding-top: 10px;
+    padding-bottom: 40px;
+  }
+
+  .column,
+  .colLeft,
+  .colCenter,
+  .colRight {
+    justify-self: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .colTitle {
+    margin-bottom: 16px;
+  }
+
+  .linkItem,
+  .infoItem {
+    justify-content: center;
+  }
+
+  .bottomBar {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 20px;
+    padding-top: 28px;
+  }
+
+  .bottomLeft,
+  .bottomRight,
+  .webContactItem {
+    display: none !important;
+  }
+
+  .bottomCenter {
+    justify-self: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .meedaCredit {
+    margin-top: 6px;
+    font-size: 10px;
+  }
+
+  .watermarkWrapper {
+    opacity: 0.03;
+    right: 50%;
+    transform: translateX(50%);
+    bottom: 100px;
+  }
+}

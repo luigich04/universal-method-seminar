@@ -1,0 +1,222 @@
+/* ─────────────────────────────────────────
+   FaqSection — Oriental Parchment FAQ Layout
+───────────────────────────────────────── */
+
+.section {
+  position: relative;
+  background: transparent;
+  width: 100%;
+  padding: 15px 80px 80px;
+  margin-top: -190px;
+  z-index: 2;
+  height: auto;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  scroll-margin-top: 80px;
+  overflow: hidden;
+}
+
+/* Background Layer with Top Gradient Mask (fades background ONLY, leaving text 100% sharp) */
+.section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #ece0d2;
+  z-index: 0;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 30px, rgba(0, 0, 0, 0.85) 65px, #000 100px);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 30px, rgba(0, 0, 0, 0.85) 65px, #000 100px);
+}
+
+/* Inner 2-column Container */
+.inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 40% 60%;
+  gap: 80px;
+  align-items: center;
+}
+
+/* Left Column */
+.leftCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent-orange, #e1a10b);
+  margin-bottom: 14px;
+}
+
+.headline {
+  font-family: var(--font-title), 'Bebas Neue', sans-serif;
+  font-size: clamp(44px, 4.2vw, 66px);
+  font-weight: 800;
+  line-height: 0.94;
+  letter-spacing: -0.01em;
+  color: #0e0e0e;
+  margin: 0 0 16px;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  font-family: var(--font-sans);
+  font-size: clamp(14px, 1.1vw, 17px);
+  font-weight: 400;
+  line-height: 1.55;
+  color: rgba(14, 14, 14, 0.75);
+  margin: 0;
+  max-width: 380px;
+}
+
+/* Right Column — Accordion */
+.rightCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.accordionList {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(14, 14, 14, 0.12);
+}
+
+.accordionItem {
+  border-bottom: 1px solid rgba(14, 14, 14, 0.12);
+  transition: background 0.35s ease;
+}
+
+.accordionItem.open {
+  background: rgba(225, 161, 11, 0.04);
+}
+
+.questionBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  gap: 16px;
+  transition: padding 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+}
+
+.compressed .questionBtn {
+  padding: 7px 6px;
+  opacity: 0.60;
+}
+
+.compressed:hover .questionBtn {
+  opacity: 1;
+}
+
+.questionBtn:hover {
+  opacity: 0.85;
+}
+
+.questionText {
+  font-family: var(--font-sans);
+  font-size: clamp(15.5px, 1.25vw, 18.5px);
+  font-weight: 600;
+  color: #121212;
+  line-height: 1.35;
+}
+
+.plusIcon {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--accent-orange, #e1a10b);
+  line-height: 1;
+  flex-shrink: 0;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.open .plusIcon {
+  transform: rotate(45deg);
+}
+
+/* ── Hardware Accelerated CSS Grid Height Animation ── */
+.answerBoxWrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.open .answerBoxWrapper {
+  grid-template-rows: 1fr;
+}
+
+.answerBoxInner {
+  overflow: hidden;
+}
+
+.answerText {
+  font-family: var(--font-sans);
+  font-size: clamp(14px, 1.1vw, 16px);
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(18, 18, 18, 0.78);
+  margin: 0;
+  padding: 0 6px 16px 6px;
+  max-width: 680px;
+  opacity: 0;
+  transition: opacity 0.25s ease 0.1s;
+}
+
+.open .answerText {
+  opacity: 1;
+}
+
+/* ═══════════════════════════
+   RESPONSIVE
+═══════════════════════════ */
+@media (max-width: 1024px) {
+  .section {
+    padding: 15px 48px 65px;
+    margin-top: -130px;
+  }
+
+  .inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .leftCol {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 10px 24px 55px;
+    margin-top: -70px;
+  }
+
+  .section::before {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 20px, rgba(0, 0, 0, 0.85) 40px, #000 60px);
+    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 20px, rgba(0, 0, 0, 0.85) 40px, #000 60px);
+  }
+
+  .questionBtn {
+    padding: 16px 4px;
+  }
+
+  .questionText {
+    font-size: 16px;
+  }
+}

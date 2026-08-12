@@ -1,0 +1,46 @@
+.faqDivider {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-dark, #070707);
+  line-height: 0;
+  margin-top: -80px;
+  margin-bottom: -2px;
+}
+
+.faqDivider::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/pattern-3.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.faqDivider img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .faqDivider {
+    height: auto;
+    margin-top: -30px;
+    margin-bottom: -2px;
+    background: var(--bg-dark, #070707);
+  }
+
+  .faqDivider img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+}

@@ -6,11 +6,15 @@ import Loader from "@/components/Loader";
 import CustomCursor from "@/components/CustomCursor";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import SponsorsMarquee from "@/components/SponsorsMarquee";
 import SeminarSection from "@/components/SeminarSection";
 import MartialDivider from "@/components/MartialDivider";
 import MethodSection from "@/components/MethodSection";
 import BrushDivider from "@/components/BrushDivider";
 import ProgrammeSection from "@/components/ProgrammeSection";
+import FaqDivider from "@/components/FaqDivider";
+import FaqSection from "@/components/FaqSection";
+import Footer from "@/components/Footer";
 import ReservationModal from "@/components/ReservationModal";
 import styles from "./page.module.css";
 
@@ -28,65 +32,48 @@ function MainContent() {
 
   // Auto-open modal on Step 5 (Confirmation Ticket Pass "YOU ARE IN.") & confirm payment with Stripe
   useEffect(() => {
-    const isSuccess = searchParams.get("success") === "true";
-    const sid = searchParams.get("session_id");
-    if (isSuccess && sid) {
-      setModalStep(5);
-      setIsReservationOpen(true);
+    const successParam = searchParams.get("success");
+    const sessionParam = searchParams.get("session_id");
 
-      // Call backend API to confirm payment with Stripe & update DB status to PAID
-      fetch(`/api/stripe-confirm?session_id=${encodeURIComponent(sid)}`)
+    if (successParam === "true" && sessionParam) {
+      // Fetch ticketId assigned in session metadata
+      fetch(`/api/stripe-confirm?session_id=${sessionParam}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.ticketId) {
             setSessionId(data.ticketId);
           } else {
-            setSessionId(`UMS-${sid.slice(-6).toUpperCase()}`);
+            setSessionId(sessionParam);
           }
-          if (data.customerName && data.customerName !== "Partecipante") {
-            try { localStorage.setItem("ums_name", data.customerName); } catch (e) {}
-          }
-          if (data.customerEmail) {
-            try { localStorage.setItem("ums_email", data.customerEmail); } catch (e) {}
-          }
+          setModalStep(5);
+          setIsReservationOpen(true);
         })
         .catch((err) => {
-          console.warn("Stripe confirm notice:", err);
-          setSessionId(`UMS-${sid.slice(-6).toUpperCase()}`);
+          console.error("Error confirming stripe session:", err);
+          setSessionId(sessionParam);
+          setModalStep(5);
+          setIsReservationOpen(true);
         });
-    } else if (isSuccess) {
-      setModalStep(5);
-      setSessionId(`UMS-${Math.floor(1000 + Math.random() * 9000)}`);
-      setIsReservationOpen(true);
     }
   }, [searchParams]);
 
-  // Global listener for smooth anchor scrolling & modal triggering
+  // Smooth scroll handler for anchor links
   useEffect(() => {
     const handleAnchorClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      const anchor = target.closest<HTMLAnchorElement>('a[href^="#"]');
-      if (!anchor) return;
-
-      const href = anchor.getAttribute("href");
-      if (!href) return;
-
-      if (href === "#reserve") {
-        e.preventDefault();
-        openReservation();
-        return;
-      }
-
-      if (href.startsWith("#") && href.length > 1) {
-        const id = href.substring(1);
-        const element = document.getElementById(id);
-        if (element) {
+      const anchor = target.closest("a");
+      if (anchor) {
+        const href = anchor.getAttribute("href");
+        if (href === "#reserve") {
           e.preventDefault();
-          const lenis = (window as any).lenis;
-          if (lenis && typeof lenis.scrollTo === "function") {
-            lenis.scrollTo(element, { offset: -80, duration: 1.2 });
-          } else {
-            element.scrollIntoView({ behavior: "smooth" });
+          openReservation();
+          return;
+        }
+        if (href && href.startsWith("#") && href.length > 1) {
+          e.preventDefault();
+          const elem = document.querySelector(href);
+          if (elem) {
+            elem.scrollIntoView({ behavior: "smooth" });
           }
         }
       }
@@ -102,13 +89,19 @@ function MainContent() {
       <CustomCursor />
       <Navbar onOpenReservation={openReservation} />
       <Hero onOpenReservation={openReservation} />
+      <SponsorsMarquee />
       <div className={styles.seminarWrapper}>
         <SeminarSection />
         <MartialDivider />
       </div>
       <MethodSection />
       <BrushDivider />
-      <ProgrammeSection onOpenReservation={openReservation} />
+      <div className={styles.programmeWrapper}>
+        <ProgrammeSection onOpenReservation={openReservation} />
+        <FaqDivider />
+      </div>
+      <FaqSection onOpenReservation={openReservation} />
+      <Footer onOpenReservation={openReservation} />
       <ReservationModal
         isOpen={isReservationOpen}
         onClose={closeReservation}

@@ -8,6 +8,24 @@
   margin-bottom: -2px;
 }
 
+.brushDivider::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/pattern-3.png");
+  background-size: cover;
+  background-position: bottom center;
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 2;
+  -webkit-mask-image: url("/pennellata_marziale.png");
+  mask-image: url("/pennellata_marziale.png");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
 .brushDivider img {
   display: block;
   width: 100%;

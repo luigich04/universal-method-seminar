@@ -1,0 +1,115 @@
+/* ─────────────────────────────────────────
+   SponsorsMarquee — Minimal Logo Scrolling Ticker
+───────────────────────────────────────── */
+
+.marqueeSection {
+  position: relative;
+  width: 100%;
+  background: var(--bg-dark, #070707);
+  padding: 22px 0;
+  overflow: hidden;
+  border: none;
+  z-index: 10;
+}
+
+.marqueeContainer {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+/* Gradient Fade Masks on Edges */
+.fadeLeft {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100px;
+  background: linear-gradient(to right, var(--bg-dark, #070707) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.fadeRight {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 100px;
+  background: linear-gradient(to left, var(--bg-dark, #070707) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Animated Track */
+.marqueeTrack {
+  display: flex;
+  align-items: center;
+  gap: 70px;
+  width: max-content;
+  animation: marqueeScroll 20s linear infinite;
+  will-change: transform;
+}
+
+.marqueeSection:hover .marqueeTrack {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Minimal Logo Item with Opacity */
+.logoItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.55;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  padding: 0 10px;
+  cursor: default;
+}
+
+.logoItem:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.sponsorLogo {
+  object-fit: contain;
+  filter: grayscale(20%);
+  transition: filter 0.3s ease;
+}
+
+.logoItem:hover .sponsorLogo {
+  filter: grayscale(0%);
+}
+
+/* ═══════════════════════════
+   RESPONSIVE
+═══════════════════════════ */
+@media (max-width: 768px) {
+  .marqueeSection {
+    padding: 16px 0;
+  }
+
+  .marqueeTrack {
+    gap: 45px;
+  }
+
+  .fadeLeft,
+  .fadeRight {
+    width: 50px;
+  }
+
+  .logoItem {
+    opacity: 0.6;
+  }
+}

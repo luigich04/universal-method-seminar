@@ -9,30 +9,10 @@
   padding: clamp(35px, 4vw, 65px) 80px 140px;
   height: auto;
   scroll-margin-top: 80px;
-  overflow: hidden;
-}
-
-/* Pattern-3 texture overlay */
-.section::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url("/pattern-3.png");
-  background-size: cover;
-  background-position: center;
-  opacity: 0.12;
-  mix-blend-mode: overlay;
-  pointer-events: none;
-  z-index: 0;
 }
 
 /* ── Inner container ── */
 .inner {
-  position: relative;
-  z-index: 1;
   max-width: 1280px;
   margin: 0 auto;
 }
@@ -176,7 +156,7 @@
   font-size: clamp(36px, 4vw, 62px);
   font-weight: 700;
   line-height: 1;
-  color: rgba(7, 7, 7, 0.80);
+  color: #070707;
   margin: 0;
   letter-spacing: -0.01em;
 }
@@ -240,6 +220,10 @@
 }
 
 @media (max-width: 768px) {
+  .section {
+    margin-top: -25px;
+  }
+
   .headline {
     font-size: clamp(46px, 10vw, 64px);
   }
@@ -256,5 +240,6 @@
 @media (max-width: 640px) {
   .section {
     padding: 40px 24px 80px;
+    margin-top: -25px;
   }
 }

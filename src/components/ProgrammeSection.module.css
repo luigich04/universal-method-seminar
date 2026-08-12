@@ -12,7 +12,7 @@
   overflow: hidden;
 }
 
-/* Cement texture overlay */
+/* Pattern-3 texture overlay */
 .section::before {
   content: "";
   position: absolute;
@@ -20,10 +20,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url("/texure-cemento.png");
+  background-image: url("/pattern-3.png");
   background-size: cover;
   background-position: center;
-  opacity: 0.04;
+  opacity: 0.15;
   mix-blend-mode: overlay;
   pointer-events: none;
   z-index: 1;

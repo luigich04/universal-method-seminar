@@ -9,10 +9,30 @@
   padding: clamp(35px, 4vw, 65px) 80px 140px;
   height: auto;
   scroll-margin-top: 80px;
+  overflow: hidden;
+}
+
+/* Pattern-3 texture overlay */
+.section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("/pattern-3.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* ── Inner container ── */
 .inner {
+  position: relative;
+  z-index: 1;
   max-width: 1280px;
   margin: 0 auto;
 }

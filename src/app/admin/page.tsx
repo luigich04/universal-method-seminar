@@ -376,18 +376,35 @@ export default function AdminCRMPage() {
 
   const handleDeleteBooking = async (ticketId: string) => {
     if (!confirm(`Sicuro di voler eliminare la prenotazione ${ticketId}?`)) return;
+
+    // Immediately remove row from local state and close drawer if selected
+    setBookings((prev) => prev.filter((b) => b.ticketId !== ticketId && b.id !== ticketId));
+    if (selectedBooking?.ticketId === ticketId || selectedBooking?.id === ticketId) {
+      setSelectedBooking(null);
+    }
+
     try {
-      const res = await fetch(`/api/admin/bookings?ticketId=${ticketId}`, {
+      const res = await fetch(`/api/admin/bookings?ticketId=${encodeURIComponent(ticketId)}`, {
         method: "DELETE",
       });
+
       if (res.ok) {
-        setBookings((prev) => prev.filter((b) => b.ticketId !== ticketId));
-        if (selectedBooking?.ticketId === ticketId) setSelectedBooking(null);
-        fetchBookings();
         addToast(`Prenotazione ${ticketId} eliminata`);
+        // Refresh background stats without re-adding the deleted row
+        const statsRes = await fetch("/api/admin/bookings");
+        const data = await statsRes.json();
+        if (data.bookings) {
+          setBookings(data.bookings.filter((b: any) => b.ticketId !== ticketId && b.id !== ticketId));
+          setStats(data.stats);
+        }
+      } else {
+        addToast("Errore durante l'eliminazione", "warning");
+        fetchBookings();
       }
     } catch (err) {
       console.error("Error deleting booking:", err);
+      addToast("Errore durante l'eliminazione", "warning");
+      fetchBookings();
     }
   };
 

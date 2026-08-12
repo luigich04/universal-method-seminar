@@ -427,7 +427,15 @@ export async function deleteBookingAsync(ticketId: string) {
   const sb = getSupabaseClient();
   if (sb) {
     try {
-      await sb.from("bookings").delete().eq("ticket_id", ticketId);
+      const { error } = await sb
+        .from("bookings")
+        .delete()
+        .or(`ticket_id.eq.${ticketId},id.eq.${ticketId}`);
+      if (error) {
+        console.warn("Supabase delete notice:", error.message);
+      } else {
+        console.log(`[SUPABASE] Deleted booking ${ticketId} from Supabase Cloud DB.`);
+      }
     } catch (err) {
       console.warn("Supabase delete notice:", err);
     }
@@ -435,15 +443,15 @@ export async function deleteBookingAsync(ticketId: string) {
   const p = getMySQLPool();
   if (p) {
     try {
-      await p.execute("DELETE FROM bookings WHERE ticket_id = ?", [ticketId]);
+      await p.execute("DELETE FROM bookings WHERE ticket_id = ? OR id = ?", [ticketId, ticketId]);
     } catch (err) {
       console.warn("MySQL delete notice:", err);
     }
   }
   ensureDirectoryExists();
   let bookings = getAllBookingsLocal();
-  bookings = bookings.filter((b) => b.ticketId !== ticketId);
-  fs.writeFileSync(DB_FILE, JSON.stringify(bookings, null, 2), "utf-8");
+  bookings = bookings.filter((b) => b.ticketId !== ticketId && b.id !== ticketId);
+  safeWriteJSON(DB_FILE, bookings);
 }
 
 export async function getCRMStatsAsync() {

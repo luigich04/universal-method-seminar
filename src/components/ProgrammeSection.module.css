@@ -102,7 +102,7 @@
   grid-template-columns: 90px minmax(360px, 1fr) 190px;
   gap: 40px;
   padding: 52px 0 70px;
-  border-top: 1px solid rgba(225, 220, 212, 0.18);
+  border-top: none;
   align-items: start;
 }
 
@@ -199,7 +199,7 @@
 .cta {
   margin-top: 60px;
   padding-top: clamp(60px, 6vw, 90px);
-  border-top: 1px solid rgba(225, 220, 212, 0.18);
+  border-top: none;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -320,7 +320,7 @@
 
 @media (max-width: 640px) {
   .section {
-    padding: 70px 24px;
+    padding: 70px 24px 130px;
   }
 
   .headline {

@@ -19,12 +19,31 @@ interface NavbarProps {
 export default function Navbar({ onOpenReservation }: NavbarProps) {
   const [pastHero, setPastHero] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLightSection, setIsLightSection] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setPastHero(window.scrollY > window.innerHeight * 0.85);
+
+      // Detect if navbar (top 75px) overlaps light background sections (Universal Method, FAQ, Footer)
+      const navY = 75;
+      const lightSectionIds = ["universal-method", "faq", "footer"];
+
+      for (const id of lightSectionIds) {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= navY && rect.bottom >= 20) {
+            setIsLightSection(true);
+            return;
+          }
+        }
+      }
+      setIsLightSection(false);
     };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -62,7 +81,7 @@ export default function Navbar({ onOpenReservation }: NavbarProps) {
   };
 
   return (
-    <header className={`${styles.header} ${pastHero ? styles.headerScrolled : ""} ${menuOpen ? styles.headerMenuOpen : ""}`}>
+    <header className={`${styles.header} ${pastHero ? styles.headerPastHero : ""} ${isLightSection ? styles.headerLight : ""} ${menuOpen ? styles.headerMenuOpen : ""}`}>
       <nav className={styles.nav} aria-label="Main navigation">
 
         {/* LEFT — Brand */}

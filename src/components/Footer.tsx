@@ -29,7 +29,7 @@ export default function Footer({ onOpenReservation }: FooterProps) {
   };
 
   return (
-    <footer className={styles.footerContainer}>
+    <footer className={styles.footerContainer} id="footer">
       {/* Dark Brush Divider Transition from FaqSection */}
       <div className={styles.brushTop} aria-hidden="true">
         <img src="/divisore-footer.png" alt="" />
@@ -111,7 +111,7 @@ export default function Footer({ onOpenReservation }: FooterProps) {
                     <line x1="8" x2="8" y1="2" y2="6" />
                     <line x1="3" x2="21" y1="10" y2="10" />
                   </svg>
-                  <span>7-8 SEPTEMBER</span>
+                  <span>7 AND 8 SEPTEMBER</span>
                 </li>
               </ul>
             </div>

@@ -1,46 +1,334 @@
-.faqDivider {
+/* ─────────────────────────────────────────
+   FaqDivider — 2.5D Cinematic Stage
+───────────────────────────────────────── */
+
+.faqDividerStage {
   position: relative;
   width: 100%;
-  overflow: hidden;
-  background: var(--bg-dark, #070707);
+  overflow: visible;
   line-height: 0;
-  margin-top: -80px;
+  margin-top: -180px;
   margin-bottom: -2px;
-}
-
-.faqDivider::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("/pattern-3.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.18;
   pointer-events: none;
-  z-index: 0;
+  z-index: 5;
+  background: transparent;
 }
 
-.faqDivider img {
+/* Main Temple Image */
+.templeImg {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: block;
   width: 100%;
   height: auto;
   object-fit: cover;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+/* Lantern Outer Wrapper (Anchored to roof eaves) */
+.lanternWrapper {
+  position: absolute;
+  z-index: 3;
+  width: 2.4%;
+  height: auto;
+  pointer-events: none;
+  transform-origin: 50% 0%;
+  will-change: transform;
+}
+
+/* Top Left Lantern Position */
+.lanternTopLeft {
+  top: 10.8%;
+  left: 29.8%;
+  width: 2.4%;
+}
+
+/* Top Right Lantern Position */
+.lanternTopRight {
+  top: 11.6%;
+  left: 67.7%;
+  width: 2.4%;
+}
+
+/* Bottom Left Lantern Position */
+.lanternBottomLeft {
+  top: 27.2%;
+  left: 12.8%;
+  width: 3.2%;
+}
+
+/* Bottom Right Lantern Position */
+.lanternBottomRight {
+  top: 27.4%;
+  left: 84.3%;
+  width: 3.2%;
+}
+
+/* Lantern Image */
+.lanternImg {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+}
+
+/* Amber Subliminal Glow (nascosto temporaneamente) */
+.amberGlow {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 180%;
+  height: 180%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(235, 165, 15, 0.45) 0%,
+    rgba(225, 130, 10, 0.18) 45%,
+    transparent 75%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  animation: amberFlicker 5.2s ease-in-out infinite alternate;
+  will-change: opacity, transform;
+}
+
+.lanternRight .amberGlow {
+  animation-delay: 1.8s;
+  animation-duration: 6s;
+}
+
+@keyframes amberFlicker {
+  0% {
+    opacity: 0.55;
+    transform: translate(-50%, -50%) scale(0.95);
+    filter: drop-shadow(0 0 6px rgba(225, 161, 11, 0.25));
+  }
+  50% {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1.05);
+    filter: drop-shadow(0 0 12px rgba(225, 161, 11, 0.45));
+  }
+  100% {
+    opacity: 0.65;
+    transform: translate(-50%, -50%) scale(0.98);
+    filter: drop-shadow(0 0 8px rgba(225, 161, 11, 0.3));
+  }
+}
+
+/* ═══════════════════════════
+   RESPONSIVE
+═══════════════════════════ */
+@media (max-width: 1024px) {
+  .faqDividerStage {
+    margin-top: -120px;
+  }
+
+  .lanternWrapper {
+    width: 2.8%;
+  }
+
+  .lanternLeft {
+    top: 10.8%;
+    left: 29.8%;
+  }
+
+  .lanternRight {
+    top: 10.8%;
+    left: 67.9%;
+  }
 }
 
 @media (max-width: 768px) {
-  .faqDivider {
-    height: auto;
-    margin-top: -30px;
-    margin-bottom: -2px;
-    background: var(--bg-dark, #070707);
+  .faqDividerStage {
+    margin-top: 0px;
+    overflow: visible;
   }
 
-  .faqDivider img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
+  .templeImg {
+    transform: scale(1.5);
+    transform-origin: center center;
   }
+
+  .lanternWrapper {
+    width: 3.6%;
+    min-width: 14px;
+  }
+
+  .lanternLeft {
+    top: 10.8%;
+    left: 19.7%;
+  }
+
+  .lanternRight {
+    top: 10.8%;
+    left: 76.8%;
+  }
+}
+
+/* ═══════════════════════════
+   DEBUG CONTROLS OVERLAY
+═══════════════════════════ */
+.debugToggleBar {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  pointer-events: auto;
+}
+
+.debugToggleBtn {
+  background: var(--accent-orange, #e1a10b);
+  color: #070707;
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.debugToggleBtn:hover {
+  transform: translateY(-2px);
+  background: #f5b014;
+}
+
+.debugPanel {
+  position: fixed;
+  bottom: 76px;
+  right: 24px;
+  width: 440px;
+  max-width: calc(100vw - 48px);
+  max-height: 75vh;
+  overflow-y: auto;
+  background: rgba(15, 15, 15, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(225, 161, 11, 0.4);
+  border-radius: 12px;
+  padding: 20px;
+  z-index: 10000;
+  pointer-events: auto;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.85);
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #e5e5e5;
+}
+
+.debugHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+
+.debugTitle {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-orange, #e1a10b);
+  letter-spacing: 0.05em;
+}
+
+.debugCloseBtn {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.debugCloseBtn:hover {
+  color: #fff;
+}
+
+.debugGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.debugCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.debugCardTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  font-family: monospace;
+}
+
+.debugCard label {
+  font-size: 11px;
+  color: #aaa;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.debugCard label span {
+  font-family: monospace;
+  color: var(--accent-orange, #e1a10b);
+  font-weight: 700;
+}
+
+.debugCard input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent-orange, #e1a10b);
+  cursor: pointer;
+}
+
+.cssOutputContainer {
+  margin-top: 16px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.15);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cssSnippet {
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 11px;
+  color: #7dd3fc;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.copyBtn {
+  background: #1c1917;
+  color: var(--accent-orange, #e1a10b);
+  border: 1px solid var(--accent-orange, #e1a10b);
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copyBtn:hover {
+  background: var(--accent-orange, #e1a10b);
+  color: #000;
 }

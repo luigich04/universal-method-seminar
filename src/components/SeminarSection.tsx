@@ -10,21 +10,21 @@ gsap.registerPlugin(ScrollTrigger);
 const BLOCKS = [
   {
     num: "01",
-    label: "STRUCTURE",
-    lead: "Develop a more connected body structure.",
-    body: "Learn how to organise the body efficiently, transmit force more clearly and reduce unnecessary tension.",
+    label: "SCALING AND ADAPTABILITY",
+    lead: "Progress without losing structure.",
+    body: "Through the principle of scaling, every exercise adapts to the practitioner's level. Objectives can be added, reduced, or modified while the core method remains stable as difficulty evolves with the individual.",
   },
   {
     num: "02",
-    label: "TIMING",
-    lead: "Recognise the right moment to act.",
-    body: "Refine your sense of timing, distance and pressure to respond with greater clarity and less hesitation.",
+    label: "CERTAINTY AND THE SCARF MODEL",
+    lead: "Free up mental resources.",
+    body: "Rooted in the SCARF model, the Certainty factor plays a central role: knowing what to do, why, and by what criteria reduces uncertainty, fosters focus, and accelerates motor learning.",
   },
   {
     num: "03",
-    label: "ADAPTABILITY",
-    lead: "Apply principles, not fixed patterns.",
-    body: "Explore how to receive, redirect and return force while maintaining balance, intent and functional control.",
+    label: "SPECIFICITY AND AUTONOMY",
+    lead: "Eliminate ambiguity in movement.",
+    body: "Every instruction is specific and every exercise has a precise function. By removing ambiguity, practitioners cultivate autonomy, confidence, and focus on the quality of their evolution.",
   },
 ];
 
@@ -96,15 +96,12 @@ export default function SeminarSection() {
             id="seminar-headline"
             className={styles.headline}
           >
-            Train principles that remain<br />
-            effective under pressure.
+            One single method.<br />
+            More clarity, more freedom.
           </h2>
           <p ref={introRef} className={styles.intro}>
-            The Universal Method Seminar is an intensive training experience
-            focused on structure, timing, adaptability and the intelligent
-            management of force. Rather than collecting isolated techniques,
-            participants will explore principles that can be tested, understood
-            and integrated into their own martial arts practice.
+            In martial arts practice, what slows growth is not always a lack of commitment, but often an excess of variables: conflicting instructions, subjective interpretations, and poorly defined goals can create dispersion and make learning less effective.<br /><br />
+            Chris Collins presents his new Universal Method in Italy, a single, clear, and shared reference system designed to make training more coherent, understandable, and sustainable over time.
           </p>
         </div>
 
@@ -123,9 +120,9 @@ export default function SeminarSection() {
         {/* ── CLOSING — below the columns, right-aligned ── */}
         <div ref={closingRef} className={styles.closing}>
           <div className={styles.closingText}>
-            <p className={styles.closingLine1}>Not a collection of techniques.</p>
+            <p className={styles.closingLine1}>Not simply new techniques.</p>
             <p className={styles.closingLine2}>
-              A deeper understanding of movement, pressure and application<span className={styles.closingDot}>.</span>
+              A clearer way to understand, organize, and develop them into solid, lasting skills<span className={styles.closingDot}>.</span>
             </p>
           </div>
           <a

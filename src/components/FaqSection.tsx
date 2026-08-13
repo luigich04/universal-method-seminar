@@ -17,7 +17,7 @@ const faqData: FaqItem[] = [
   {
     question: "Do I need previous martial arts experience?",
     answer:
-      "All skill levels are welcome — from complete beginners to advanced practitioners and black belts. Chris Collins adapts instruction to help everyone progress at their personal level.",
+      "All skill levels are welcome, from complete beginners to advanced practitioners and black belts. Chris Collins adapts instruction to help everyone progress at their personal level.",
   },
   {
     question: "What should I bring?",
@@ -27,7 +27,7 @@ const faqData: FaqItem[] = [
   {
     question: "Where will the seminar take place?",
     answer:
-      "The seminar takes place in Bracciano (Rome), Italy on September 7–8, 2026. Exact venue address, directions, and local accommodation recommendations will be sent to your email upon reservation.",
+      "The seminar takes place in Bracciano (Rome), Italy on September 7 and 8, 2026. Exact venue address, directions, and local accommodation recommendations will be sent to your email upon reservation.",
   },
   {
     question: "How do I reserve my place?",
@@ -42,7 +42,7 @@ const faqData: FaqItem[] = [
   {
     question: "Can I attend only one day?",
     answer:
-      "Yes! We offer single-day passes for Day 1 (Perceive & Intercept) or Day 2 (Adapt & Overcome), as well as the discounted Full 2-Day Bundle.",
+      "Yes! We offer single-day passes for Day 1 (Perceive and Intercept) or Day 2 (Adapt and Overcome), as well as the discounted Full 2-Day Bundle.",
   },
 ];
 

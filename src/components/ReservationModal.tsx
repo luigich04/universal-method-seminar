@@ -22,7 +22,7 @@ const TIERS: TierInfo[] = [
     id: "full",
     name: "FULL SEMINAR (2 DAYS)",
     price: 140,
-    subtitle: "Sabato 7 & Domenica 8 Settembre 2026 (6 Ore Totali)",
+    subtitle: "Sabato 7 e Domenica 8 Settembre 2026 (6 Ore Totali)",
     tag: "CONSIGLIATO",
     isFeatured: true,
     features: [
@@ -590,7 +590,7 @@ export default function ReservationModal({
               <div class="event-title">${passName}</div>
               <div class="event-sub">Bracciano (RM), Italia · 7–8 settembre 2026</div>
 
-              <div class="notice">Check-in richiesto — Istruttore principale: Chris Collins (BJJ Black Belt & Wing Tsun Sifu)</div>
+              <div class="notice">Check-in richiesto — Istruttore principale: Chris Collins (BJJ Black Belt and Wing Tsun Sifu)</div>
 
               <div class="info-grid">
                 <div class="cell"><div class="label">Date</div><div class="value">7 & 8 Sept 2026<small>Orari su pass</small></div></div>
@@ -770,7 +770,7 @@ export default function ReservationModal({
                       )}
                     </div>
 
-                    <p className={styles.locationText}>Bracciano, Italia · 7–8 settembre 2026</p>
+                    <p className={styles.locationText}>Bracciano, Italia · 7 e 8 settembre 2026</p>
                   </div>
                   <div className={styles.divider} />
                 </>
@@ -975,7 +975,7 @@ export default function ReservationModal({
                         {/* Final Order Confirmation Card */}
                         <div className={styles.finalCheckoutCard}>
                           <div className={styles.finalCheckoutTitle}>{currentTierObj.name}</div>
-                          <div className={styles.finalCheckoutSub}>7–8 settembre 2026 · Bracciano</div>
+                          <div className={styles.finalCheckoutSub}>7 e 8 settembre 2026 · Bracciano</div>
                           <div className={styles.finalCheckoutTotalRow}>
                             <span>Totale:</span>
                             <strong>{currentTierObj.price},00 €</strong>
@@ -1014,8 +1014,8 @@ export default function ReservationModal({
                           <span className={styles.tValBlueClean}>{currentTierObj.name}</span>
                         </div>
                         <div>
-                          <span className={styles.tLabelClean}>DATE & ORARI</span>
-                          <span className={styles.tValClean}>7 & 8 Settembre 2026</span>
+                          <span className={styles.tLabelClean}>DATE E ORARI</span>
+                          <span className={styles.tValClean}>7 e 8 Settembre 2026</span>
                         </div>
                         <div>
                           <span className={styles.tLabelClean}>LUOGO</span>
@@ -1223,7 +1223,7 @@ export default function ReservationModal({
 
                 <div className={styles.supportChannelCard}>
                   <div className={styles.channelHeader}>
-                    <strong>💬 WhatsApp & Assistenza Telefonica</strong>
+                    <strong>💬 WhatsApp e Assistenza Telefonica</strong>
                     <span className={styles.channelBadge}>LUN - SAB: 09:00 - 19:00</span>
                   </div>
                   <p className={styles.channelDesc}>Per assistenza immediata e supporto diretto sulla posizione della palestra ed orari.</p>

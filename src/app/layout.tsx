@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Universal Method Seminar 2026 — Chris Collins",
-    description: "Official 2-Day Martial Arts Seminar in Bracciano (Rome), Italy — 7–8 September 2026.",
+    description: "Official 2-Day Martial Arts Seminar in Bracciano (Rome), Italy — 7 and 8 September 2026.",
     images: ["/logo.png"],
   },
 };

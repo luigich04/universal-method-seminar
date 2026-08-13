@@ -8,7 +8,7 @@
   width: 100%;
   padding: 15px 80px 80px;
   margin-top: -190px;
-  z-index: 2;
+  z-index: 20;
   height: auto;
   min-height: 100%;
   display: flex;
@@ -21,18 +21,21 @@
 .section::before {
   content: "";
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: -4px;
+  right: -4px;
   background: #ece0d2;
   z-index: 0;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 30px, rgba(0, 0, 0, 0.85) 65px, #000 100px);
-  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 30px, rgba(0, 0, 0, 0.85) 65px, #000 100px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 20px, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 20px, #000 100%);
 }
 
 /* Inner 2-column Container */
 .inner {
   position: relative;
-  z-index: 2;
+  z-index: 30;
   max-width: 1280px;
   margin: 0 auto;
   width: 100%;
@@ -187,8 +190,8 @@
 ═══════════════════════════ */
 @media (max-width: 1024px) {
   .section {
-    padding: 15px 48px 65px;
-    margin-top: -130px;
+    padding: 25px 48px 65px;
+    margin-top: 10px;
   }
 
   .inner {
@@ -203,13 +206,13 @@
 
 @media (max-width: 640px) {
   .section {
-    padding: 10px 24px 55px;
-    margin-top: -70px;
+    padding: 15px 24px 55px;
+    margin-top: -30px;
   }
 
   .section::before {
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 20px, rgba(0, 0, 0, 0.85) 40px, #000 60px);
-    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 20px, rgba(0, 0, 0, 0.85) 40px, #000 60px);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 20px, #000 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 20px, #000 100%);
   }
 
   .questionBtn {

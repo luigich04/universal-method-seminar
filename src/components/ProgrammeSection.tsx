@@ -11,7 +11,7 @@ const DAYS = [
   {
     num: "01",
     date: "7 SEPTEMBER",
-    time: "17:00 — 20:00",
+    time: "17:00 TO 20:00",
     title: "PERCEIVE",
     tagline: "Read what is actually happening.",
     body: "Recognise structure, intention, distance and pressure before committing to a response.",
@@ -20,7 +20,7 @@ const DAYS = [
   {
     num: "02",
     date: "8 SEPTEMBER",
-    time: "10:00 — 13:00",
+    time: "10:00 TO 13:00",
     title: "ADAPT AND RESPOND",
     tagline: "Move according to reality.",
     body: "Develop timing, angles and mechanics that remain functional across different systems and combat ranges.",

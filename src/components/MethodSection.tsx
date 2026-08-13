@@ -10,27 +10,27 @@ gsap.registerPlugin(ScrollTrigger);
 const PRINCIPLES = [
   {
     num: "01",
-    keyword: "PERCEIVE",
-    lead: "Read what is actually happening.",
-    body: "Recognise structure, intention, distance and pressure before committing to a response.",
+    keyword: "SCALING",
+    lead: "Adapt to level and needs.",
+    body: "Objectives can be added, reduced, or progressively modified without losing the path's structure. The method stays stable while difficulty evolves alongside the person.",
   },
   {
     num: "02",
-    keyword: "ADAPT",
-    lead: "Respond to the situation, not to a pattern.",
-    body: "Allow the action to emerge from the conditions in front of you rather than forcing a predetermined solution.",
+    keyword: "CERTAINTY",
+    lead: "SCARF Model principle.",
+    body: "Knowing what to do, why to do it, and by what criteria reduces uncertainty, frees mental resources, and consolidates motor learning more effectively.",
   },
   {
     num: "03",
-    keyword: "CONNECT",
-    lead: "Organise the body as one functional unit.",
-    body: "Integrate movement, balance and force without relying on isolated muscular effort.",
+    keyword: "SPECIFICITY",
+    lead: "Precise function for every exercise.",
+    body: "Every instruction is specific and targeted. By reducing the margin of ambiguity, practitioners focus on the quality of movement and authentic growth.",
   },
   {
     num: "04",
-    keyword: "APPLY",
-    lead: "Turn understanding into functional action.",
-    body: "Test principles through contact, resistance and progressively less predictable situations.",
+    keyword: "AUTONOMY",
+    lead: "Build solid, lasting competence.",
+    body: "Rather than imitating isolated techniques, practitioners gain a unified framework to organize and develop skills with confidence and self-reliance.",
   },
 ];
 
@@ -108,17 +108,13 @@ export default function MethodSection() {
               id="method-headline"
               className={styles.headline}
             >
-              A system for<br />understanding.<br />Not imitating.
+              A single structure.<br />Adaptable to any<br />level and context.
             </h2>
             <p ref={introRef} className={styles.intro}>
-              The Universal Method is not a fixed style or a collection of
-              predetermined responses. It is a framework for understanding how
-              structure, movement, timing and force interact in constantly
-              changing situations.
+              Chris Collins&apos; Universal Method does not simply propose new techniques, but a clearer way to understand, organize, and develop them.
             </p>
             <p ref={introSubRef} className={styles.introSub}>
-              The objective is not to reproduce an ideal movement, but to
-              recognise the principles that make effective action possible.
+              A single, shared reference system that reduces ambiguity and creates a coherent framework for long-term progress.
             </p>
           </div>
 
@@ -146,9 +142,9 @@ export default function MethodSection() {
         {/* ── CLOSING — below the grid ── */}
         <div ref={closingRef} className={styles.closing}>
           <div className={styles.closingStatement}>
-            <p className={styles.closingLine}>Different situations.</p>
+            <p className={styles.closingLine}>Fewer variables.</p>
             <p className={styles.closingLine}>
-              One underlying logic<span className={styles.closingDot}>.</span>
+              More clarity, more freedom<span className={styles.closingDot}>.</span>
             </p>
           </div>
           <a

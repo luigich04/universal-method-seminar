@@ -236,7 +236,7 @@ export default function Hero({ onOpenReservation }: HeroProps) {
           {/* Event info */}
           <div className={styles.mobileEventInfo}>
             <div className={styles.mobileEventTitle}>UNIVERSAL METHOD SEMINAR</div>
-            <div className={styles.mobileEventDetails}>BRACCIANO · 7–8 SEPT</div>
+            <div className={styles.mobileEventDetails}>BRACCIANO · 7, 8 SEPT</div>
           </div>
         </div>
 

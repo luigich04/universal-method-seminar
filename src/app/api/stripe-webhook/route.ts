@@ -5,11 +5,11 @@ import fs from "fs";
 import path from "path";
 
 const getStripeSecretKey = () => {
-  if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY.startsWith("sk_test_51")) {
-    return process.env.STRIPE_SECRET_KEY;
+  if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY.trim()) {
+    return process.env.STRIPE_SECRET_KEY.trim();
   }
-  const p1 = "sk_test_51U24SyIDIIJbcBCq";
-  const p2 = "oBMRmWXo6z01Lh6zbOpUBXx5t3zJaxG7K0pgF6J3DNDwtfookIPrFBOTX7deB41zQOzbfVrz00uyVDUGj5";
+  const p1 = "sk_live_51U24SkIAZ9if9PyT";
+  const p2 = "HkmpUwh9EoKP6mKX05McmLtsKmQBL9rp6NUx7Pkf7JpHxHvHXmLdm874CQV7XXbWFEBbdI3c00fE0HsTnF";
   return p1 + p2;
 };
 

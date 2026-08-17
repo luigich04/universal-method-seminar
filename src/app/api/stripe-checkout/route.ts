@@ -52,7 +52,6 @@ export async function POST(request: Request) {
     const generatedTicketId = `UMS-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
-      payment_method_types: ["card", "klarna", "paypal"],
       line_items: [
         {
           price_data: {

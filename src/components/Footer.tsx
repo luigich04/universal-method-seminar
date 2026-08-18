@@ -1,20 +1,23 @@
 "use client";
 
 import Image from "next/image";
+import { useLanguage } from "@/context/LanguageContext";
 import styles from "./Footer.module.css";
 
 interface FooterProps {
   onOpenReservation?: () => void;
 }
 
-const QUICK_LINKS = [
-  { label: "THE SEMINAR", id: "the-seminar" },
-  { label: "UNIVERSAL METHOD", id: "universal-method" },
-  { label: "PROGRAMME", id: "programme" },
-  { label: "FAQ", id: "faq" },
-];
-
 export default function Footer({ onOpenReservation }: FooterProps) {
+  const { dict } = useLanguage();
+
+  const quickLinks = [
+    { label: dict.nav.seminar.toUpperCase(), id: "the-seminar" },
+    { label: dict.nav.method.toUpperCase(), id: "universal-method" },
+    { label: dict.nav.programme.toUpperCase(), id: "programme" },
+    { label: dict.nav.faq.toUpperCase(), id: "faq" },
+  ];
+
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
     const element = document.getElementById(id);
@@ -37,7 +40,6 @@ export default function Footer({ onOpenReservation }: FooterProps) {
 
       <div className={styles.footerContent}>
         <div className={styles.inner}>
-          
           {/* TOP BAR - SEMINAR LOGOS & TITLE */}
           <div className={styles.topBar}>
             <div className={styles.brand}>
@@ -66,12 +68,11 @@ export default function Footer({ onOpenReservation }: FooterProps) {
 
           {/* 3 COLUMNS GRID */}
           <div className={styles.columnsGrid}>
-            
             {/* COLUMN 1: QUICK LINKS */}
             <div className={`${styles.column} ${styles.colLeft}`}>
-              <h4 className={styles.colTitle}>QUICK LINKS</h4>
+              <h4 className={styles.colTitle}>{dict.footer.quickLinks}</h4>
               <ul className={styles.linksList}>
-                {QUICK_LINKS.map(({ label, id }) => (
+                {quickLinks.map(({ label, id }) => (
                   <li key={id}>
                     <a
                       href={`#${id}`}
@@ -88,7 +89,7 @@ export default function Footer({ onOpenReservation }: FooterProps) {
 
             {/* COLUMN 2: EVENT DETAILS */}
             <div className={`${styles.column} ${styles.colCenter}`}>
-              <h4 className={styles.colTitle}>EVENT DETAILS</h4>
+              <h4 className={styles.colTitle}>{dict.footer.eventDetails}</h4>
               <ul className={styles.infoList}>
                 <li className={styles.infoItem}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e1a10b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -101,7 +102,7 @@ export default function Footer({ onOpenReservation }: FooterProps) {
                     rel="noopener noreferrer"
                     className={styles.contactLink}
                   >
-                    BRACCIANO, ITALY
+                    {dict.footer.location}
                   </a>
                 </li>
                 <li className={styles.infoItem}>
@@ -111,14 +112,14 @@ export default function Footer({ onOpenReservation }: FooterProps) {
                     <line x1="8" x2="8" y1="2" y2="6" />
                     <line x1="3" x2="21" y1="10" y2="10" />
                   </svg>
-                  <span>7 AND 8 SEPTEMBER</span>
+                  <span>{dict.footer.date}</span>
                 </li>
               </ul>
             </div>
 
             {/* COLUMN 3: CONTACT */}
             <div className={`${styles.column} ${styles.colRight}`}>
-              <h4 className={styles.colTitle}>CONTACT</h4>
+              <h4 className={styles.colTitle}>{dict.footer.contact}</h4>
               <ul className={styles.infoList}>
                 <li className={styles.infoItem}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e1a10b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -147,7 +148,7 @@ export default function Footer({ onOpenReservation }: FooterProps) {
                     href="mailto:yimwckf@gmail.it?subject=Richiesta%20Sponsor&body=Ciao,%20vorrei%20partecipare%20come%20sponsor%20al%20vostro%20progetto,%20sono:"
                     className={styles.sponsorContactLink}
                   >
-                    DIVENTA SPONSOR
+                    {dict.footer.becomeSponsor}
                   </a>
                 </li>
               </ul>
@@ -162,13 +163,12 @@ export default function Footer({ onOpenReservation }: FooterProps) {
           {/* BOTTOM BAR */}
           <div className={styles.bottomBar}>
             <div className={styles.bottomCenter}>
-              <div>© 2025 UNIVERSAL METHOD SEMINAR. ALL RIGHTS RESERVED.</div>
+              <div>© 2025 UNIVERSAL METHOD SEMINAR. {dict.footer.rights}</div>
               <div className={styles.meedaCredit}>
-                WEBSITE BY <a href="https://meeda.it" target="_blank" rel="noopener noreferrer" className={styles.meedaLink}>MEEDA STUDIO</a>
+                {dict.footer.websiteBy} <a href="https://meeda.it" target="_blank" rel="noopener noreferrer" className={styles.meedaLink}>MEEDA STUDIO</a>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </footer>

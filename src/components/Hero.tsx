@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
+import { useLanguage } from "@/context/LanguageContext";
 import styles from "./Hero.module.css";
 
 const OUTFITS = [
@@ -17,6 +18,7 @@ interface HeroProps {
 }
 
 export default function Hero({ onOpenReservation }: HeroProps) {
+  const { dict } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
   const heroRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +58,6 @@ export default function Hero({ onOpenReservation }: HeroProps) {
       const x = (e.clientX / innerWidth - 0.5) * 2;
       const y = (e.clientY / innerHeight - 0.5) * 2;
 
-      // Movimento GSAP ultra-morbido solo su titolo e info bar (il soggetto rimane fermo)
       xName(-x * 32);
       yName(-y * 20);
 
@@ -183,27 +184,27 @@ export default function Hero({ onOpenReservation }: HeroProps) {
       <div className={styles.heroInfoBar}>
         {/* Left Info: Location & Country */}
         <div className={styles.infoLeft}>
-          <h3 className={styles.locCity}>BRACCIANO</h3>
-          <div className={styles.locCountry}>I T A L Y</div>
+          <h3 className={styles.locCity}>{dict.hero.city}</h3>
+          <div className={styles.locCountry}>{dict.hero.country}</div>
           <div className={styles.flagLine} aria-hidden="true" />
         </div>
 
         {/* Right Info: Schedule & Program */}
         <div className={styles.infoRight}>
           <div className={styles.dayCol}>
-            <span className={styles.dayNumber}>7TH</span>
-            <span className={styles.dayMonth}>SEPTEMBER</span>
-            <span className={styles.dayHours}>FROM 5:00 PM</span>
-            <span className={styles.dayHours}>TO 8:00 PM</span>
+            <span className={styles.dayNumber}>{dict.hero.day1.number}</span>
+            <span className={styles.dayMonth}>{dict.hero.day1.month}</span>
+            <span className={styles.dayHours}>{dict.hero.day1.timeFrom}</span>
+            <span className={styles.dayHours}>{dict.hero.day1.timeTo}</span>
           </div>
 
           <span className={styles.dayDot} aria-hidden="true" />
 
           <div className={styles.dayCol}>
-            <span className={styles.dayNumber}>8TH</span>
-            <span className={styles.dayMonth}>SEPTEMBER</span>
-            <span className={styles.dayHours}>FROM 10:00 AM</span>
-            <span className={styles.dayHours}>TO 1:00 PM</span>
+            <span className={styles.dayNumber}>{dict.hero.day2.number}</span>
+            <span className={styles.dayMonth}>{dict.hero.day2.month}</span>
+            <span className={styles.dayHours}>{dict.hero.day2.timeFrom}</span>
+            <span className={styles.dayHours}>{dict.hero.day2.timeTo}</span>
           </div>
         </div>
       </div>
@@ -214,17 +215,16 @@ export default function Hero({ onOpenReservation }: HeroProps) {
       {/* ── CTA Hero — posizionato in basso ── */}
       <div className={styles.heroCta}>
         <a href="#reserve" onClick={handleCtaClick} className={styles.heroCtaBtn} id="hero-reserve-place">
-          RESERVE YOUR PLACE
+          {dict.hero.reservePlace}
         </a>
         <p className={styles.heroCtaMicro}>
-          <span className={styles.heroCtaMicroGold}>Limited places</span>
-          {" · Open to martial arts practitioners"}
+          <span className={styles.heroCtaMicroGold}>{dict.hero.limitedPlaces}</span>
+          {` · ${dict.hero.audienceNote}`}
         </p>
       </div>
 
       {/* ── Mobile-only Text Block ── */}
       <div className={styles.mobileTextBlock}>
-
         {/* Group name and event info for tighter spacing */}
         <div className={styles.mobileHeaderGroup}>
           {/* Name block */}
@@ -235,22 +235,21 @@ export default function Hero({ onOpenReservation }: HeroProps) {
 
           {/* Event info */}
           <div className={styles.mobileEventInfo}>
-            <div className={styles.mobileEventTitle}>UNIVERSAL METHOD SEMINAR</div>
-            <div className={styles.mobileEventDetails}>BRACCIANO · 7, 8 SEPT</div>
+            <div className={styles.mobileEventTitle}>{dict.hero.mobileTitle}</div>
+            <div className={styles.mobileEventDetails}>{dict.hero.mobileDetails}</div>
           </div>
         </div>
 
         {/* CTA */}
         <div className={styles.mobileCta}>
           <a href="#reserve" onClick={handleCtaClick} className={styles.mobileCtaBtn} id="mobile-hero-reserve-place">
-            RESERVE YOUR PLACE
+            {dict.hero.reservePlace}
           </a>
           <p className={styles.mobileCtaMicro}>
-            <span className={styles.mobileCtaMicroGold}>LIMITED PLACES</span>
-            <span className={styles.audienceNote}>Open to martial arts practitioners</span>
+            <span className={styles.mobileCtaMicroGold}>{dict.hero.limitedPlaces.toUpperCase()}</span>
+            <span className={styles.audienceNote}>{dict.hero.audienceNote}</span>
           </p>
         </div>
-
       </div>
     </section>
   );

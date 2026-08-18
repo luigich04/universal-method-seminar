@@ -105,6 +105,55 @@
   justify-self: end;
 }
 
+.langToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-left: 8px;
+}
+
+.headerLight .langToggle {
+  background: transparent;
+  border: none;
+}
+
+.langBtn {
+  background: none;
+  border: 1.5px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.langBtn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.langBtnActive {
+  opacity: 1;
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 6px rgba(225, 161, 11, 0.4);
+}
+
+.headerLight .langBtnActive {
+  border-color: #8b6300;
+  box-shadow: 0 0 6px rgba(139, 99, 0, 0.3);
+}
+
+.langDivider {
+  display: none;
+}
+
+
 .link {
   font-family: var(--font-sans);
   font-size: 13px;

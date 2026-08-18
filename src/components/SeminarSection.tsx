@@ -3,32 +3,13 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLanguage } from "@/context/LanguageContext";
 import styles from "./SeminarSection.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const BLOCKS = [
-  {
-    num: "01",
-    label: "SCALING AND ADAPTABILITY",
-    lead: "Progress without losing structure.",
-    body: "Through the principle of scaling, every exercise adapts to the practitioner's level. Objectives can be added, reduced, or modified while the core method remains stable as difficulty evolves with the individual.",
-  },
-  {
-    num: "02",
-    label: "CERTAINTY AND THE SCARF MODEL",
-    lead: "Free up mental resources.",
-    body: "Rooted in the SCARF model, the Certainty factor plays a central role: knowing what to do, why, and by what criteria reduces uncertainty, fosters focus, and accelerates motor learning.",
-  },
-  {
-    num: "03",
-    label: "SPECIFICITY AND AUTONOMY",
-    lead: "Eliminate ambiguity in movement.",
-    body: "Every instruction is specific and every exercise has a precise function. By removing ambiguity, practitioners cultivate autonomy, confidence, and focus on the quality of their evolution.",
-  },
-];
-
 export default function SeminarSection() {
+  const { dict } = useLanguage();
   const sectionRef  = useRef<HTMLElement>(null);
   const eyebrowRef  = useRef<HTMLParagraphElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
@@ -90,24 +71,24 @@ export default function SeminarSection() {
 
         {/* ── TOP ── */}
         <div className={styles.top}>
-          <p ref={eyebrowRef} className={styles.eyebrow}>The Seminar</p>
+          <p ref={eyebrowRef} className={styles.eyebrow}>{dict.seminar.eyebrow}</p>
           <h2
             ref={headlineRef}
             id="seminar-headline"
             className={styles.headline}
           >
-            One single method.<br />
-            More clarity, more freedom.
+            {dict.seminar.headlineLine1}<br />
+            {dict.seminar.headlineLine2}
           </h2>
           <p ref={introRef} className={styles.intro}>
-            In martial arts practice, what slows growth is not always a lack of commitment, but often an excess of variables: conflicting instructions, subjective interpretations, and poorly defined goals can create dispersion and make learning less effective.<br /><br />
-            Chris Collins presents his new Universal Method in Italy, a single, clear, and shared reference system designed to make training more coherent, understandable, and sustainable over time.
+            {dict.seminar.introPart1}<br /><br />
+            {dict.seminar.introPart2}
           </p>
         </div>
 
         {/* ── BLOCKS — 3 columns, single row ── */}
         <div ref={blocksRef} className={styles.blocksRow}>
-          {BLOCKS.map((block) => (
+          {dict.seminar.blocks.map((block: { num: string; label: string; lead: string; body: string }) => (
             <div key={block.num} data-block className={styles.block}>
               <p className={styles.blockNum}>{block.num}</p>
               <p className={styles.blockTitle}>{block.label}</p>
@@ -120,9 +101,9 @@ export default function SeminarSection() {
         {/* ── CLOSING — below the columns, right-aligned ── */}
         <div ref={closingRef} className={styles.closing}>
           <div className={styles.closingText}>
-            <p className={styles.closingLine1}>Not simply new techniques.</p>
+            <p className={styles.closingLine1}>{dict.seminar.closing1}</p>
             <p className={styles.closingLine2}>
-              A clearer way to understand, organize, and develop them into solid, lasting skills<span className={styles.closingDot}>.</span>
+              {dict.seminar.closing2}<span className={styles.closingDot}>.</span>
             </p>
           </div>
           <a
@@ -130,7 +111,7 @@ export default function SeminarSection() {
             className={styles.closingCta}
             id="seminar-view-programme"
           >
-            View the Programme
+            {dict.seminar.viewProgramme}
             <span className={styles.ctaArrow} aria-hidden="true">↘</span>
           </a>
         </div>

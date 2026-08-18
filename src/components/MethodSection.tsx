@@ -3,38 +3,13 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLanguage } from "@/context/LanguageContext";
 import styles from "./MethodSection.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const PRINCIPLES = [
-  {
-    num: "01",
-    keyword: "SCALING",
-    lead: "Adapt to level and needs.",
-    body: "Objectives can be added, reduced, or progressively modified without losing the path's structure. The method stays stable while difficulty evolves alongside the person.",
-  },
-  {
-    num: "02",
-    keyword: "CERTAINTY",
-    lead: "SCARF Model principle.",
-    body: "Knowing what to do, why to do it, and by what criteria reduces uncertainty, frees mental resources, and consolidates motor learning more effectively.",
-  },
-  {
-    num: "03",
-    keyword: "SPECIFICITY",
-    lead: "Precise function for every exercise.",
-    body: "Every instruction is specific and targeted. By reducing the margin of ambiguity, practitioners focus on the quality of movement and authentic growth.",
-  },
-  {
-    num: "04",
-    keyword: "AUTONOMY",
-    lead: "Build solid, lasting competence.",
-    body: "Rather than imitating isolated techniques, practitioners gain a unified framework to organize and develop skills with confidence and self-reliance.",
-  },
-];
-
 export default function MethodSection() {
+  const { dict } = useLanguage();
   const sectionRef = useRef<HTMLElement>(null);
   const labelRef = useRef<HTMLParagraphElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
@@ -96,25 +71,25 @@ export default function MethodSection() {
       aria-labelledby="method-headline"
     >
       <div className={styles.inner}>
-
         {/* ── ASYMMETRIC GRID ── */}
         <div className={styles.grid}>
-
           {/* LEFT — sticky label / headline / intro */}
           <div className={styles.left}>
-            <p ref={labelRef} className={styles.label}>Universal Method</p>
+            <p ref={labelRef} className={styles.label}>{dict.method.label}</p>
             <h2
               ref={headlineRef}
               id="method-headline"
               className={styles.headline}
             >
-              A single structure.<br />Adaptable to any<br />level and context.
+              {dict.method.headlineLine1}<br />
+              {dict.method.headlineLine2}<br />
+              {dict.method.headlineLine3}
             </h2>
             <p ref={introRef} className={styles.intro}>
-              Chris Collins&apos; Universal Method does not simply propose new techniques, but a clearer way to understand, organize, and develop them.
+              {dict.method.intro}
             </p>
             <p ref={introSubRef} className={styles.introSub}>
-              A single, shared reference system that reduces ambiguity and creates a coherent framework for long-term progress.
+              {dict.method.introSub}
             </p>
           </div>
 
@@ -123,7 +98,7 @@ export default function MethodSection() {
 
           {/* RIGHT — four principles */}
           <div ref={principlesRef} className={styles.right}>
-            {PRINCIPLES.map((p) => (
+            {dict.method.principles.map((p: { num: string; keyword: string; lead: string; body: string }) => (
               <div
                 key={p.num}
                 data-principle
@@ -136,15 +111,14 @@ export default function MethodSection() {
               </div>
             ))}
           </div>
-
         </div>
 
         {/* ── CLOSING — below the grid ── */}
         <div ref={closingRef} className={styles.closing}>
           <div className={styles.closingStatement}>
-            <p className={styles.closingLine}>Fewer variables.</p>
+            <p className={styles.closingLine}>{dict.method.closingLine1}</p>
             <p className={styles.closingLine}>
-              More clarity, more freedom<span className={styles.closingDot}>.</span>
+              {dict.method.closingLine2}<span className={styles.closingDot}>.</span>
             </p>
           </div>
           <a
@@ -152,11 +126,10 @@ export default function MethodSection() {
             className={styles.closingCta}
             id="method-explore-programme"
           >
-            Explore the Programme
+            {dict.method.exploreProgramme}
             <span className={styles.ctaArrow} aria-hidden="true">↘</span>
           </a>
         </div>
-
       </div>
     </section>
   );

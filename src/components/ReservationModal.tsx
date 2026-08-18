@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./ReservationModal.module.css";
 import { encodeCode128B } from "./TicketBarcode";
 import QRCode from "qrcode";
+import { useLanguage } from "@/context/LanguageContext";
 
 export type TierType = "full" | "day1" | "day2";
 
@@ -17,46 +18,69 @@ export interface TierInfo {
   features: string[];
 }
 
-const TIERS: TierInfo[] = [
-  {
-    id: "full",
-    name: "FULL SEMINAR (2 DAYS)",
-    price: 140,
-    subtitle: "Sabato 7 e Domenica 8 Settembre 2026 (6 Ore Totali)",
-    tag: "CONSIGLIATO",
-    isFeatured: true,
-    features: [
-      "Accesso completo a entrambe le giornate (7 e 8 Settembre)",
-      "6 Ore di istruzione diretta con Chris Collins",
-      "Attestato di Partecipazione Ufficiale UMS",
-      "Accesso esclusivo ai video di analisi post-seminario",
-    ],
-  },
-  {
-    id: "day1",
-    name: "Day 1 Pass — Perceive",
-    price: 80,
-    subtitle: "Sabato 7 Settembre (17:00 - 20:00)",
-    tag: "SINGOLA GIORNATA",
-    features: [
-      "Accesso completo alla sessione di Sabato (3 Ore)",
-      "Struttura, biomeccanica e lettura dell'intenzione",
-      "Test di pressione e controllo della distanza",
-    ],
-  },
-  {
-    id: "day2",
-    name: "Day 2 Pass — Adapt",
-    price: 80,
-    subtitle: "Domenica 8 Settembre (10:00 - 13:00)",
-    tag: "SINGOLA GIORNATA",
-    features: [
-      "Accesso completo alla sessione di Domenica (3 Ore)",
-      "Timing dinamico, angoli e meccaniche applicative",
-      "Risposta fluida tra diversi sistemi marziali",
-    ],
-  },
-];
+function getTiers(lang: string): TierInfo[] {
+  const isEn = lang === "en";
+  return [
+    {
+      id: "full",
+      name: isEn ? "FULL SEMINAR (2 DAYS)" : "SEMINARIO COMPLETO (2 GIORNI)",
+      price: 140,
+      subtitle: isEn ? "Saturday 7 & Sunday 8 September 2026 (6 Hours Total)" : "Sabato 7 e Domenica 8 Settembre 2026 (6 Ore Totali)",
+      tag: isEn ? "RECOMMENDED" : "CONSIGLIATO",
+      isFeatured: true,
+      features: isEn
+        ? [
+            "Full access to both days (7 & 8 September)",
+            "6 Hours of direct instruction with Chris Collins",
+            "Official UMS Certificate of Participation",
+            "Exclusive access to post-seminar video breakdown",
+          ]
+        : [
+            "Accesso completo a entrambe le giornate (7 e 8 Settembre)",
+            "6 Ore di istruzione diretta con Chris Collins",
+            "Attestato di Partecipazione Ufficiale UMS",
+            "Accesso esclusivo ai video di analisi post-seminario",
+          ],
+    },
+    {
+      id: "day1",
+      name: isEn ? "Day 1 Pass — Perceive" : "Pass Giorno 1 — Percepire",
+      price: 80,
+      subtitle: isEn ? "Saturday 7 September (17:00 - 20:00)" : "Sabato 7 Settembre (17:00 - 20:00)",
+      tag: isEn ? "SINGLE DAY" : "SINGOLA GIORNATA",
+      features: isEn
+        ? [
+            "Full access to Saturday session (3 Hours)",
+            "Structure, biomechanics and intention reading",
+            "Pressure testing and distance control",
+          ]
+        : [
+            "Accesso completo alla sessione di Sabato (3 Ore)",
+            "Struttura, biomeccanica e lettura dell'intenzione",
+            "Test di pressione e controllo della distanza",
+          ],
+    },
+    {
+      id: "day2",
+      name: isEn ? "Day 2 Pass — Adapt" : "Pass Giorno 2 — Adattarsi",
+      price: 80,
+      subtitle: isEn ? "Sunday 8 September (10:00 - 13:00)" : "Domenica 8 Settembre (10:00 - 13:00)",
+      tag: isEn ? "SINGLE DAY" : "SINGOLA GIORNATA",
+      features: isEn
+        ? [
+            "Full access to Sunday session (3 Hours)",
+            "Dynamic timing, angles and application mechanics",
+            "Fluid response across martial systems",
+          ]
+        : [
+            "Accesso completo alla sessione di Domenica (3 Ore)",
+            "Timing dinamico, angoli e meccaniche applicative",
+            "Risposta fluida tra diversi sistemi marziali",
+          ],
+    },
+  ];
+}
+
 
 interface CustomSelectProps {
   label: string;
@@ -128,8 +152,12 @@ export default function ReservationModal({
   initialStep = 1,
   initialSessionId = "",
 }: ReservationModalProps) {
+  const { lang, dict } = useLanguage();
+  const tiers = getTiers(lang);
+
   const [step, setStep] = useState<number>(initialStep);
   const [selectedTier, setSelectedTier] = useState<TierType>("full");
+
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"card" | "klarna">("card");
   const [isProcessing, setIsProcessing] = useState(false);
   const [ticketId, setTicketId] = useState(initialSessionId);
@@ -286,7 +314,7 @@ export default function ReservationModal({
 
   if (!isOpen) return null;
 
-  const currentTierObj = TIERS.find((t) => t.id === selectedTier) || TIERS[0];
+  const currentTierObj = tiers.find((t) => t.id === selectedTier) || tiers[0];
 
   const handleNextToTier = () => setStep(2);
   const handleNextToDati = () => setStep(3);
@@ -729,10 +757,10 @@ export default function ReservationModal({
             <span className={styles.stepDash}>—</span>
             <span className={step >= 4 ? styles.stepDotActive : styles.stepDot}>4</span>
             <span className={styles.stepDash}>—</span>
-            <span className={styles.stepLabelEnd}>Pagamento</span>
+            <span className={styles.stepLabelEnd}>{lang === "en" ? "Payment" : "Pagamento"}</span>
           </div>
 
-          <button className={styles.closeBtn} onClick={onClose} aria-label="Chiudi">
+          <button className={styles.closeBtn} onClick={onClose} aria-label={lang === "en" ? "Close" : "Chiudi"}>
             ✕
           </button>
         </div>
@@ -763,14 +791,16 @@ export default function ReservationModal({
                         <span className={styles.topOldPriceStrikethrough}>160,00 €</span>
                       )}
                       <h1 className={styles.priceDisplay}>
-                        {step === 1 ? "Pass da 80 € · Full Seminar 140 €" : `${currentTierObj.price},00 €`}
+                        {step === 1 ? (lang === "en" ? "Pass from €80 · Full Seminar €140" : "Pass da 80 € · Full Seminar 140 €") : `${currentTierObj.price},00 €`}
                       </h1>
                       {step > 1 && currentTierObj.id === "full" && (
-                        <span className={styles.topDiscountBadge}>RISPARMI 20 €</span>
+                        <span className={styles.topDiscountBadge}>{lang === "en" ? "SAVE €20" : "RISPARMI 20 €"}</span>
                       )}
                     </div>
 
-                    <p className={styles.locationText}>Bracciano, Italia · 7 e 8 settembre 2026</p>
+                    <p className={styles.locationText}>
+                      {lang === "en" ? "Bracciano, Italy · 7 & 8 September 2026" : "Bracciano, Italia · 7 e 8 settembre 2026"}
+                    </p>
                   </div>
                   <div className={styles.divider} />
                 </>
@@ -781,31 +811,39 @@ export default function ReservationModal({
                 {/* ── STEP 1: OVERVIEW & DETAILS ── */}
                 {step === 1 && (
                   <div className={styles.sectionBlock}>
-                    <h2 className={styles.sectionTitle}>Dettagli del Seminario</h2>
+                    <h2 className={styles.sectionTitle}>{lang === "en" ? "Seminar Details" : "Dettagli del Seminario"}</h2>
                     <div className={styles.overviewSpecList}>
                       <div className={styles.overviewSpecItem}>
-                        <span className={styles.overviewSpecLabel}>Docente Principale</span>
+                        <span className={styles.overviewSpecLabel}>{lang === "en" ? "Lead Instructor" : "Docente Principale"}</span>
                         <span className={styles.overviewSpecValue}>Chris Collins</span>
                       </div>
 
                       <div className={styles.overviewSpecItem}>
-                        <span className={styles.overviewSpecLabel}>Disponibilità</span>
-                        <span className={styles.overviewSpecValue}>Posti limitati — iscrizione fino a esaurimento</span>
+                        <span className={styles.overviewSpecLabel}>{lang === "en" ? "Availability" : "Disponibilità"}</span>
+                        <span className={styles.overviewSpecValue}>
+                          {lang === "en" ? "Limited places — registration open until sold out" : "Posti limitati — iscrizione fino a esaurimento"}
+                        </span>
                       </div>
 
                       <div className={styles.overviewSpecItem}>
-                        <span className={styles.overviewSpecLabel}>Durata</span>
-                        <span className={styles.overviewSpecValue}>2 giorni · 6 ore di formazione diretta con Chris Collins</span>
+                        <span className={styles.overviewSpecLabel}>{lang === "en" ? "Duration" : "Durata"}</span>
+                        <span className={styles.overviewSpecValue}>
+                          {lang === "en" ? "2 days · 6 hours of direct instruction with Chris Collins" : "2 giorni · 6 ore di formazione diretta con Chris Collins"}
+                        </span>
                       </div>
 
                       <div className={styles.overviewSpecItem}>
-                        <span className={styles.overviewSpecLabel}>Certificazione</span>
-                        <span className={styles.overviewSpecValue}>Attestato di partecipazione</span>
+                        <span className={styles.overviewSpecLabel}>{lang === "en" ? "Certification" : "Certificazione"}</span>
+                        <span className={styles.overviewSpecValue}>
+                          {lang === "en" ? "Official Certificate of Participation" : "Attestato di partecipazione"}
+                        </span>
                       </div>
 
                       <div className={styles.overviewSpecItem}>
-                        <span className={styles.overviewSpecLabel}>Focus Tecnico</span>
-                        <span className={styles.overviewSpecValue}>Biomeccanica · Timing · Pressione · Struttura</span>
+                        <span className={styles.overviewSpecLabel}>{lang === "en" ? "Technical Focus" : "Focus Tecnico"}</span>
+                        <span className={styles.overviewSpecValue}>
+                          {lang === "en" ? "Biomechanics · Timing · Pressure · Structure" : "Biomeccanica · Timing · Pressione · Struttura"}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -815,12 +853,14 @@ export default function ReservationModal({
                 {step === 2 && (
                   <>
                     <div className={styles.sectionBlock}>
-                      <h2 className={styles.sectionTitle}>Seleziona il tuo pass</h2>
-                      <p className={styles.sectionSub}>Scegli la formula di partecipazione al seminario</p>
+                      <h2 className={styles.sectionTitle}>{dict.modal.step1Title}</h2>
+                      <p className={styles.sectionSub}>
+                        {lang === "en" ? "Choose your seminar participation pass" : "Scegli la formula di partecipazione al seminario"}
+                      </p>
                     </div>
 
                     <div className={styles.tiersList}>
-                      {TIERS.map((tier) => {
+                      {tiers.map((tier) => {
                         const isSelected = selectedTier === tier.id;
                         const isFullTier = tier.id === "full";
 
@@ -838,7 +878,7 @@ export default function ReservationModal({
                                 <div className={styles.tierNameContainer}>
                                   <span className={styles.tierNameClean}>{tier.name}</span>
                                   {isFullTier && (
-                                    <span className={styles.discountBadgeTag}>RISPARMI 20 €</span>
+                                    <span className={styles.discountBadgeTag}>{lang === "en" ? "SAVE €20" : "RISPARMI 20 €"}</span>
                                   )}
                                 </div>
                                 <div className={styles.tierPriceGroup}>
@@ -860,14 +900,14 @@ export default function ReservationModal({
                 {/* ── STEP 3: I TUOI DATI ── */}
                 {step === 3 && (
                   <form id="datiForm" onSubmit={(e) => { e.preventDefault(); handleNextToEsperienza(); }} className={styles.cleanForm}>
-                    <h2 className={styles.sectionTitle}>I tuoi dati</h2>
+                    <h2 className={styles.sectionTitle}>{dict.modal.step2Title}</h2>
 
                     <div className={styles.fieldGroupClean}>
-                      <label className={styles.fieldLabel}>Nome e cognome *</label>
+                      <label className={styles.fieldLabel}>{lang === "en" ? "Full Name *" : "Nome e cognome *"}</label>
                       <input
                         type="text"
                         required
-                        placeholder="es. Mario Rossi"
+                        placeholder={lang === "en" ? "e.g. John Doe" : "es. Mario Rossi"}
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         autoFocus
@@ -879,14 +919,14 @@ export default function ReservationModal({
                       <input
                         type="email"
                         required
-                        placeholder="mario.rossi@email.com"
+                        placeholder={lang === "en" ? "john.doe@email.com" : "mario.rossi@email.com"}
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       />
                     </div>
 
                     <div className={styles.fieldGroupClean}>
-                      <label className={styles.fieldLabel}>Telefono / WhatsApp *</label>
+                      <label className={styles.fieldLabel}>{lang === "en" ? "Phone / WhatsApp *" : "Telefono / WhatsApp *"}</label>
                       <div className={styles.phoneInputRow}>
                         <select
                           className={styles.countryCodeSelect}
@@ -923,25 +963,25 @@ export default function ReservationModal({
                   <>
                     {showDoubleConfirm ? (
                       <div className={styles.doubleConfirmClean}>
-                        <h3 className={styles.warningTitleClean}>Email già registrata</h3>
+                        <h3 className={styles.warningTitleClean}>{lang === "en" ? "Email already registered" : "Email già registrata"}</h3>
                         <p className={styles.warningDescClean}>
-                          Risulta già un'iscrizione confermata per l'email <strong>{formData.email}</strong>.
+                          {lang === "en" ? "There is already a confirmed booking for email " : "Risulta già un'iscrizione confermata per l'email "}<strong>{formData.email}</strong>.
                         </p>
                         <div className={styles.warningDetailsClean}>
-                          <div><strong>Nome:</strong> {duplicateData.existingName}</div>
+                          <div><strong>{lang === "en" ? "Name:" : "Nome:"}</strong> {duplicateData.existingName}</div>
                           <div><strong>Pass ID:</strong> {duplicateData.existingTicketId}</div>
-                          <div><strong>Tipo Pass:</strong> {duplicateData.existingTier}</div>
+                          <div><strong>{lang === "en" ? "Pass Type:" : "Tipo Pass:"}</strong> {duplicateData.existingTier}</div>
                         </div>
                         <p className={styles.warningSubClean}>
-                          Vuoi procedere comunque all'acquisto di un nuovo pass per questa email?
+                          {lang === "en" ? "Do you still wish to purchase an additional pass with this email?" : "Vuoi procedere comunque all'acquisto di un nuovo pass per questa email?"}
                         </p>
                       </div>
                     ) : (
                       <form id="esperienzaForm" onSubmit={handleProceedToStripeCheckout} className={styles.cleanForm}>
-                        <h2 className={styles.sectionTitle}>La tua esperienza</h2>
+                        <h2 className={styles.sectionTitle}>{lang === "en" ? "Your Experience" : "La tua esperienza"}</h2>
 
                         <div className={styles.fieldGroupClean}>
-                          <label className={styles.fieldLabel}>Sistema marziale</label>
+                          <label className={styles.fieldLabel}>{lang === "en" ? "Martial System" : "Sistema marziale"}</label>
                           <div className={styles.customSelectWrapper}>
                             <CustomSelect
                               label=""
@@ -951,7 +991,7 @@ export default function ReservationModal({
                                 { value: "wing-tsun", label: "Wing Tsun" },
                                 { value: "mma", label: "MMA / Striking" },
                                 { value: "karate", label: "Karate / Kung Fu" },
-                                { value: "other", label: "Altro Sistema" },
+                                { value: "other", label: lang === "en" ? "Other System" : "Altro Sistema" },
                               ]}
                               onChange={(val) => setFormData({ ...formData, system: val })}
                             />
@@ -959,14 +999,14 @@ export default function ReservationModal({
                         </div>
 
                         <div className={styles.fieldGroupClean}>
-                          <label className={styles.fieldLabel}>Livello di esperienza</label>
+                          <label className={styles.fieldLabel}>{lang === "en" ? "Experience Level" : "Livello di esperienza"}</label>
                           <CustomSelect
                             label=""
                             value={formData.experience}
                             options={[
-                              { value: "beginner", label: "Principiante (0 - 1 Anno)" },
-                              { value: "intermediate", label: "Intermedio (1 - 4 Anni)" },
-                              { value: "advanced", label: "Avanzato / Cintura Nera" },
+                              { value: "beginner", label: lang === "en" ? "Beginner (0 - 1 Year)" : "Principiante (0 - 1 Anno)" },
+                              { value: "intermediate", label: lang === "en" ? "Intermediate (1 - 4 Years)" : "Intermedio (1 - 4 Anni)" },
+                              { value: "advanced", label: lang === "en" ? "Advanced / Black Belt" : "Avanzato / Cintura Nera" },
                             ]}
                             onChange={(val) => setFormData({ ...formData, experience: val })}
                           />
@@ -975,9 +1015,9 @@ export default function ReservationModal({
                         {/* Final Order Confirmation Card */}
                         <div className={styles.finalCheckoutCard}>
                           <div className={styles.finalCheckoutTitle}>{currentTierObj.name}</div>
-                          <div className={styles.finalCheckoutSub}>7 e 8 settembre 2026 · Bracciano</div>
+                          <div className={styles.finalCheckoutSub}>{lang === "en" ? "7 & 8 September 2026 · Bracciano" : "7 e 8 settembre 2026 · Bracciano"}</div>
                           <div className={styles.finalCheckoutTotalRow}>
-                            <span>Totale:</span>
+                            <span>{lang === "en" ? "Total:" : "Totale:"}</span>
                             <strong>{currentTierObj.price},00 €</strong>
                           </div>
                         </div>
@@ -992,9 +1032,9 @@ export default function ReservationModal({
                     <div className={styles.confirmBadgeIcon}>✓</div>
 
                     <div className={styles.confirmHeaderClean}>
-                      <h1 className={styles.confirmTitleClean}>Iscrizione Confermata!</h1>
+                      <h1 className={styles.confirmTitleClean}>{lang === "en" ? "Registration Confirmed!" : "Iscrizione Confermata!"}</h1>
                       <p className={styles.confirmSubClean}>
-                        La tua prenotazione al seminario con Chris Collins è stata registrata con successo.
+                        {dict.modal.ticketConfirmed}
                       </p>
                     </div>
 
@@ -1006,19 +1046,19 @@ export default function ReservationModal({
 
                       <div className={styles.ticketGridClean}>
                         <div>
-                          <span className={styles.tLabelClean}>PARTECIPANTE</span>
-                          <span className={styles.tValClean}>{formData.name || "Partecipante Confermato"}</span>
+                          <span className={styles.tLabelClean}>{lang === "en" ? "PARTICIPANT" : "PARTECIPANTE"}</span>
+                          <span className={styles.tValClean}>{formData.name || (lang === "en" ? "Confirmed Participant" : "Partecipante Confermato")}</span>
                         </div>
                         <div>
-                          <span className={styles.tLabelClean}>TIPO DI PASS</span>
+                          <span className={styles.tLabelClean}>{lang === "en" ? "PASS TYPE" : "TIPO DI PASS"}</span>
                           <span className={styles.tValBlueClean}>{currentTierObj.name}</span>
                         </div>
                         <div>
-                          <span className={styles.tLabelClean}>DATE E ORARI</span>
-                          <span className={styles.tValClean}>7 e 8 Settembre 2026</span>
+                          <span className={styles.tLabelClean}>{lang === "en" ? "DATES & TIMES" : "DATE E ORARI"}</span>
+                          <span className={styles.tValClean}>{lang === "en" ? "7 & 8 September 2026" : "7 e 8 Settembre 2026"}</span>
                         </div>
                         <div>
-                          <span className={styles.tLabelClean}>LUOGO</span>
+                          <span className={styles.tLabelClean}>{lang === "en" ? "LOCATION" : "LUOGO"}</span>
                           <span className={styles.tValClean}>Bracciano (RM), Italia</span>
                         </div>
                       </div>
@@ -1030,19 +1070,19 @@ export default function ReservationModal({
                           className={styles.btnSecondary}
                           onClick={onClose}
                         >
-                          Chiudi
+                          {lang === "en" ? "Close" : "Chiudi"}
                         </button>
 
                         <button
                           className={styles.btnPrimary}
                           onClick={handleDownloadTicket}
                         >
-                          Scarica Biglietto →
+                          {lang === "en" ? "Download Ticket →" : "Scarica Biglietto →"}
                         </button>
                       </div>
 
                       <p className={styles.stripeSecuritySubtext}>
-                        ✉️ abbiamo inviato la conferma ed il biglietto a <strong>{formData.email || "tua email"}</strong>
+                        {lang === "en" ? "✉️ we sent confirmation and ticket to " : "✉️ abbiamo inviato la conferma ed il biglietto a "}<strong>{formData.email || (lang === "en" ? "your email" : "tua email")}</strong>
                       </p>
                     </div>
                   </div>
@@ -1053,7 +1093,7 @@ export default function ReservationModal({
               {step === 1 && (
                 <div className={styles.actionRowEnd}>
                   <button className={styles.btnPrimary} onClick={handleNextToTier}>
-                    Continua →
+                    {lang === "en" ? "Continue →" : "Continua →"}
                   </button>
                 </div>
               )}
@@ -1061,10 +1101,10 @@ export default function ReservationModal({
               {step === 2 && (
                 <div className={styles.actionRowBetween}>
                   <button className={styles.btnSecondary} onClick={handleBack}>
-                    ← Indietro
+                    {lang === "en" ? "← Back" : "← Indietro"}
                   </button>
                   <button className={styles.btnPrimary} onClick={handleNextToDati}>
-                    Continua →
+                    {lang === "en" ? "Continue →" : "Continua →"}
                   </button>
                 </div>
               )}
@@ -1072,10 +1112,10 @@ export default function ReservationModal({
               {step === 3 && (
                 <div className={styles.actionRowBetween}>
                   <button className={styles.btnSecondary} onClick={handleBack}>
-                    ← Indietro
+                    {lang === "en" ? "← Back" : "← Indietro"}
                   </button>
                   <button type="submit" form="datiForm" className={styles.btnPrimary}>
-                    Continua →
+                    {lang === "en" ? "Continue →" : "Continua →"}
                   </button>
                 </div>
               )}
@@ -1089,7 +1129,7 @@ export default function ReservationModal({
                         className={styles.btnSecondary}
                         onClick={() => setShowDoubleConfirm(false)}
                       >
-                        Cambia Email
+                        {lang === "en" ? "Change Email" : "Cambia Email"}
                       </button>
                       <button
                         type="button"
@@ -1097,14 +1137,14 @@ export default function ReservationModal({
                         onClick={executeStripeRedirect}
                         disabled={isProcessing}
                       >
-                        {isProcessing ? "Reindirizzamento..." : `Vai al pagamento sicuro (${currentTierObj.price},00 €) →`}
+                        {isProcessing ? (lang === "en" ? "Redirecting..." : "Reindirizzamento...") : (lang === "en" ? `Proceed to secure payment (${currentTierObj.price},00 €) →` : `Vai al pagamento sicuro (${currentTierObj.price},00 €) →`)}
                       </button>
                     </div>
                   ) : (
                     <div className={styles.actionRowCenterColumn} style={{ marginTop: "16px" }}>
                       <div className={styles.actionRowBetween} style={{ width: "100%", marginTop: 0 }}>
                         <button type="button" className={styles.btnSecondary} onClick={handleBack}>
-                          ← Indietro
+                          {lang === "en" ? "← Back" : "← Indietro"}
                         </button>
                         <button
                           type="submit"
@@ -1112,11 +1152,11 @@ export default function ReservationModal({
                           className={styles.btnPrimary}
                           disabled={isProcessing}
                         >
-                          {isProcessing ? "Reindirizzamento..." : "Vai al pagamento sicuro →"}
+                          {isProcessing ? (lang === "en" ? "Redirecting..." : "Reindirizzamento...") : (lang === "en" ? "Proceed to secure payment →" : "Vai al pagamento sicuro →")}
                         </button>
                       </div>
                       <p className={styles.stripeSecuritySubtext}>
-                        🔒 Pagamento sicuro gestito da Stripe
+                        {lang === "en" ? "🔒 Secure payment powered by Stripe" : "🔒 Pagamento sicuro gestito da Stripe"}
                       </p>
                     </div>
                   )}
@@ -1130,7 +1170,7 @@ export default function ReservationModal({
                   className={styles.legalLink}
                   onClick={openTerms}
                 >
-                  Termini e Condizioni
+                  {lang === "en" ? "Terms & Conditions" : "Termini e Condizioni"}
                 </button>
                 <span className={styles.legalDot}>•</span>
                 <button
@@ -1138,7 +1178,7 @@ export default function ReservationModal({
                   className={styles.legalLink}
                   onClick={openSupport}
                 >
-                  Assistenza
+                  {lang === "en" ? "Support" : "Assistenza"}
                 </button>
               </div>
             </>

@@ -290,6 +290,19 @@
   color: #ffffff;
 }
 
+.sponsorContactLink {
+  color: #e1a10b;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.sponsorContactLink:hover {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(225, 161, 11, 0.6);
+}
+
 /* Emblem Watermark */
 .watermarkWrapper {
   position: absolute;

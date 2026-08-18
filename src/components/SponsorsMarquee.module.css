@@ -71,25 +71,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.55;
+  opacity: 0.75;
   transition: opacity 0.3s ease, transform 0.3s ease;
-  padding: 0 10px;
+  padding: 0 15px;
+  height: 60px;
   cursor: default;
 }
 
 .logoItem:hover {
   opacity: 1;
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .sponsorLogo {
   object-fit: contain;
-  filter: grayscale(20%);
+  max-height: 52px;
+  max-width: 160px;
+  width: auto;
+  height: auto;
+  filter: brightness(0) invert(1);
   transition: filter 0.3s ease;
 }
 
 .logoItem:hover .sponsorLogo {
-  filter: grayscale(0%);
+  filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(225, 161, 11, 0.6));
 }
 
 /* ═══════════════════════════

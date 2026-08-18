@@ -139,6 +139,17 @@ export default function Footer({ onOpenReservation }: FooterProps) {
                     UNIVERSALMETHOD.SEMINAR
                   </a>
                 </li>
+                <li className={styles.infoItem}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e1a10b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                  <a
+                    href="mailto:info@universalmethod.seminar?subject=Richiesta%20Sponsor&body=Ciao,%20vorrei%20partecipare%20come%20sponsor%20al%20vostro%20progetto,%20sono:"
+                    className={styles.sponsorContactLink}
+                  >
+                    DIVENTA SPONSOR
+                  </a>
+                </li>
               </ul>
             </div>
 

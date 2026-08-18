@@ -4,10 +4,11 @@ import Image from "next/image";
 import styles from "./SponsorsMarquee.module.css";
 
 const SPONSOR_LOGOS = [
-  { src: "/yim-logo-ticket.png", alt: "Yim Wing Tsun", width: 44, height: 44 },
-  { src: "/logo-header.png", alt: "Universal Method", width: 44, height: 44 },
-  { src: "/logo.png", alt: "UMS Emblem", width: 44, height: 44 },
-  { src: "/logo-yim.png", alt: "Yim Emblem", width: 44, height: 44 },
+  { src: "/sponsor/abbruzzi.png", alt: "Abbruzzi", width: 140, height: 60 },
+  { src: "/sponsor/agora.png", alt: "Agorà", width: 140, height: 60 },
+  { src: "/sponsor/Logo%20simone.png", alt: "Simone", width: 140, height: 60 },
+  { src: "/sponsor/logo_garrison_black.png", alt: "Garrison", width: 140, height: 60 },
+  { src: "/sponsor/Villa%20Sandra.png", alt: "Villa Sandra", width: 160, height: 60 },
 ];
 
 export default function SponsorsMarquee() {

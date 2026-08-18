@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import CustomCursor from "@/components/CustomCursor";
+import Loader from "@/components/Loader";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import SponsorsMarquee from "@/components/SponsorsMarquee";
@@ -84,6 +85,7 @@ function MainContent() {
 
   return (
     <main>
+      <Loader />
       <CustomCursor />
       <Navbar onOpenReservation={openReservation} />
       <Hero onOpenReservation={openReservation} />

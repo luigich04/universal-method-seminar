@@ -88,6 +88,36 @@
 }
 
 /* ============================================
+   SPINNER BIANCO BOTTOM SCREEN
+============================================ */
+.bottomSpinnerContainer {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.whiteSpinner {
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spinLoader 0.7s linear infinite;
+}
+
+@keyframes spinLoader {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
    STEP 3 — SEMINAR SLAM (GSAP)
 ============================================ */
 .seminarBlock {

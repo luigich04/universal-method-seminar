@@ -105,6 +105,11 @@ export default function Loader() {
           </div>
         )}
 
+        {/* Spinner bianco fisso in basso prima e durante l'animazione */}
+        <div className={styles.bottomSpinnerContainer}>
+          <span className={styles.whiteSpinner} aria-label="Caricamento..." />
+        </div>
+
       </div>
     </div>
   );

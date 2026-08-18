@@ -125,8 +125,8 @@ export default function Footer({ onOpenReservation }: FooterProps) {
                     <rect width="20" height="16" x="2" y="4" rx="2" />
                     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                   </svg>
-                  <a href="mailto:info@universalmethod.seminar" className={styles.contactLink}>
-                    INFO@UNIVERSALMETHOD.SEMINAR
+                  <a href="mailto:yimwckf@gmail.it" className={styles.contactLink}>
+                    YIMWCKF@GMAIL.IT
                   </a>
                 </li>
                 <li className={`${styles.infoItem} ${styles.webContactItem}`}>
@@ -144,7 +144,7 @@ export default function Footer({ onOpenReservation }: FooterProps) {
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                   </svg>
                   <a
-                    href="mailto:info@universalmethod.seminar?subject=Richiesta%20Sponsor&body=Ciao,%20vorrei%20partecipare%20come%20sponsor%20al%20vostro%20progetto,%20sono:"
+                    href="mailto:yimwckf@gmail.it?subject=Richiesta%20Sponsor&body=Ciao,%20vorrei%20partecipare%20come%20sponsor%20al%20vostro%20progetto,%20sono:"
                     className={styles.sponsorContactLink}
                   >
                     DIVENTA SPONSOR

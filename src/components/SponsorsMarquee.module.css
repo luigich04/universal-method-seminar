@@ -53,10 +53,6 @@
   will-change: transform;
 }
 
-.marqueeSection:hover .marqueeTrack {
-  animation-play-state: paused;
-}
-
 @keyframes marqueeScroll {
   0% {
     transform: translateX(0%);
@@ -66,21 +62,15 @@
   }
 }
 
-/* Minimal Logo Item with Opacity */
+/* Minimal Logo Item */
 .logoItem {
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.75;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0.85;
   padding: 0 15px;
   height: 60px;
   cursor: default;
-}
-
-.logoItem:hover {
-  opacity: 1;
-  transform: scale(1.08);
 }
 
 .sponsorLogo {
@@ -90,11 +80,6 @@
   width: auto;
   height: auto;
   filter: brightness(0) invert(1);
-  transition: filter 0.3s ease;
-}
-
-.logoItem:hover .sponsorLogo {
-  filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(225, 161, 11, 0.6));
 }
 
 /* ═══════════════════════════

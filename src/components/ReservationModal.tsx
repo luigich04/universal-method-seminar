@@ -1252,7 +1252,7 @@ export default function ReservationModal({
 
                 <div className={styles.supportChannelCard}>
                   <div className={styles.channelHeader}>
-                    <strong>📧 Supporto Ufficiale via Email</strong>
+                    <strong>Supporto Ufficiale via Email</strong>
                     <span className={styles.channelBadge}>RISPOSTA ENTRO 2 ORE</span>
                   </div>
                   <p className={styles.channelDesc}>Per informazioni generali, modifiche ai dati del biglietto e richieste amministrative.</p>
@@ -1263,17 +1263,17 @@ export default function ReservationModal({
 
                 <div className={styles.supportChannelCard}>
                   <div className={styles.channelHeader}>
-                    <strong>💬 WhatsApp e Assistenza Telefonica</strong>
+                    <strong>WhatsApp e Assistenza Telefonica</strong>
                     <span className={styles.channelBadge}>LUN - SAB: 09:00 - 19:00</span>
                   </div>
                   <p className={styles.channelDesc}>Per assistenza immediata e supporto diretto sulla posizione della palestra ed orari.</p>
-                  <a href="https://wa.me/393401234567" target="_blank" rel="noopener noreferrer" className={styles.channelLink}>
-                    +39 340 1234567
+                  <a href="https://wa.me/393290076810" target="_blank" rel="noopener noreferrer" className={styles.channelLink}>
+                    +39 329 007 6810
                   </a>
                 </div>
 
                 <div className={styles.supportInvoiceNote}>
-                  <strong>📄 Richiesta Fattura Elettronica / Aziendale:</strong><br />
+                  <strong>Richiesta Fattura Elettronica / Aziendale:</strong><br />
                   Se hai bisogno di fattura intestata alla tua Società / P.IVA o Associazione Sportiva, rispondi semplicemente alla mail di conferma inviando la Ragione Sociale ed il Codice SDI.
                 </div>
               </div>

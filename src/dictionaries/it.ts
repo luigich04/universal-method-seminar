@@ -62,7 +62,7 @@ export const it = {
   },
   method: {
     label: "Universal Method",
-    headlineLine1: "Un'unica struttura.",
+    headlineLine1: "Un unica struttura.",
     headlineLine2: "Adattabile a ogni",
     headlineLine3: "livello e contesto.",
     intro:

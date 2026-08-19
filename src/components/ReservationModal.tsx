@@ -25,7 +25,7 @@ function getTiers(lang: string): TierInfo[] {
       id: "full",
       name: isEn ? "FULL SEMINAR (2 DAYS)" : "SEMINARIO COMPLETO (2 GIORNI)",
       price: 140,
-      subtitle: isEn ? "Saturday 7 & Sunday 8 September 2026 (6 Hours Total)" : "Sabato 7 e Domenica 8 Settembre 2026 (6 Ore Totali)",
+      subtitle: isEn ? "Monday 7 & Tuesday 8 September 2026 (6 Hours Total)" : "Lunedi e Martedi 8 Settembre 2026 (6 Ore Totali)",
       tag: isEn ? "RECOMMENDED" : "CONSIGLIATO",
       isFeatured: true,
       features: isEn
@@ -46,7 +46,7 @@ function getTiers(lang: string): TierInfo[] {
       id: "day1",
       name: isEn ? "Day 1 Pass — Perceive" : "Pass Giorno 1 — Percepire",
       price: 80,
-      subtitle: isEn ? "Saturday 7 September (17:00 - 20:00)" : "Sabato 7 Settembre (17:00 - 20:00)",
+      subtitle: isEn ? "Monday 7 September (17:00 - 20:00)" : "Lunedi 7 Settembre (17:00 - 20:00)",
       tag: isEn ? "SINGLE DAY" : "SINGOLA GIORNATA",
       features: isEn
         ? [
@@ -64,7 +64,7 @@ function getTiers(lang: string): TierInfo[] {
       id: "day2",
       name: isEn ? "Day 2 Pass — Adapt" : "Pass Giorno 2 — Adattarsi",
       price: 80,
-      subtitle: isEn ? "Sunday 8 September (10:00 - 13:00)" : "Domenica 8 Settembre (10:00 - 13:00)",
+      subtitle: isEn ? "Tuesday 8 September (10:00 - 13:00)" : "Martedi 8 Settembre (10:00 - 13:00)",
       tag: isEn ? "SINGLE DAY" : "SINGOLA GIORNATA",
       features: isEn
         ? [

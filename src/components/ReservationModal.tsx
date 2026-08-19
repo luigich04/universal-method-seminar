@@ -25,7 +25,7 @@ function getTiers(lang: string): TierInfo[] {
       id: "full",
       name: isEn ? "FULL SEMINAR (2 DAYS)" : "SEMINARIO COMPLETO (2 GIORNI)",
       price: 140,
-      subtitle: isEn ? "Monday 7 & Tuesday 8 September 2026 (6 Hours Total)" : "Lunedi e Martedi 8 Settembre 2026 (6 Ore Totali)",
+      subtitle: isEn ? "Monday 7 & Tuesday 8 September 2026 (6 Hours Total)" : "Lunedi 7 e Martedi 8 Settembre 2026 (6 Ore Totali)",
       tag: isEn ? "RECOMMENDED" : "CONSIGLIATO",
       isFeatured: true,
       features: isEn
